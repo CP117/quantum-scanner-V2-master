@@ -1,344 +1,163 @@
 {
-  "timestamp_utc": "2026-11-18T23:43:06.583067+00:00",
-  "monotonic_seconds": 267815.9456095,
+  "timestamp_utc": "2026-11-18T23:56:38.364685+00:00",
+  "monotonic_seconds": 268627.727219,
   "process_health": {},
   "snapshot_meta_stocks": {
-    "last_full_sweep_at": "2026-11-18T23:22:44.384002+00:00",
-    "last_batch_at": "2026-11-18T23:42:50.583668+00:00",
-    "current_batch_index": 28,
-    "highest_completed_batch": 33,
+    "last_full_sweep_at": "2026-11-18T23:48:55.235729+00:00",
+    "last_batch_at": "2026-11-18T23:56:23.748637+00:00",
+    "current_batch_index": 7,
+    "highest_completed_batch": 4,
     "total_batches": 35,
     "universe_size": 3455,
     "rows_scored": 3161,
-    "evaluations_ever": 74365,
-    "current_sweep_scanned": 3604,
-    "sweeps_completed": 16
+    "evaluations_ever": 76035,
+    "current_sweep_scanned": 675,
+    "sweeps_completed": 17
   },
   "top10_priority_lane": {
     "running": true,
     "started_at_epoch": 1795018898.008134,
-    "uptime_seconds": 26488.574836730957,
+    "uptime_seconds": 27300.35649251938,
     "last_tick_at_epoch": 1795019112.9917045,
-    "last_tick_seconds_ago": 26273.591267108917,
+    "last_tick_seconds_ago": 27085.372923135757,
     "last_tick_symbols_rescored": 13,
     "last_tick_error": "",
     "total_ticks": 8,
     "total_symbols_rescored": 131,
-    "consecutive_slow": 465,
+    "consecutive_slow": 480,
     "consecutive_fast": 0,
     "monitor_only": true,
     "last_sleep_seconds": 56.953125,
-    "last_tick_elapsed_seconds": 4.5299530029296875e-06,
+    "last_tick_elapsed_seconds": 1.9073486328125e-06,
     "viewport_first_pass": {
       "tracked_total": 58,
       "ttl_seconds": 600,
       "recent_first_pass": [
         {
           "symbol": "ARAI",
-          "age_seconds": 26273.6
+          "age_seconds": 27085.4
         },
         {
           "symbol": "AOUT",
-          "age_seconds": 26273.6
+          "age_seconds": 27085.4
         },
         {
           "symbol": "AIFC",
-          "age_seconds": 26273.6
+          "age_seconds": 27085.4
         },
         {
           "symbol": "AKAN",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AIRS",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AMIX",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AMLX",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "ALMS",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "ALGS",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AMKL",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "ALNY",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AEMD",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AIFF",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "ADGM",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AIFU",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AEHL",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AIMD",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "ADMA",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AFYA",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "ADVB",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "AMOD",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "ALIS",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "ALDX",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "ALPS",
-          "age_seconds": 26309.5
+          "age_seconds": 27121.3
         },
         {
           "symbol": "BMBL",
-          "age_seconds": 26349.5
+          "age_seconds": 27161.2
         }
       ]
     }
   },
   "threads": [
     {
-      "tid": 706060,
-      "name": "Thread-110160 (_run_via_pool)",
-      "daemon": false,
-      "alive": true,
-      "stack": [
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 138, in _lazy_load_price_history\n    self._price_history = PriceHistory(self._data, self.ticker, self._get_ticker_tz(timeout=10))",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 145, in _get_ticker_tz\n    tz = c.lookup(self.ticker)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\cache.py\", line 171, in lookup\n    return _TZ_KV.get(_TZ_KV.key == key).value",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 7964, in get\n    return sq.get()",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 8456, in get\n    return clone.execute(database)[0]",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 2127, in inner\n    return method(self, database, *args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 2194, in execute\n    return self._execute(database)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 8431, in _execute\n    cursor_wrapper = super(BaseModelSelect, self)._execute(database)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 2205, in _execute\n    cursor = database.execute(self)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 3933, in execute\n    return self.execute_sql(sql, params)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 3928, in execute_sql\n    return self._execute_cursor(sql, params)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 3917, in _execute_cursor\n    cursor = self.cursor(**cursor_options)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 3898, in cursor\n    self.connect()",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 3848, in connect\n    self._state.set_connection(self._connect())",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 4268, in _connect\n    conn = sqlite3.connect(self.database, timeout=self._timeout,"
-      ]
-    },
-    {
-      "tid": 573456,
-      "name": "Thread-110159 (_run_via_pool)",
-      "daemon": false,
-      "alive": true,
-      "stack": [
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
-      ]
-    },
-    {
-      "tid": 581568,
-      "name": "Thread-110158 (_run_via_pool)",
-      "daemon": false,
-      "alive": true,
-      "stack": [
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
-      ]
-    },
-    {
-      "tid": 443156,
-      "name": "Thread-110157 (_run_via_pool)",
-      "daemon": false,
-      "alive": true,
-      "stack": [
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
-      ]
-    },
-    {
-      "tid": 468760,
-      "name": "Thread-110156 (_run_via_pool)",
-      "daemon": false,
-      "alive": true,
-      "stack": [
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
-      ]
-    },
-    {
-      "tid": 470624,
-      "name": "Thread-110155 (_run_via_pool)",
-      "daemon": false,
-      "alive": true,
-      "stack": [
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
-      ]
-    },
-    {
-      "tid": 465140,
-      "name": "Thread-110154 (_run_via_pool)",
-      "daemon": false,
-      "alive": true,
-      "stack": [
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
-      ]
-    },
-    {
-      "tid": 480776,
+      "tid": 647656,
       "name": "AnyIO worker thread",
       "daemon": false,
       "alive": true,
       "stack": [
         "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
         "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1089, in run\n    item = self.queue.get()",
-        "  File \"C:\\Python314\\Lib\\queue.py\", line 199, in get\n    self.not_empty.wait()",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 369, in wait\n    waiter.acquire()"
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1100, in run\n    result = context.run(func, *args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\routes\\cross_market_radar.py\", line 19, in cross_market_squeeze\n    return compute_cross_market_radar(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\cross_market_radar_service.py\", line 163, in compute_cross_market_radar\n    env = get_results_batch(batch=0, limit=min(universe_scan_limit, 200), market='stocks')",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\result_store.py\", line 140, in get_results_batch\n    scored_rows = score_symbol_rows(slice_rows)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2902, in score_symbol_rows\n    scored = score_from_prices(row, safe_float(cached.get('last_price')), safe_float(cached.get('previous_close')), 'cache', age, _cached_as_of, 'cached last-good quote', fundamentals_info=intraday, use_real_options=use_real_options, daily_hist=daily_hist, reg_index_snapshot=reg_index_snapshot, score_depth=_depth)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 1686, in score_from_prices\n    breakdown = _core_algorithm_breakdown(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 1538, in _core_algorithm_breakdown\n    history_identity = _history_material_identity(daily_hist)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 1382, in _history_material_identity\n    \"content_fingerprint\": stable_fingerprint({",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\memory_store.py\", line 58, in stable_fingerprint\n    return hashlib.sha256(encoded.encode(\"utf-8\")).hexdigest()"
       ]
     },
     {
-      "tid": 287532,
+      "tid": 620092,
       "name": "AnyIO worker thread",
       "daemon": false,
       "alive": true,
@@ -359,7 +178,25 @@
       ]
     },
     {
-      "tid": 428876,
+      "tid": 584584,
+      "name": "AnyIO worker thread",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1100, in run\n    result = context.run(func, *args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\routes\\active_scan.py\", line 11, in active_scan_results\n    payload = get_active_scan_results(limit=limit, market=market)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\active_scan_service.py\", line 11, in get_active_scan_results\n    scored_rows = score_symbol_rows(universe)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 3058, in score_symbol_rows\n    full_row = score_from_prices(score_depth='full', **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 1786, in score_from_prices\n    return {",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 1633, in _core_algorithm_breakdown\n    return breakdown",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 1376, in _history_material_identity\n    return {",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\memory_store.py\", line 58, in stable_fingerprint\n    return hashlib.sha256(encoded.encode(\"utf-8\")).hexdigest()"
+      ]
+    },
+    {
+      "tid": 605724,
       "name": "AnyIO worker thread",
       "daemon": false,
       "alive": true,
@@ -379,58 +216,16 @@
       ]
     },
     {
-      "tid": 211768,
-      "name": "Thread-109480 (_runner)",
-      "daemon": true,
-      "alive": true,
-      "stack": [
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\crypto_provider_service.py\", line 469, in _runner\n    fetch_coingecko_catalog(True)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\crypto_provider_service.py\", line 269, in fetch_coingecko_catalog\n    _time.sleep(12)"
-      ]
-    },
-    {
-      "tid": 322376,
+      "tid": 428876,
       "name": "AnyIO worker thread",
       "daemon": false,
       "alive": true,
       "stack": [
         "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
         "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1100, in run\n    result = context.run(func, *args)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\routes\\cross_market_radar.py\", line 19, in cross_market_squeeze\n    return compute_cross_market_radar(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\cross_market_radar_service.py\", line 163, in compute_cross_market_radar\n    env = get_results_batch(batch=0, limit=min(universe_scan_limit, 200), market='stocks')",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\result_store.py\", line 140, in get_results_batch\n    scored_rows = score_symbol_rows(slice_rows)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2678, in score_symbol_rows\n    symbol_to_quote.update(download_quotes(group, 'stocks'))",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2565, in download_quotes\n    return run_quote_chain(symbols, market, chain)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\base.py\", line 449, in run_quote_chain\n    payload = fetcher(pending, market) or {}",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 142, in fetch\n    for fut in as_completed(futures, timeout=20):",
-        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\_base.py\", line 237, in as_completed\n    waiter.event.wait(wait_timeout)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 670, in wait\n    signaled = self._cond.wait(timeout)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
-      ]
-    },
-    {
-      "tid": 143660,
-      "name": "AnyIO worker thread",
-      "daemon": false,
-      "alive": true,
-      "stack": [
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1100, in run\n    result = context.run(func, *args)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\routes\\cross_market_radar.py\", line 19, in cross_market_squeeze\n    return compute_cross_market_radar(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\cross_market_radar_service.py\", line 163, in compute_cross_market_radar\n    env = get_results_batch(batch=0, limit=min(universe_scan_limit, 200), market='stocks')",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\result_store.py\", line 140, in get_results_batch\n    scored_rows = score_symbol_rows(slice_rows)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2678, in score_symbol_rows\n    symbol_to_quote.update(download_quotes(group, 'stocks'))",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2565, in download_quotes\n    return run_quote_chain(symbols, market, chain)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\base.py\", line 449, in run_quote_chain\n    payload = fetcher(pending, market) or {}",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 142, in fetch\n    for fut in as_completed(futures, timeout=20):",
-        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\_base.py\", line 237, in as_completed\n    waiter.event.wait(wait_timeout)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 670, in wait\n    signaled = self._cond.wait(timeout)",
-        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1089, in run\n    item = self.queue.get()",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 199, in get\n    self.not_empty.wait()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 369, in wait\n    waiter.acquire()"
       ]
     },
     {
@@ -742,7 +537,26 @@
         "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
         "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
         "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
-        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 92, in run\n    self.future.set_result(result)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2283, in fetch_intraday_shape\n    return merged",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\quote.py\", line 479, in market_cap\n    self._tkr.info",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\ticker.py\", line 163, in info\n    return self.get_info()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 329, in get_info\n    data = self._quote.info",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\quote.py\", line 511, in info\n    self._fetch_info()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\quote.py\", line 611, in _fetch_info\n    additional_info = self._fetch_additional_info()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\quote.py\", line 600, in _fetch_additional_info\n    except curl_cffi.requests.exceptions.HTTPError as e:",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 443, in get_raw_json\n    response = self.get(url, params=params, timeout=timeout)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 425, in _make_request\n    crumb, strategy = self._get_cookie_and_crumb(timeout)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 848, in _request_once\n    c.reset()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\utils.py\", line 1046, in set_curl_options\n    return req, buffer, header_buffer, q, header_recved, quit_now",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 488, in setopt\n    return ret"
       ]
     },
     {
@@ -898,7 +712,24 @@
         "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
         "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
         "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
-        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2182, in fetch_intraday_shape\n    'marketCap': safe_float(getattr(fast, 'market_cap', None) if hasattr(fast, 'market_cap') else fast.get('marketCap') if isinstance(fast, dict) else None),",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\quote.py\", line 479, in market_cap\n    self._tkr.info",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\quote.py\", line 245, in shares\n    return self._shares",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 95, in wrapper\n    return result",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 643, in get_shares_full\n    return None",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 31, in wrapped\n    return func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 439, in cache_get\n    return self.get(url, params, timeout)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 95, in wrapper\n    return result",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 381, in get\n    return response",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 95, in wrapper\n    return result",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 434, in _make_request\n    return response",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 848, in _request_once\n    c.reset()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 597, in perform\n    self.clean_handles_and_buffers(clear_headers, clear_resolve)"
       ]
     },
     {
@@ -1432,8 +1263,18 @@
         "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
         "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 240, in resilient_get\n    _sleep_for_attempt(attempt - 1, cfg, _retry_after_seconds(last_headers))",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 131, in _sleep_for_attempt\n    time.sleep(wait)"
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
       ]
     },
     {
@@ -1449,8 +1290,18 @@
         "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
         "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 240, in resilient_get\n    _sleep_for_attempt(attempt - 1, cfg, _retry_after_seconds(last_headers))",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 131, in _sleep_for_attempt\n    time.sleep(wait)"
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
       ]
     },
     {
@@ -1608,15 +1459,11 @@
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 534, in _make_request\n    response = conn.getresponse()",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1109, in _validate_conn\n    if not conn.is_verified and not conn.proxy_is_verified:",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 858, in connect\n    if self._has_connected_to_proxy and self.proxy_is_verified is None:",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 1016, in _ssl_wrap_socket_and_match_hostname\n    return _WrappedAndVerifiedSocket(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 434, in ssl_wrap_socket\n    return ssl_sock",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 477, in _ssl_wrap_socket_impl\n    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)",
-        "  File \"C:\\Python314\\Lib\\ssl.py\", line 455, in wrap_socket\n    return self.sslsocket_class._create(",
-        "  File \"C:\\Python314\\Lib\\ssl.py\", line 1083, in _create\n    return self",
-        "  File \"C:\\Python314\\Lib\\ssl.py\", line 1374, in do_handshake\n    self.settimeout(timeout)"
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
       ]
     },
     {
@@ -1633,17 +1480,7 @@
         "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 131, in _sleep_for_attempt\n    time.sleep(wait)"
       ]
     },
     {
@@ -1696,8 +1533,8 @@
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 225, in _new_conn\n    return sock",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\connection.py\", line 76, in create_connection\n    return sock"
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
       ]
     },
     {
@@ -1802,4 +1639,421 @@
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
         "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
-        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 397336,
+      "name": "yahoo-chart_4",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 335184,
+      "name": "yahoo-chart_3",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 131, in _sleep_for_attempt\n    time.sleep(wait)"
+      ]
+    },
+    {
+      "tid": 334116,
+      "name": "yahoo-chart_2",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 532428,
+      "name": "yahoo-chart_1",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 334528,
+      "name": "yahoo-chart_0",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 450896,
+      "name": "yf-batch-timeout_3",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 396012,
+      "name": "yf-batch-timeout_2",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 347088,
+      "name": "yf-batch-timeout_1",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 317588,
+      "name": "yf-batch-timeout_0",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 933996,
+      "name": "asyncio_0",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 506008,
+      "name": "quote-warmer",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\warmer_service.py\", line 47, in _loop\n    score_symbol_rows(rows)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 3102, in score_symbol_rows\n    attach_forward_metrics_fast(r, regulatory_signal=reg_sig, market=_mkt)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2109, in score_from_prices\n    return {",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 1376, in _history_material_identity\n    return {",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\memory_store.py\", line 58, in stable_fingerprint\n    return hashlib.sha256(encoded.encode(\"utf-8\")).hexdigest()"
+      ]
+    },
+    {
+      "tid": 398564,
+      "name": "maintenance-loop",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\maintenance_service.py\", line 506, in _loop\n    _thread_stop.wait(QUOTE_CACHE_FLUSH_TICK_SECONDS)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 667, in wait\n    with self._cond:",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 381, in wait\n    self._waiters.remove(waiter)"
+      ]
+    },
+    {
+      "tid": 446880,
+      "name": "tier3-scanner",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\tier_3_background_scanner.py\", line 90, in _tier3_loop\n    time.sleep(max(60.0, interval_seconds - _last_pass_duration_s))"
+      ]
+    },
+    {
+      "tid": 442420,
+      "name": "tier2-scanner",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\_base.py\", line 251, in as_completed\n    for f in fs:",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 667, in wait\n    with self._cond:",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 379, in wait\n    if not gotit:"
+      ]
+    },
+    {
+      "tid": 374164,
+      "name": "tier1-scanner",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\tier_1_active_scanner.py\", line 78, in _tier1_loop\n    _run_tick(universe_meta, upsert_rows, score_symbol_rows, get_snapshot)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\tier_1_active_scanner.py\", line 145, in _run_tick\n    scored = score_symbol_rows(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2678, in score_symbol_rows\n    symbol_to_quote.update(download_quotes(group, 'stocks'))",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2565, in download_quotes\n    return run_quote_chain(symbols, market, chain)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\base.py\", line 449, in run_quote_chain\n    payload = fetcher(pending, market) or {}",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 142, in fetch\n    for fut in as_completed(futures, timeout=20):",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\_base.py\", line 237, in as_completed\n    waiter.event.wait(wait_timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 670, in wait\n    signaled = self._cond.wait(timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 403128,
+      "name": "tier-watchdog",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\tier_resilience.py\", line 237, in _watchdog_loop\n    time.sleep(30.0)"
+      ]
+    },
+    {
+      "tid": 482640,
+      "name": "tier-state-flusher",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\tier_manager.py\", line 170, in _flush_loop\n    time.sleep(_FLUSH_INTERVAL_S)"
+      ]
+    },
+    {
+      "tid": 332504,
+      "name": "tier3-cache-flusher",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\tier_cache_store.py\", line 216, in _flush_loop\n    time.sleep(_t3_flush_interval_s)"
+      ]
+    },
+    {
+      "tid": 349288,
+      "name": "wedge-watchdog",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\wedge_watchdog.py\", line 129, in _loop\n    _dump_once()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\wedge_watchdog.py\", line 106, in _dump_once\n    'threads': _snapshot_threads(),",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\wedge_watchdog.py\", line 58, in _snapshot_threads\n    stack_lines = [line.rstrip() for line in traceback.format_stack(frame, limit=30)]"
+      ]
+    },
+    {
+      "tid": 410348,
+      "name": "top10-priority-lane",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\top10_priority_service.py\", line 431, in _priority_lane_loop\n    _stop_event.wait(sleep_s)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 670, in wait\n    signaled = self._cond.wait(timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 537588,
+      "name": "snap-worker_1",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\snapshot_store.py\", line 1194, in _sweep_one_batch\n    envelope = get_results_batch(batch=batch_idx, limit=limit, market=market)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\result_store.py\", line 140, in get_results_batch\n    scored_rows = score_symbol_rows(slice_rows)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 3102, in score_symbol_rows\n    attach_forward_metrics_fast(r, regulatory_signal=reg_sig, market=_mkt)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2109, in score_from_prices\n    return {",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\extended_factors.py\", line 495, in compute_extended_factors\n    return result",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\volume_sentiment.py\", line 202, in compute_volume_sentiment\n    return {",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\pandas\\core\\frame.py\", line 6716, in dropna\n    return result",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\pandas\\core\\generic.py\", line 4160, in take\n    return self._constructor_from_mgr(new_data, axes=new_data.axes).__finalize__(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\pandas\\core\\internals\\managers.py\", line 913, in take\n    return self.reindex_indexer(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\pandas\\core\\internals\\managers.py\", line 725, in reindex_indexer\n    return new_mgr",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\pandas\\core\\internals\\managers.py\", line 865, in _slice_take_blocks_ax0\n    return blocks",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\pandas\\core\\array_algos\\take.py\", line 117, in take_nd\n    return _take_nd_ndarray(arr, indexer, axis, fill_value, allow_fill)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\pandas\\core\\array_algos\\take.py\", line 166, in _take_nd_ndarray\n    return out"
+      ]
+    },
+    {
+      "tid": 591108,
+      "name": "snap-worker_0",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\snapshot_store.py\", line 1194, in _sweep_one_batch\n    envelope = get_results_batch(batch=batch_idx, limit=limit, market=market)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\result_store.py\", line 140, in get_results_batch\n    scored_rows = score_symbol_rows(slice_rows)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2678, in score_symbol_rows\n    symbol_to_quote.update(download_quotes(group, 'stocks'))",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2565, in download_quotes\n    return run_quote_chain(symbols, market, chain)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\base.py\", line 449, in run_quote_chain\n    payload = fetcher(pending, market) or {}",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 142, in fetch\n    for fut in as_completed(futures, timeout=20):",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\_base.py\", line 237, in as_completed\n    waiter.event.wait(wait_timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 670, in wait\n    signaled = self._cond.wait(timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 408948,
+      "name": "snapshot-scanner",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\snapshot_store.py\", line 1363, in _scan_loop_target\n    time.sleep(_SATURATED_POLL_S)"
+      ]
+    },
+    {
+      "tid": 408604,
+      "name": "MainThread",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"<frozen runpy>\", line 198, in _run_module_as_main",
+        "  File \"<frozen runpy>\", line 88, in _run_code",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\uvicorn\\__main__.py\", line 4, in <module>\n    uvicorn.main()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\click\\core.py\", line 1631, in __call__\n    return self.main(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\click\\core.py\", line 1552, in main\n    rv = self.invoke(ctx)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\click\\core.py\", line 1415, in invoke\n    return ctx.invoke(self.callback, **ctx.params)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\click\\core.py\", line 910, in invoke\n    return callback(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\uvicorn\\main.py\", line 441, in main\n    run(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\uvicorn\\main.py\", line 620, in run\n    server.run()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\uvicorn\\server.py\", line 75, in run\n    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())",
+        "  File \"C:\\Python314\\Lib\\asyncio\\runners.py\", line 204, in run\n    return runner.run(main)",
+        "  File \"C:\\Python314\\Lib\\asyncio\\runners.py\", line 127, in run\n    return self._loop.run_until_complete(task)",
+        "  File \"C:\\Python314\\Lib\\asyncio\\base_events.py\", line 706, in run_until_complete\n    self.run_forever()",
+        "  File \"C:\\Python314\\Lib\\asyncio\\base_events.py\", line 677, in run_forever\n    self._run_once()",
+        "  File \"C:\\Python314\\Lib\\asyncio\\base_events.py\", line 2047, in _run_once\n    handle = None  # Needed to break cycles when an exception occurs.",
+        "  File \"C:\\Python314\\Lib\\asyncio\\windows_events.py\", line 453, in select\n    tmp = None",
+        "  File \"C:\\Python314\\Lib\\asyncio\\windows_events.py\", line 817, in _poll\n    self._unregistered.clear()"
+      ]
+    }
+  ],
+  "note": "If timestamp_utc is more than ~60 s behind real time, the process was wedged at this moment.  Look for threads with identical stacks across multiple watchdog dumps \u2014 they're the deadlocked ones."
+}
