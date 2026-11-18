@@ -1,0 +1,1805 @@
+{
+  "timestamp_utc": "2026-11-18T23:43:06.583067+00:00",
+  "monotonic_seconds": 267815.9456095,
+  "process_health": {},
+  "snapshot_meta_stocks": {
+    "last_full_sweep_at": "2026-11-18T23:22:44.384002+00:00",
+    "last_batch_at": "2026-11-18T23:42:50.583668+00:00",
+    "current_batch_index": 28,
+    "highest_completed_batch": 33,
+    "total_batches": 35,
+    "universe_size": 3455,
+    "rows_scored": 3161,
+    "evaluations_ever": 74365,
+    "current_sweep_scanned": 3604,
+    "sweeps_completed": 16
+  },
+  "top10_priority_lane": {
+    "running": true,
+    "started_at_epoch": 1795018898.008134,
+    "uptime_seconds": 26488.574836730957,
+    "last_tick_at_epoch": 1795019112.9917045,
+    "last_tick_seconds_ago": 26273.591267108917,
+    "last_tick_symbols_rescored": 13,
+    "last_tick_error": "",
+    "total_ticks": 8,
+    "total_symbols_rescored": 131,
+    "consecutive_slow": 465,
+    "consecutive_fast": 0,
+    "monitor_only": true,
+    "last_sleep_seconds": 56.953125,
+    "last_tick_elapsed_seconds": 4.5299530029296875e-06,
+    "viewport_first_pass": {
+      "tracked_total": 58,
+      "ttl_seconds": 600,
+      "recent_first_pass": [
+        {
+          "symbol": "ARAI",
+          "age_seconds": 26273.6
+        },
+        {
+          "symbol": "AOUT",
+          "age_seconds": 26273.6
+        },
+        {
+          "symbol": "AIFC",
+          "age_seconds": 26273.6
+        },
+        {
+          "symbol": "AKAN",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AIRS",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AMIX",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AMLX",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "ALMS",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "ALGS",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AMKL",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "ALNY",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AEMD",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AIFF",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "ADGM",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AIFU",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AEHL",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AIMD",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "ADMA",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AFYA",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "ADVB",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "AMOD",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "ALIS",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "ALDX",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "ALPS",
+          "age_seconds": 26309.5
+        },
+        {
+          "symbol": "BMBL",
+          "age_seconds": 26349.5
+        }
+      ]
+    }
+  },
+  "threads": [
+    {
+      "tid": 706060,
+      "name": "Thread-110160 (_run_via_pool)",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 138, in _lazy_load_price_history\n    self._price_history = PriceHistory(self._data, self.ticker, self._get_ticker_tz(timeout=10))",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 145, in _get_ticker_tz\n    tz = c.lookup(self.ticker)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\cache.py\", line 171, in lookup\n    return _TZ_KV.get(_TZ_KV.key == key).value",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 7964, in get\n    return sq.get()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 8456, in get\n    return clone.execute(database)[0]",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 2127, in inner\n    return method(self, database, *args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 2194, in execute\n    return self._execute(database)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 8431, in _execute\n    cursor_wrapper = super(BaseModelSelect, self)._execute(database)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 2205, in _execute\n    cursor = database.execute(self)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 3933, in execute\n    return self.execute_sql(sql, params)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 3928, in execute_sql\n    return self._execute_cursor(sql, params)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 3917, in _execute_cursor\n    cursor = self.cursor(**cursor_options)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 3898, in cursor\n    self.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 3848, in connect\n    self._state.set_connection(self._connect())",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\peewee.py\", line 4268, in _connect\n    conn = sqlite3.connect(self.database, timeout=self._timeout,"
+      ]
+    },
+    {
+      "tid": 573456,
+      "name": "Thread-110159 (_run_via_pool)",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
+      ]
+    },
+    {
+      "tid": 581568,
+      "name": "Thread-110158 (_run_via_pool)",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
+      ]
+    },
+    {
+      "tid": 443156,
+      "name": "Thread-110157 (_run_via_pool)",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
+      ]
+    },
+    {
+      "tid": 468760,
+      "name": "Thread-110156 (_run_via_pool)",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
+      ]
+    },
+    {
+      "tid": 470624,
+      "name": "Thread-110155 (_run_via_pool)",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
+      ]
+    },
+    {
+      "tid": 465140,
+      "name": "Thread-110154 (_run_via_pool)",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\multitasking\\__init__.py\", line 303, in _run_via_pool\n    return callee(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 267, in _download_one_threaded\n    _download_one(ticker, start, end, auto_adjust, back_adjust, repair,",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\multi.py\", line 281, in _download_one\n    data = Ticker(ticker).history(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\base.py\", line 132, in history\n    return self._lazy_load_price_history().history(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\scrapers\\history.py\", line 210, in history\n    data = get_fn(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 371, in get\n    response = self._make_request(url, request_method = self._session.get, params=params, timeout=timeout)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\utils.py\", line 92, in wrapper\n    result = func(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\yfinance\\data.py\", line 417, in _make_request\n    response = request_method(**request_args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 949, in get\n    return self.request(method=\"GET\", url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 900, in request\n    return self._request_once(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\requests\\session.py\", line 827, in _request_once\n    c.perform()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\curl_cffi\\curl.py\", line 588, in perform\n    ret = lib.curl_easy_perform(self._curl)"
+      ]
+    },
+    {
+      "tid": 480776,
+      "name": "AnyIO worker thread",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1089, in run\n    item = self.queue.get()",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 199, in get\n    self.not_empty.wait()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 369, in wait\n    waiter.acquire()"
+      ]
+    },
+    {
+      "tid": 287532,
+      "name": "AnyIO worker thread",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1100, in run\n    result = context.run(func, *args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\routes\\cross_market_radar.py\", line 19, in cross_market_squeeze\n    return compute_cross_market_radar(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\cross_market_radar_service.py\", line 163, in compute_cross_market_radar\n    env = get_results_batch(batch=0, limit=min(universe_scan_limit, 200), market='stocks')",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\result_store.py\", line 140, in get_results_batch\n    scored_rows = score_symbol_rows(slice_rows)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2678, in score_symbol_rows\n    symbol_to_quote.update(download_quotes(group, 'stocks'))",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2565, in download_quotes\n    return run_quote_chain(symbols, market, chain)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\base.py\", line 449, in run_quote_chain\n    payload = fetcher(pending, market) or {}",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 142, in fetch\n    for fut in as_completed(futures, timeout=20):",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\_base.py\", line 237, in as_completed\n    waiter.event.wait(wait_timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 670, in wait\n    signaled = self._cond.wait(timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 428876,
+      "name": "AnyIO worker thread",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1100, in run\n    result = context.run(func, *args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\routes\\active_scan.py\", line 11, in active_scan_results\n    payload = get_active_scan_results(limit=limit, market=market)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\active_scan_service.py\", line 11, in get_active_scan_results\n    scored_rows = score_symbol_rows(universe)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2678, in score_symbol_rows\n    symbol_to_quote.update(download_quotes(group, 'stocks'))",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2565, in download_quotes\n    return run_quote_chain(symbols, market, chain)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\base.py\", line 449, in run_quote_chain\n    payload = fetcher(pending, market) or {}",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 142, in fetch\n    for fut in as_completed(futures, timeout=20):",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\_base.py\", line 237, in as_completed\n    waiter.event.wait(wait_timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 670, in wait\n    signaled = self._cond.wait(timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 211768,
+      "name": "Thread-109480 (_runner)",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\crypto_provider_service.py\", line 469, in _runner\n    fetch_coingecko_catalog(True)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\crypto_provider_service.py\", line 269, in fetch_coingecko_catalog\n    _time.sleep(12)"
+      ]
+    },
+    {
+      "tid": 322376,
+      "name": "AnyIO worker thread",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1100, in run\n    result = context.run(func, *args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\routes\\cross_market_radar.py\", line 19, in cross_market_squeeze\n    return compute_cross_market_radar(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\cross_market_radar_service.py\", line 163, in compute_cross_market_radar\n    env = get_results_batch(batch=0, limit=min(universe_scan_limit, 200), market='stocks')",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\result_store.py\", line 140, in get_results_batch\n    scored_rows = score_symbol_rows(slice_rows)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2678, in score_symbol_rows\n    symbol_to_quote.update(download_quotes(group, 'stocks'))",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2565, in download_quotes\n    return run_quote_chain(symbols, market, chain)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\base.py\", line 449, in run_quote_chain\n    payload = fetcher(pending, market) or {}",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 142, in fetch\n    for fut in as_completed(futures, timeout=20):",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\_base.py\", line 237, in as_completed\n    waiter.event.wait(wait_timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 670, in wait\n    signaled = self._cond.wait(timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 143660,
+      "name": "AnyIO worker thread",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\anyio\\_backends\\_asyncio.py\", line 1100, in run\n    result = context.run(func, *args)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\routes\\cross_market_radar.py\", line 19, in cross_market_squeeze\n    return compute_cross_market_radar(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\cross_market_radar_service.py\", line 163, in compute_cross_market_radar\n    env = get_results_batch(batch=0, limit=min(universe_scan_limit, 200), market='stocks')",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\result_store.py\", line 140, in get_results_batch\n    scored_rows = score_symbol_rows(slice_rows)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2678, in score_symbol_rows\n    symbol_to_quote.update(download_quotes(group, 'stocks'))",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\scoring_service.py\", line 2565, in download_quotes\n    return run_quote_chain(symbols, market, chain)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\base.py\", line 449, in run_quote_chain\n    payload = fetcher(pending, market) or {}",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 142, in fetch\n    for fut in as_completed(futures, timeout=20):",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\_base.py\", line 237, in as_completed\n    waiter.event.wait(wait_timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 670, in wait\n    signaled = self._cond.wait(timeout)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 801252,
+      "name": "opt-prefetch_11",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 724532,
+      "name": "stooq_19",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 792912,
+      "name": "stooq_18",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 1062972,
+      "name": "stooq_17",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 11140,
+      "name": "stooq_16",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 720960,
+      "name": "stooq_15",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 855448,
+      "name": "stooq_14",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 721424,
+      "name": "stooq_13",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 1668656,
+      "name": "yf-options-timeout_1",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 1283148,
+      "name": "detail-fetch_3",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 1283956,
+      "name": "detail-fetch_2",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 1341844,
+      "name": "detail-fetch_1",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 1191688,
+      "name": "detail-fetch_0",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 713916,
+      "name": "intraday_23",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 736980,
+      "name": "opt-prefetch_10",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 774136,
+      "name": "opt-prefetch_9",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 765656,
+      "name": "opt-prefetch_8",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 625324,
+      "name": "opt-prefetch_7",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 531872,
+      "name": "opt-prefetch_6",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 531768,
+      "name": "intraday_22",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 695776,
+      "name": "intraday_21",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 426384,
+      "name": "intraday_20",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 575244,
+      "name": "intraday_19",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 561528,
+      "name": "intraday_18",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 584540,
+      "name": "opt-prefetch_5",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 468852,
+      "name": "intraday_17",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 520168,
+      "name": "intraday_16",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 487812,
+      "name": "intraday_15",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 407308,
+      "name": "yf-batch-timeout_9",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 458364,
+      "name": "yf-batch-timeout_8",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 360612,
+      "name": "yf-batch-timeout_7",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 507840,
+      "name": "intraday_14",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 364120,
+      "name": "intraday_13",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 318548,
+      "name": "intraday_12",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 477676,
+      "name": "intraday_11",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 385332,
+      "name": "intraday_10",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 322500,
+      "name": "intraday_9",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 407752,
+      "name": "intraday_8",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 354896,
+      "name": "intraday_7",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 425628,
+      "name": "intraday_6",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 489200,
+      "name": "intraday_5",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 751440,
+      "name": "opt-prefetch_4",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 405136,
+      "name": "opt-prefetch_3",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 370048,
+      "name": "opt-prefetch_2",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 506432,
+      "name": "opt-prefetch_1",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 333464,
+      "name": "opt-prefetch_0",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 748380,
+      "name": "yf-batch-timeout_6",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 373220,
+      "name": "intraday_4",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 387760,
+      "name": "yf-options-timeout_0",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 378088,
+      "name": "yf-batch-timeout_5",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 268144,
+      "name": "intraday_3",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 413844,
+      "name": "intraday_2",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 403328,
+      "name": "intraday_1",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 344476,
+      "name": "intraday_0",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 795980,
+      "name": "stooq_12",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 313172,
+      "name": "stooq_11",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 597296,
+      "name": "stooq_10",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 522248,
+      "name": "stooq_9",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 388076,
+      "name": "stooq_8",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 501080,
+      "name": "stooq_7",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 332512,
+      "name": "stooq_6",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 188908,
+      "name": "stooq_5",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 368676,
+      "name": "stooq_4",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 652532,
+      "name": "stooq_3",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 395352,
+      "name": "stooq_2",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 481164,
+      "name": "stooq_1",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 876576,
+      "name": "stooq_0",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 371388,
+      "name": "yf-batch-timeout_4",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 116, in _worker\n    work_item = work_queue.get(block=True)"
+      ]
+    },
+    {
+      "tid": 464300,
+      "name": "dh-worker_9",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\daily_history_service.py\", line 222, in _prefetch_worker\n    sym = _prefetch_q.get(timeout=60)",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 210, in get\n    self.not_empty.wait(remaining)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 406796,
+      "name": "dh-worker_8",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\daily_history_service.py\", line 222, in _prefetch_worker\n    sym = _prefetch_q.get(timeout=60)",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 210, in get\n    self.not_empty.wait(remaining)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 424528,
+      "name": "dh-worker_7",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\daily_history_service.py\", line 222, in _prefetch_worker\n    sym = _prefetch_q.get(timeout=60)",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 210, in get\n    self.not_empty.wait(remaining)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 483568,
+      "name": "dh-worker_6",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\daily_history_service.py\", line 222, in _prefetch_worker\n    sym = _prefetch_q.get(timeout=60)",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 210, in get\n    self.not_empty.wait(remaining)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 505660,
+      "name": "dh-worker_5",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\daily_history_service.py\", line 222, in _prefetch_worker\n    sym = _prefetch_q.get(timeout=60)",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 210, in get\n    self.not_empty.wait(remaining)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 470084,
+      "name": "dh-worker_4",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\daily_history_service.py\", line 222, in _prefetch_worker\n    sym = _prefetch_q.get(timeout=60)",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 210, in get\n    self.not_empty.wait(remaining)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 335556,
+      "name": "dh-worker_3",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\daily_history_service.py\", line 222, in _prefetch_worker\n    sym = _prefetch_q.get(timeout=60)",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 210, in get\n    self.not_empty.wait(remaining)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 585880,
+      "name": "dh-worker_2",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\daily_history_service.py\", line 222, in _prefetch_worker\n    sym = _prefetch_q.get(timeout=60)",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 210, in get\n    self.not_empty.wait(remaining)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 434356,
+      "name": "dh-worker_1",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\daily_history_service.py\", line 222, in _prefetch_worker\n    sym = _prefetch_q.get(timeout=60)",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 210, in get\n    self.not_empty.wait(remaining)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 460152,
+      "name": "dh-worker_0",
+      "daemon": false,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\daily_history_service.py\", line 222, in _prefetch_worker\n    sym = _prefetch_q.get(timeout=60)",
+        "  File \"C:\\Python314\\Lib\\queue.py\", line 210, in get\n    self.not_empty.wait(remaining)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 373, in wait\n    gotit = waiter.acquire(True, timeout)"
+      ]
+    },
+    {
+      "tid": 629196,
+      "name": "yahoo-chart_19",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 240, in resilient_get\n    _sleep_for_attempt(attempt - 1, cfg, _retry_after_seconds(last_headers))",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 131, in _sleep_for_attempt\n    time.sleep(wait)"
+      ]
+    },
+    {
+      "tid": 551828,
+      "name": "yahoo-chart_18",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 240, in resilient_get\n    _sleep_for_attempt(attempt - 1, cfg, _retry_after_seconds(last_headers))",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 131, in _sleep_for_attempt\n    time.sleep(wait)"
+      ]
+    },
+    {
+      "tid": 569252,
+      "name": "yahoo-chart_17",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 402276,
+      "name": "yahoo-chart_16",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 450920,
+      "name": "yahoo-chart_15",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 625356,
+      "name": "yahoo-chart_14",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 486404,
+      "name": "yahoo-chart_13",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 396952,
+      "name": "yahoo-chart_12",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 534, in _make_request\n    response = conn.getresponse()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1109, in _validate_conn\n    if not conn.is_verified and not conn.proxy_is_verified:",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 858, in connect\n    if self._has_connected_to_proxy and self.proxy_is_verified is None:",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 1016, in _ssl_wrap_socket_and_match_hostname\n    return _WrappedAndVerifiedSocket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 434, in ssl_wrap_socket\n    return ssl_sock",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 477, in _ssl_wrap_socket_impl\n    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)",
+        "  File \"C:\\Python314\\Lib\\ssl.py\", line 455, in wrap_socket\n    return self.sslsocket_class._create(",
+        "  File \"C:\\Python314\\Lib\\ssl.py\", line 1083, in _create\n    return self",
+        "  File \"C:\\Python314\\Lib\\ssl.py\", line 1374, in do_handshake\n    self.settimeout(timeout)"
+      ]
+    },
+    {
+      "tid": 337504,
+      "name": "yahoo-chart_11",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 483192,
+      "name": "yahoo-chart_10",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 425004,
+      "name": "yahoo-chart_9",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 225, in _new_conn\n    return sock",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\connection.py\", line 76, in create_connection\n    return sock"
+      ]
+    },
+    {
+      "tid": 602360,
+      "name": "yahoo-chart_8",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 521740,
+      "name": "yahoo-chart_7",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 390924,
+      "name": "yahoo-chart_6",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 1106, in _validate_conn\n    conn.connect()",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 796, in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connection.py\", line 975, in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\util\\ssl_.py\", line 411, in ssl_wrap_socket\n    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)"
+      ]
+    },
+    {
+      "tid": 440196,
+      "name": "yahoo-chart_5",
+      "daemon": true,
+      "alive": true,
+      "stack": [
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1044, in _bootstrap\n    self._bootstrap_inner()",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1082, in _bootstrap_inner\n    self._context.run(self.run)",
+        "  File \"C:\\Python314\\Lib\\threading.py\", line 1024, in run\n    self._target(*self._args, **self._kwargs)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 119, in _worker\n    work_item.run(ctx)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 86, in run\n    result = ctx.run(self.task)",
+        "  File \"C:\\Python314\\Lib\\concurrent\\futures\\thread.py\", line 73, in run\n    return fn(*args, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\providers\\yahoo_chart_provider.py\", line 58, in _fetch_one\n    res = resilient_get(url, params=_PARAMS, headers={'Accept': 'application/json'}, cfg=cfg)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\app\\services\\http_client.py\", line 194, in resilient_get\n    resp = requests.get(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 87, in get\n    return request(\"get\", url, params=params, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\api.py\", line 71, in request\n    return session.request(method=method, url=url, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\n    resp = self.send(prep, **send_kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\n    r = adapter.send(request, **kwargs)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\requests\\adapters.py\", line 696, in send\n    resp = conn.urlopen(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 788, in urlopen\n    response = self._make_request(",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)",
+        "  File \"C:\\Users\\ispai\\Downloads\\quantum-scanner-v2-master (6)\\quantum-scanner-v2-master\\venv\\Lib\\site-packages\\urllib3
