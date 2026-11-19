@@ -112,7 +112,8 @@ _BROWSER_HEADERS = {
 }
 # Indices and some ETFs require the `_` prefix on CBOE (e.g. _SPX, _VIX).
 # We try the bare symbol first, then retry with the underscore prefix if the
-# first returns 404. Cache the working form per symbol so we don't re-probe.
+# first is not listed (404, or cdn-api.cboe.com's 403 AccessDenied XML; see
+# _is_not_listed). Cache the working form per symbol so we don't re-probe.
 _PREFIX_KNOWN: dict[str, str] = {}  # sym -> '' | '_'
 
 # Phase 26.23: per-symbol 403 cooldown. Cloudflare in front of CBOE
@@ -156,6 +157,7 @@ _rl_stats = {
     'throttled_per_minute': 0,
     'redirects_followed': 0,
     'redirects_not_followed': 0,
+    'not_listed_403': 0,
 }
 
 # Reserved start times of recent network fetches (monotonic seconds).
@@ -237,7 +239,24 @@ def fetch_budget_snapshot() -> dict[str, Any]:
             'throttled_per_minute': _rl_stats['throttled_per_minute'],
             'redirects_followed': _rl_stats['redirects_followed'],
             'redirects_not_followed': _rl_stats['redirects_not_followed'],
+            'not_listed_403': _rl_stats['not_listed_403'],
         }
+
+
+def _is_not_listed(r: Any) -> bool:
+    """True for cdn-api.cboe.com's answer to a chain it does not have.
+
+    The new host fronts an S3 origin through CloudFront, which answers a
+    missing object with 403 and an XML <Code>AccessDenied</Code> body
+    instead of 404 (e.g. bare SPX/VIX/NDX, unlisted tickers). A Cloudflare
+    bot block is also 403 but an HTML page, so the two are told apart by
+    content type and body.
+    """
+    if getattr(r, 'status_code', 0) != 403:
+        return False
+    headers = getattr(r, 'headers', None) or {}
+    ctype = next((str(v) for k, v in headers.items() if str(k).lower() == 'content-type'), '')
+    return 'xml' in ctype.lower() and '<Code>AccessDenied</Code>' in (r.text or '')[:1024]
 
 
 def _fetch_chain(url: str, headers: dict, cfg: Any) -> Any:
@@ -629,7 +648,7 @@ def get_options_positioning(symbol: str, last_price: float, *,
             # a real ban still surfaces quickly. No log spam: silently
             # retry, then fall through to the existing error path if it
             # still fails.
-            if r.status_code == 403:
+            if r.status_code == 403 and not _is_not_listed(r):
                 import time as _t
                 _t.sleep(0.6)
                 retry_headers = dict(_BROWSER_HEADERS)
@@ -646,6 +665,13 @@ def get_options_positioning(symbol: str, last_price: float, *,
                 break
             elif r.status_code == 404:
                 continue  # try next prefix
+            elif _is_not_listed(r):
+                # cdn-api.cboe.com's "no such chain" (see _is_not_listed):
+                # same as a 404, so indices still reach the '_' prefix and
+                # unlisted symbols are a miss, not a circuit failure.
+                with _lock:
+                    _rl_stats['not_listed_403'] += 1
+                continue
             elif r.status_code in REDIRECT_STATUSES:
                 # A redirect that resilient_get refused to follow (host
                 # outside .cboe.com, too many hops, no Location, or an

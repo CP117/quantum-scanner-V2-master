@@ -309,6 +309,63 @@ def test_404_still_probes_the_underscore_prefix(web):
     assert web.urls() == [NEW_TEMPLATE.format(symbol='SPX'), NEW_TEMPLATE.format(symbol='_SPX')]
 
 
+NOT_LISTED_XML = (b'<?xml version="1.0" encoding="UTF-8"?>\n'
+                  b'<Error><Code>AccessDenied</Code><Message>Access Denied</Message></Error>')
+BOT_BLOCK_HTML = b'<!DOCTYPE html><html><head><title>Attention Required! | Cloudflare</title></head></html>'
+
+
+def test_index_needs_underscore_prefix_after_xml_403(web):
+    """cdn-api.cboe.com answers bare SPX with 403 AccessDenied XML, not 404."""
+    web.add(NEW_TEMPLATE.format(symbol='SPX'), 403, body=NOT_LISTED_XML, content_type='application/xml')
+    web.add(NEW_TEMPLATE.format(symbol='_SPX'), 200, body=_fixture_bytes(), content_type='application/json')
+    assert cboe.get_options_positioning('SPX', 352.0)
+    assert web.urls() == [NEW_TEMPLATE.format(symbol='SPX'), NEW_TEMPLATE.format(symbol='_SPX')]
+    assert cboe._PREFIX_KNOWN['SPX'] == '_'
+    row = _cboe_row()
+    assert row['errors'] == 0 and row['hits'] == 1
+    assert 'SPX' not in cboe._HTTP_FAIL_UNTIL
+
+
+def test_unlisted_symbol_is_a_miss_not_a_failure(web):
+    for sym in ('ZZZZQ', '_ZZZZQ'):
+        web.add(NEW_TEMPLATE.format(symbol=sym), 403, body=NOT_LISTED_XML, content_type='application/xml')
+    assert cboe.get_options_positioning('ZZZZQ', 10.0) is None
+    # No fresh-UA retry for this kind of 403: one request per prefix.
+    assert web.urls() == [NEW_TEMPLATE.format(symbol='ZZZZQ'), NEW_TEMPLATE.format(symbol='_ZZZZQ')]
+    row = _cboe_row()
+    assert row['misses'] == 1
+    assert row['errors'] == 0 and row['consecutive_failures'] == 0
+    assert 'ZZZZQ' not in cboe._HTTP_FAIL_UNTIL
+    assert cboe.fetch_budget_snapshot()['not_listed_403'] == 2
+    # The negative result is cached: no second network call.
+    assert cboe.get_options_positioning('ZZZZQ', 10.0) is None
+    assert len(web.urls()) == 2
+
+
+def test_cloudflare_html_403_keeps_the_retry_and_cooldown(web, monkeypatch):
+    monkeypatch.setattr(cboe.time, 'sleep', lambda _s: None)
+    web.add(NEW_AAPL, 403, body=BOT_BLOCK_HTML, content_type='text/html; charset=UTF-8')
+    assert cboe.get_options_positioning('AAPL', 352.0) is None
+    assert web.urls() == [NEW_AAPL, NEW_AAPL]  # one fresh-UA retry
+    row = _cboe_row()
+    assert row['errors'] == 1 and row['last_error'] == 'http_403'
+    assert 'AAPL' in cboe._HTTP_FAIL_UNTIL
+    assert cboe._rl_stats['not_listed_403'] == 0
+
+
+def test_xml_403_without_access_denied_is_not_treated_as_not_listed():
+    from app.services.http_client import ResilientResponse
+
+    other = ResilientResponse(403, '<Error><Code>RequestTimeTooSkewed</Code></Error>',
+                              {'content-type': 'application/xml'}, NEW_AAPL, 1)
+    denied = ResilientResponse(403, NOT_LISTED_XML.decode(), {'Content-Type': 'application/xml'}, NEW_AAPL, 1)
+    html = ResilientResponse(403, BOT_BLOCK_HTML.decode() + '<Code>AccessDenied</Code>',
+                             {'content-type': 'text/html'}, NEW_AAPL, 1)
+    assert cboe._is_not_listed(denied) is True
+    assert cboe._is_not_listed(other) is False
+    assert cboe._is_not_listed(html) is False
+
+
 # ---------------------------------------------------------------------------
 # resilient_get redirect semantics
 # ---------------------------------------------------------------------------
