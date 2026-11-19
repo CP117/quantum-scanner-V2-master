@@ -223,11 +223,17 @@ def _options_chain_provider_rows(options_stats: dict, generic_provider_stats: di
             })
         return row
 
-    out.append(_row(
+    cboe_row = _row(
         'CBOE delayed quotes', 'primary',
         'cboe_attempts', 'cboe_hits', 'cboe_misses', 'cboe_errors',
         cb_row=cboe_cb,
-    ))
+    )
+    try:
+        from app.services.providers import cboe_options_provider as _cboe
+        cboe_row['fetch_limit'] = _cboe.fetch_budget_snapshot()
+    except Exception:  # noqa: BLE001 - the status page must still render
+        pass
+    out.append(cboe_row)
     out.append(_row(
         'Yahoo Finance (yfinance)', 'fallback',
         'yahoo_attempts', 'yahoo_hits', 'yahoo_misses', 'yahoo_errors',
