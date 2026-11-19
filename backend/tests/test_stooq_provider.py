@@ -519,3 +519,23 @@ def test_budget_cancels_symbols_that_have_not_started(monkeypatch, web):
     stooq._pool.shutdown(wait=True)
     assert len(web.seen) == 2  # the two in flight; the other eight were cancelled
     assert stooq._diag['attempts'] == 2
+
+
+# ---------------------------------------------------------------------------
+# Status page: the dedicated circuit row
+# ---------------------------------------------------------------------------
+def test_circuit_row_shows_reopen_time_only_while_open():
+    from app.routes.providers import _circuit_breaker_rows
+
+    diag = {'attempts': 20, 'circuit_open': True, 'consecutive_failures': 20,
+            'fail_threshold': 20, 'circuit_trip_count': 1,
+            'circuit_reopens_at_utc': '2026-11-20T00:21:58+00:00'}
+    row = next(r for r in _circuit_breaker_rows([], diag) if r['kind'] == 'dedicated-exponential')
+    assert row['state'] == 'open'
+    assert row['open_until_utc'] == '2026-11-20T00:21:58+00:00'
+
+    diag['circuit_open'] = False
+    row = next(r for r in _circuit_breaker_rows([], diag) if r['kind'] == 'dedicated-exponential')
+    assert row['state'] == 'closed' and row['open_until_utc'] is None
+
+    assert _circuit_breaker_rows([], {'attempts': 0}) == []
