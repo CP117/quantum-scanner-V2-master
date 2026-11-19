@@ -56,6 +56,12 @@ from fastapi.responses import JSONResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from app.config import settings
+from app.security import (
+    AdminGuardMiddleware,
+    announce_security_settings,
+    cors_origins,
+    unhandled_exception_handler,
+)
 from app.routes.health import router as health_router
 from app.routes.search import router as search_router
 from app.routes.results import router as results_router
@@ -133,6 +139,12 @@ async def _signal_index_refresher():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Phase 1 security: create the admin token if needed and log where it
+    # lives (never the token itself).
+    try:
+        announce_security_settings()
+    except Exception:
+        pass
     # Phase 26.33: tune the GC for long-haul scans before anything else
     # populates the heap.  Defers gen-2 collections out of the scoring
     # hot path; without this, the gen-2 walk fires randomly during
@@ -344,7 +356,17 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title='Market Refinement Dashboard', lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_credentials=False, allow_methods=['*'], allow_headers=['*'])
+# Phase 1 security: the admin guard is added first so it sits inside CORS
+# (Starlette treats the last-added middleware as the outermost).  CORS can
+# then answer preflights and decorate 401 responses.  See app/security.py.
+app.add_middleware(AdminGuardMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins(),
+    allow_credentials=False,
+    allow_methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allow_headers=['Content-Type', 'Authorization', 'X-MRD-Admin-Token', 'If-None-Match'],
+)
 # Phase 26.16 / Tier 1.2: gzip the snapshot + provider-status responses
 # (anything > 4 KB). Empirically cuts the 6 MB snapshot payload to ~600 KB
 # and shaves measurable CPU off `json.dumps` because the encoder writes
@@ -353,9 +375,9 @@ app.add_middleware(GZipMiddleware, minimum_size=4_000, compresslevel=5)
 app.add_middleware(ForceHeadersMiddleware)
 
 
-@app.exception_handler(Exception)
-async def unhandled_exception_handler(request: Request, exc: Exception):
-    return JSONResponse(status_code=500, content={'error': 'internal_server_error', 'path': str(request.url.path), 'detail': str(exc)})
+# Unhandled errors answer 500 with a request id only; the traceback is
+# logged under that id (app/security.py).
+app.add_exception_handler(Exception, unhandled_exception_handler)
 
 
 @app.get('/')
