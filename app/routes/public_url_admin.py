@@ -575,9 +575,10 @@ async def ensure_public_url_on_startup() -> None:
         except Exception as exc:  # noqa: BLE001
             log.warning('startup tunnel ensure failed: %s', exc)
 
-    # Fire-and-forget. If the user has disabled the auto-refresh via env
-    # var, we skip entirely.
-    if os.environ.get('MRD_AUTO_TUNNEL_ON_STARTUP', '1') == '0':
-        log.info('startup: MRD_AUTO_TUNNEL_ON_STARTUP=0 set; skipping')
+    # Fire-and-forget.  Phase 1 security: the tunnel is opt-in.  It runs
+    # only when MRD_AUTO_TUNNEL_ON_STARTUP is exactly "1" (start.sh and
+    # start.bat set it with --tunnel).
+    if os.environ.get('MRD_AUTO_TUNNEL_ON_STARTUP', '0') != '1':
+        log.info('startup: public tunnel off (start with --tunnel or set MRD_AUTO_TUNNEL_ON_STARTUP=1)')
         return
     asyncio.create_task(_worker())

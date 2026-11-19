@@ -1,3 +1,0 @@
-﻿https://advertiser-governmental-suggests-drops.trycloudflare.com
-http://192.168.0.39:8001
-http://localhost:8001

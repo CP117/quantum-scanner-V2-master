@@ -3,16 +3,56 @@
 #  Market Refinement Dashboard - macOS / Linux startup
 # ============================================================
 #  Mirrors start.bat: creates .venv on first run, installs
-#  dependencies, downloads cloudflared for off-network access,
-#  launches the FastAPI backend on port 8001, opens the
-#  dashboard in the default browser, and prints local + LAN +
-#  PUBLIC URLs so anyone (any device, any network) can connect.
+#  dependencies, launches the FastAPI backend on port 8001 and
+#  opens the dashboard in the default browser.
 #
-#  Usage:  ./start.sh   (run from this directory)
+#  By default the server listens on 127.0.0.1 only (this machine).
+#    --lan     also accept other devices on your network
+#              (same as MRD_BIND_HOST=0.0.0.0)
+#    --tunnel  also open a public Cloudflare Quick Tunnel; downloads
+#              cloudflared on first use (same as MRD_TUNNEL=1)
+#  With --lan or --tunnel, writes from other devices need the admin
+#  token.  See docs/SECURITY.md.
+#
+#  Usage:  ./start.sh [--lan] [--tunnel]   (run from this directory)
 #  Stop :  press Ctrl+C   (cleans up cloudflared automatically)
 # ============================================================
 set -uo pipefail
 cd "$(dirname "$0")"
+
+# --- 0) options ----------------------------------------------
+BIND_HOST="${MRD_BIND_HOST:-127.0.0.1}"
+TUNNEL="${MRD_TUNNEL:-0}"
+for arg in "$@"; do
+  case "$arg" in
+    --lan) BIND_HOST="0.0.0.0" ;;
+    --tunnel) TUNNEL=1 ;;
+    -h|--help)
+      echo "Usage: ./start.sh [--lan] [--tunnel]"
+      echo "  --lan     listen on all interfaces (other devices on your network)"
+      echo "  --tunnel  open a public Cloudflare Quick Tunnel"
+      echo "Default: this machine only (127.0.0.1), no tunnel."
+      exit 0 ;;
+    *) echo "[warn] Unknown option '$arg' ignored (use --lan or --tunnel)." ;;
+  esac
+done
+case "$BIND_HOST" in
+  127.0.0.1|localhost|::1) LAN_MODE=0 ;;
+  *) LAN_MODE=1 ;;
+esac
+# The backend opens its own fallback tunnel at startup only when this is "1".
+if [ -z "${MRD_AUTO_TUNNEL_ON_STARTUP:-}" ]; then
+  if [ "$TUNNEL" = "1" ]; then
+    export MRD_AUTO_TUNNEL_ON_STARTUP=1
+  else
+    export MRD_AUTO_TUNNEL_ON_STARTUP=0
+  fi
+fi
+if [ -n "${MRD_ADMIN_TOKEN:-}" ]; then
+  TOKEN_WHERE="environment variable MRD_ADMIN_TOKEN"
+else
+  TOKEN_WHERE="data/admin_token.txt (created on first start)"
+fi
 
 echo ""
 echo "============================================================"
@@ -62,7 +102,7 @@ else
   echo "[ok] Dependencies already installed. To force re-install: rm .deps_installed"
 fi
 
-# --- 4) download cloudflared once ---------------------------
+# --- 4) download cloudflared once (only with --tunnel) ------
 #   cloudflared = Cloudflare's tunnel binary.  Free, no signup, gives us
 #   an anonymous https://xxx-yyy-zzz.trycloudflare.com URL that proxies
 #   straight to the local backend - lets devices on OTHER networks
@@ -117,8 +157,12 @@ ensure_cloudflared() {
 }
 
 CFD_AVAILABLE=0
-if ensure_cloudflared; then
-  CFD_AVAILABLE=1
+if [ "$TUNNEL" = "1" ]; then
+  if ensure_cloudflared; then
+    CFD_AVAILABLE=1
+  fi
+else
+  echo "[ok] Public tunnel off (start with --tunnel to open one)."
 fi
 
 # --- 5) pick a free port ------------------------------------
@@ -151,12 +195,14 @@ write_public_url_file() {
     if [ -n "$public_url" ]; then
       echo "$public_url"
     fi
-    for ip in $(discover_lan_ips 2>/dev/null); do
-      case "$ip" in
-        127.*|169.254.*) ;;
-        *) echo "http://$ip:$PORT" ;;
-      esac
-    done
+    if [ "$LAN_MODE" = "1" ]; then
+      for ip in $(discover_lan_ips 2>/dev/null); do
+        case "$ip" in
+          127.*|169.254.*) ;;
+          *) echo "http://$ip:$PORT" ;;
+        esac
+      done
+    fi
     echo "http://localhost:$PORT"
   } > "$PUBLIC_URL_FILE"
 }
@@ -202,8 +248,8 @@ if [ "$CFD_AVAILABLE" = "1" ]; then
     ) &
   fi
 else
-  # No cloudflared - still publish the LAN URLs so the frontend banner has
-  # something useful to show.
+  # No tunnel - still publish the local (and, with --lan, LAN) URLs so
+  # the frontend banner has something useful to show.
   write_public_url_file ""
 fi
 
@@ -237,16 +283,24 @@ open_browser &
 
 echo ""
 echo "============================================================"
-echo " Backend launching on:"
-echo "   http://localhost:$PORT/ui          (this machine only)"
-for ip in $(discover_lan_ips); do
-  case "$ip" in
-    127.*|169.254.*) ;;
-    *) echo "   http://$ip:$PORT/ui    (any device on this LAN)";;
-  esac
-done
+echo " Listening on:  $BIND_HOST:$PORT"
+echo " Public tunnel: $([ "$TUNNEL" = "1" ] && echo on || echo off)"
+echo " Admin token:   $TOKEN_WHERE"
 echo ""
-if [ -n "$PUBLIC_URL" ]; then
+echo " Backend launching on:"
+echo "   http://localhost:$PORT/ui          (this machine)"
+if [ "$LAN_MODE" = "1" ]; then
+  for ip in $(discover_lan_ips); do
+    case "$ip" in
+      127.*|169.254.*) ;;
+      *) echo "   http://$ip:$PORT/ui    (any device on this LAN)";;
+    esac
+  done
+fi
+echo ""
+if [ "$TUNNEL" != "1" ]; then
+  echo " PUBLIC URL: off (start with --tunnel to open one)."
+elif [ -n "$PUBLIC_URL" ]; then
   echo " PUBLIC URL (works from ANY network - share with anyone):"
   echo "   $PUBLIC_URL/ui"
   echo ""
@@ -262,7 +316,11 @@ else
   echo "   downloaded for this platform). LAN access still works."
 fi
 echo ""
-echo " Phones / tablets on the same WiFi can use any LAN URL above."
+if [ "$LAN_MODE" = "1" ]; then
+  echo " Phones / tablets on the same WiFi can use any LAN URL above."
+else
+  echo " Other devices cannot connect (start with --lan to allow your network)."
+fi
 echo " Press Ctrl+C to stop the server (and the tunnel)."
 echo "============================================================"
 echo ""
@@ -270,4 +328,4 @@ echo ""
 # --- 8) launch FastAPI via uvicorn --------------------------
 # Suppress yfinance's internal Pandas FutureWarning / DeprecationWarning floods.
 export PYTHONWARNINGS="ignore::FutureWarning,ignore::DeprecationWarning"
-"$VENV_PY" -m uvicorn app.main:app --host 0.0.0.0 --port "$PORT"
+"$VENV_PY" -m uvicorn app.main:app --host "$BIND_HOST" --port "$PORT"

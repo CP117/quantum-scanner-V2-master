@@ -6,12 +6,20 @@ REM  What this script does:
 REM    1. Finds a Python 3.11+ interpreter
 REM    2. Creates a virtual environment in .\venv (first run only)
 REM    3. Installs all required packages on first run
-REM    4. Downloads cloudflared.exe on first run (off-network access)
+REM    4. With --tunnel: downloads cloudflared.exe on first use
 REM    5. Launches the FastAPI backend on http://localhost:8001
-REM    6. Launches Cloudflare Quick Tunnel for a public https URL
-REM    7. Prints the URLs (local, LAN, public) and opens the local one
+REM    6. With --tunnel: launches a Cloudflare Quick Tunnel
+REM    7. Prints the URLs and opens the local one
 REM
-REM  Usage:  double-click start.bat
+REM  By default the server listens on 127.0.0.1 only (this machine).
+REM    --lan     also accept other devices on your network
+REM              (same as MRD_BIND_HOST=0.0.0.0)
+REM    --tunnel  also open a public Cloudflare Quick Tunnel
+REM              (same as MRD_TUNNEL=1)
+REM  With --lan or --tunnel, writes from other devices need the admin
+REM  token.  See docs\SECURITY.md.
+REM
+REM  Usage:  double-click start.bat, or run: start.bat [--lan] [--tunnel]
 REM  Stop :  press Ctrl+C in the window that appears (kills both
 REM          uvicorn and cloudflared cleanly)
 REM ============================================================
@@ -19,6 +27,44 @@ REM ============================================================
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 title Market Refinement Dashboard
+
+REM ---- 0) Options ------------------------------------------------
+if not defined MRD_BIND_HOST set "MRD_BIND_HOST=127.0.0.1"
+if not defined MRD_TUNNEL set "MRD_TUNNEL=0"
+:parse_args
+if "%~1"=="" goto args_done
+set "_ARG_OK="
+if /i "%~1"=="--lan" (
+    set "MRD_BIND_HOST=0.0.0.0"
+    set "_ARG_OK=1"
+)
+if /i "%~1"=="--tunnel" (
+    set "MRD_TUNNEL=1"
+    set "_ARG_OK=1"
+)
+if not defined _ARG_OK echo [warn] Unknown option %1 ignored ^(use --lan or --tunnel^).
+shift
+goto parse_args
+:args_done
+set "BIND_HOST=%MRD_BIND_HOST%"
+set "LAN_MODE=1"
+if "%BIND_HOST%"=="127.0.0.1" set "LAN_MODE=0"
+if /i "%BIND_HOST%"=="localhost" set "LAN_MODE=0"
+if "%BIND_HOST%"=="::1" set "LAN_MODE=0"
+REM The backend opens its own fallback tunnel at startup only when this is 1.
+if not defined MRD_AUTO_TUNNEL_ON_STARTUP (
+    if "%MRD_TUNNEL%"=="1" (
+        set "MRD_AUTO_TUNNEL_ON_STARTUP=1"
+    ) else (
+        set "MRD_AUTO_TUNNEL_ON_STARTUP=0"
+    )
+)
+if defined MRD_ADMIN_TOKEN (
+    set "TOKEN_WHERE=environment variable MRD_ADMIN_TOKEN"
+) else (
+    REM Quoted parentheses are safe inside a block, so no carets here.
+    set "TOKEN_WHERE=data\admin_token.txt (created on first start)"
+)
 
 echo.
 echo ============================================================
@@ -151,11 +197,16 @@ if defined DEPS_NEEDED (
     echo.
 )
 
-REM ---- 4) Make sure cloudflared.exe is available ----------------
+REM ---- 4) Make sure cloudflared.exe is available (--tunnel only) -
 REM       cloudflared = Cloudflare's official tunnel binary. Free,
 REM       no account required, gives us an anonymous public https://
 REM       URL that proxies straight to the local backend so users
 REM       on OTHER networks can connect using the URL we print below.
+if not "%MRD_TUNNEL%"=="1" (
+    echo [ok] Public tunnel off ^(start with --tunnel to open one^).
+    echo.
+    goto skip_cloudflared_download
+)
 if not exist "cloudflared.exe" (
     echo [info] Downloading cloudflared.exe ^(~30 MB, one-time only^).
     echo        This is Cloudflare's official tunnel client and
@@ -167,8 +218,8 @@ if not exist "cloudflared.exe" (
     if errorlevel 1 (
         echo [WARN] cloudflared download failed. The app will still run
         echo        locally and on the LAN, just without a public URL.
-        echo        Re-run start.bat once you have internet access to
-        echo        download it automatically.
+        echo        Re-run start.bat --tunnel once you have internet
+        echo        access to download it automatically.
     ) else (
         echo [ok] cloudflared.exe downloaded.
     )
@@ -177,6 +228,7 @@ if not exist "cloudflared.exe" (
     echo [ok] cloudflared.exe already present.
     echo.
 )
+:skip_cloudflared_download
 
 REM ---- 5) Pick a free port (default 8001, fallback 8011) --------
 set "PORT=8001"
@@ -206,7 +258,7 @@ set "PUBLIC_URL_FILE=app\data\public_url.txt"
 if not exist "app\data" mkdir "app\data" >nul 2>&1
 type nul > "%PUBLIC_URL_FILE%"
 
-if exist "cloudflared.exe" (
+if "%MRD_TUNNEL%"=="1" if exist "cloudflared.exe" (
     REM Use --no-autoupdate so cloudflared doesn't write to Program Files.
     REM Write logs to TEMP so we can grep the public URL out shortly.
     start "MRD-Cloudflared" /b cmd /c ".\cloudflared.exe --no-autoupdate tunnel --url http://localhost:%PORT% > ""%CFD_LOG%"" 2>&1"
@@ -242,7 +294,7 @@ REM to think a URL had been published when in fact none had.
 if "!PUBLIC_URL:~0,8!"=="https://" (
     >>"%PUBLIC_URL_FILE%" echo !PUBLIC_URL!
 )
-for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr /R /C:"IPv4 Address"') do (
+if "%LAN_MODE%"=="1" for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr /R /C:"IPv4 Address"') do (
     set "_IP=%%A"
     set "_IP=!_IP: =!"
     if not "!_IP!"=="127.0.0.1" if not "!_IP:~0,7!"=="169.254" (
@@ -279,9 +331,15 @@ if defined CFD_RUNNING (
 REM ---- 7) Discover LAN IPv4 address(es) -------------------------
 echo.
 echo ============================================================
+set "TUNNEL_STATE=off"
+if "%MRD_TUNNEL%"=="1" set "TUNNEL_STATE=on"
+echo  Listening on:  %BIND_HOST%:%PORT%
+echo  Public tunnel: %TUNNEL_STATE%
+echo  Admin token:   !TOKEN_WHERE!
+echo.
 echo  Backend launching on:
-echo    http://localhost:%PORT%/ui          ^(this machine only^)
-for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr /R /C:"IPv4 Address"') do (
+echo    http://localhost:%PORT%/ui          ^(this machine^)
+if "%LAN_MODE%"=="1" for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr /R /C:"IPv4 Address"') do (
     set "_IP=%%A"
     set "_IP=!_IP: =!"
     if not "!_IP!"=="127.0.0.1" if not "!_IP:~0,7!"=="169.254" (
@@ -289,6 +347,10 @@ for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr /R /C:"IPv4 Address"') d
     )
 )
 echo.
+if not "%MRD_TUNNEL%"=="1" (
+    echo  PUBLIC URL: off ^(start with --tunnel to open one^).
+    goto skip_public_url_banner
+)
 if defined PUBLIC_URL (
     if "!PUBLIC_URL:~0,8!"=="https://" (
         echo  PUBLIC URL ^(works from ANY network -- share with anyone^):
@@ -311,14 +373,19 @@ if defined PUBLIC_URL (
         echo    show up -- your firewall may be blocking outbound TCP.
     ) else (
         echo  PUBLIC URL: not available ^(cloudflared.exe missing^).
-        echo    Re-run start.bat once you have internet so it can
-        echo    download cloudflared automatically.
+        echo    Re-run start.bat --tunnel once you have internet so it
+        echo    can download cloudflared automatically.
     )
 )
+:skip_public_url_banner
 echo.
-echo  Phones / tablets on the same WiFi can use any LAN URL above.
-echo  Windows Firewall may prompt the first time another device
-echo  connects -- click Allow once and it'll stop asking.
+if "%LAN_MODE%"=="1" (
+    echo  Phones / tablets on the same WiFi can use any LAN URL above.
+    echo  Windows Firewall may prompt the first time another device
+    echo  connects -- click Allow once and it'll stop asking.
+) else (
+    echo  Other devices cannot connect ^(start with --lan to allow your network^).
+)
 echo.
 echo  Keep this window OPEN. Press Ctrl+C to stop the server.
 echo ============================================================
@@ -326,7 +393,7 @@ echo.
 
 REM ---- 8) Run uvicorn -------------------------------------------
 set "PYTHONWARNINGS=ignore::FutureWarning,ignore::DeprecationWarning"
-"%VENV_PY%" -m uvicorn app.main:app --host 0.0.0.0 --port %PORT%
+"%VENV_PY%" -m uvicorn app.main:app --host %BIND_HOST% --port %PORT%
 set "RC=%ERRORLEVEL%"
 
 REM ---- 9) Clean up cloudflared when uvicorn exits ---------------

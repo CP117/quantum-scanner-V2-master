@@ -4,12 +4,21 @@ const http = require('http');
 const TARGET_PORT = 8001;
 
 const server = http.createServer((req, res) => {
+  // Mark every proxied request with X-Forwarded-For.  The backend treats
+  // only direct loopback requests as trusted-local, so without this header
+  // anyone who can reach this proxy would pass that check (app/security.py).
+  const prior = req.headers['x-forwarded-for'];
+  const client = req.socket.remoteAddress || 'unknown';
   const opts = {
     hostname: '127.0.0.1',
     port: TARGET_PORT,
     path: req.url,
     method: req.method,
-    headers: { ...req.headers, host: `127.0.0.1:${TARGET_PORT}` },
+    headers: {
+      ...req.headers,
+      host: `127.0.0.1:${TARGET_PORT}`,
+      'x-forwarded-for': prior ? `${prior}, ${client}` : client,
+    },
   };
   const upstream = http.request(opts, (up) => {
     res.writeHead(up.statusCode, up.headers);
