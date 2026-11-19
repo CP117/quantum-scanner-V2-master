@@ -4197,6 +4197,10 @@ function _renderStatusImpl() {
     if (stooqDiag.network_errors) reasons.push(`${fmtNum(stooqDiag.network_errors)} net-errors`);
     if (stooqDiag.http_errors) reasons.push(`${fmtNum(stooqDiag.http_errors)} HTTP-errors`);
     if (stooqDiag.no_data) reasons.push(`${fmtNum(stooqDiag.no_data)} no-data`);
+    // Phase 2B: refusals that open the circuit straight away.
+    if (stooqDiag.quota_hits) reasons.push('daily quota used up');
+    if (stooqDiag.key_rejected) reasons.push(`${fmtNum(stooqDiag.key_rejected)} key-rejected`);
+    if (stooqDiag.blocked) reasons.push(`${fmtNum(stooqDiag.blocked)} blocked`);
     let circuit = '';
     if (stooqDiag.circuit_open) {
       const rem = Number(stooqDiag.circuit_remaining_seconds || 0);
@@ -4205,7 +4209,7 @@ function _renderStatusImpl() {
       circuit = ` \u00b7 paused${trip} ${remHuman}`;
     }
     stooqNote = reasons.length
-      ? ` <span class="prov-note" title="Stooq is unreachable from this network. ${reasons.join(', ')}. The provider auto-disables with exponential backoff (30m → 1h → 2h → 6h → 24h cap) after 50 consecutive failures.">(${reasons.join(' \u00b7 ')}${circuit})</span>`
+      ? ` <span class="prov-note" title="Stooq is failing from this network: ${reasons.join(', ')}. It pauses with exponential backoff (30m → 1h → 2h → 6h → 24h cap) after 20 consecutive failures, or at once on a refusal; a used-up quota pauses it until 00:00 UTC.">(${reasons.join(' \u00b7 ')}${circuit})</span>`
       : (stooqDiag.circuit_open ? ` <span class="prov-note" title="Circuit breaker open">(paused${stooqDiag.circuit_trip_count ? ' #' + stooqDiag.circuit_trip_count : ''})</span>` : '');
   }
   const providerLines = psEntries

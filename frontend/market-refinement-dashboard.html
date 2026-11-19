@@ -639,8 +639,14 @@
             <button type="button" data-action="save-api-key" data-provider="alphavantage" data-testid="api-key-save-alphavantage">Save</button>
             <span class="api-key-status" id="apiKeyStatusAlphaVantage" data-testid="api-key-status-alphavantage">not set</span>
           </div>
+          <div class="api-key-row">
+            <label for="apiKeyStooq" title="Daily CSVs, best-effort. Get a key at stooq.com/q/d/?s=aapl.us&amp;get_apikey. Also needs MRD_STOOQ_ENABLED=1">Stooq</label>
+            <input id="apiKeyStooq" type="password" placeholder="paste key…" data-provider="stooq" data-testid="api-key-input-stooq" />
+            <button type="button" data-action="save-api-key" data-provider="stooq" data-testid="api-key-save-stooq">Save</button>
+            <span class="api-key-status" id="apiKeyStatusStooq" data-testid="api-key-status-stooq">not set</span>
+          </div>
         </div>
-        <p class="tracker-meta" style="margin-top:.5rem;font-size:.72rem">Currently active: Finnhub. Other slots are reserved for future cascade layers.</p>
+        <p class="tracker-meta" style="margin-top:.5rem;font-size:.72rem">Used when set: Finnhub, and Stooq when the server also runs with MRD_STOOQ_ENABLED=1. Other slots are reserved for future cascade layers.</p>
       </details>
     </aside>
 
