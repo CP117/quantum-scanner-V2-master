@@ -5,7 +5,10 @@ Phase 26.14: Adds a second, more reliable source of options-chain data so the
 Ultra Scanner is no longer single-threaded behind Yahoo Finance. CBOE publishes
 free, public, 15-min delayed quotes via:
 
-    https://cdn.cboe.com/api/global/delayed_quotes/options/{SYMBOL}.json
+    https://cdn-api.cboe.com/api/global/delayed_quotes/options/{SYMBOL}.json
+
+(The original host, cdn.cboe.com, now answers 307 to that URL. Override the
+URL with MRD_CBOE_BASE_URL; see `_base_url`.)
 
 Why use it as the PRIMARY source (with Yahoo as fallback):
   * No auth, no API key required.
@@ -31,8 +34,10 @@ Behavior:
 from __future__ import annotations
 
 import logging
+import os
 import re
 import time
+from collections import deque
 from datetime import datetime, timezone
 from threading import Lock
 from typing import Any
@@ -74,7 +79,23 @@ _MIN_GAP_SECONDS = 0.20           # CBOE CDN has no documented limit; be polite
 # downloaded.
 DEFAULT_MAX_EXPIRATIONS = 4
 
-_BASE_URL = 'https://cdn.cboe.com/api/global/delayed_quotes/options/{symbol}.json'
+# CBOE moved the delayed-quotes CDN from cdn.cboe.com to cdn-api.cboe.com.
+# The old host answers 307 to the new one; httpx does not follow redirects
+# by default, so every fetch used to fail as `http_307`. The new host is the
+# default and redirects are followed only within `.cboe.com`.
+_DEFAULT_BASE_URL = 'https://cdn-api.cboe.com/api/global/delayed_quotes/options/{symbol}.json'
+_BASE_URL = _DEFAULT_BASE_URL  # kept for importers; use _base_url()
+_REDIRECT_ALLOW_SUFFIXES = ('.cboe.com',)
+_MAX_REDIRECTS = 3
+# A followed or refused redirect is logged at WARNING at most this often.
+_REDIRECT_WARN_INTERVAL_S = 3600.0
+
+# Each full chain is about 1.5 MB (AAPL: ~3,400 contracts), so fetches are
+# capped per rolling minute. Over the cap, get_options_positioning returns
+# None and options_chain_service falls back to Yahoo, exactly as it does for
+# the thundering-herd bail below.
+_DEFAULT_MAX_FETCHES_PER_MINUTE = 20
+_FETCH_WINDOW_S = 60.0
 # Phase 26.19: CBOE sits behind Cloudflare. When the request looks too
 # bare (no Accept-Language, no Referer/Origin) Cloudflare's bot-detection
 # layer intermittently returns 403 even though the resource is public.
@@ -132,7 +153,15 @@ _rl_stats = {
     'bailed_thundering_herd': 0,
     'served_immediately': 0,
     'slept_for_gap': 0,
+    'throttled_per_minute': 0,
+    'redirects_followed': 0,
+    'redirects_not_followed': 0,
 }
+
+# Reserved start times of recent network fetches (monotonic seconds).
+_fetch_times: deque[float] = deque()
+# kind -> monotonic time of the last WARNING for that kind.
+_last_warning_at: dict[str, float] = {}
 
 
 def rate_limit_stats() -> dict[str, int]:
@@ -144,6 +173,100 @@ def rate_limit_stats() -> dict[str, int]:
 
 def _now() -> float:
     return time.monotonic()
+
+
+def _warn_at_most_hourly(kind: str, msg: str, *args: Any) -> None:
+    now = _now()
+    with _lock:
+        last = _last_warning_at.get(kind)
+        if last is not None and now - last < _REDIRECT_WARN_INTERVAL_S:
+            return
+        _last_warning_at[kind] = now
+    log.warning(msg, *args)
+
+
+def _base_url() -> str:
+    """Chain URL template. MRD_CBOE_BASE_URL overrides the default and
+    must contain '{symbol}'; anything else falls back to the default."""
+    raw = (os.environ.get('MRD_CBOE_BASE_URL') or '').strip()
+    if not raw:
+        return _DEFAULT_BASE_URL
+    if '{symbol}' not in raw:
+        _warn_at_most_hourly(
+            'bad_base_url',
+            'cboe: MRD_CBOE_BASE_URL=%r has no {symbol} placeholder; using %s',
+            raw, _DEFAULT_BASE_URL,
+        )
+        return _DEFAULT_BASE_URL
+    return raw
+
+
+def _max_fetches_per_minute() -> int:
+    """MRD_CBOE_MAX_FETCHES_PER_MINUTE, default 20. Values below 1 or
+    non-integers fall back to the default."""
+    raw = (os.environ.get('MRD_CBOE_MAX_FETCHES_PER_MINUTE') or '').strip()
+    if not raw:
+        return _DEFAULT_MAX_FETCHES_PER_MINUTE
+    try:
+        value = int(raw)
+    except ValueError:
+        value = 0
+    if value < 1:
+        _warn_at_most_hourly(
+            'bad_fetch_cap',
+            'cboe: MRD_CBOE_MAX_FETCHES_PER_MINUTE=%r is not a positive integer; using %d',
+            raw, _DEFAULT_MAX_FETCHES_PER_MINUTE,
+        )
+        return _DEFAULT_MAX_FETCHES_PER_MINUTE
+    return value
+
+
+def fetch_budget_snapshot() -> dict[str, Any]:
+    """Read-only view of the per-minute fetch cap for the status page."""
+    # Both helpers may log through _warn_at_most_hourly, which takes _lock,
+    # so they must run before _lock is held (it is not re-entrant).
+    cap = _max_fetches_per_minute()
+    base_url = _base_url()
+    now = _now()
+    with _lock:
+        used = sum(1 for t in _fetch_times if now - t < _FETCH_WINDOW_S)
+        return {
+            'base_url': base_url,
+            'max_fetches_per_minute': cap,
+            'fetches_last_minute': used,
+            'throttled_per_minute': _rl_stats['throttled_per_minute'],
+            'redirects_followed': _rl_stats['redirects_followed'],
+            'redirects_not_followed': _rl_stats['redirects_not_followed'],
+        }
+
+
+def _fetch_chain(url: str, headers: dict, cfg: Any) -> Any:
+    """GET one chain URL, following redirects only within .cboe.com."""
+    from app.services.http_client import REDIRECT_STATUSES, resilient_get
+    r = resilient_get(
+        url, headers=headers, cfg=cfg, client='httpx',
+        follow_redirects=True, max_redirects=_MAX_REDIRECTS,
+        redirect_allow_suffixes=_REDIRECT_ALLOW_SUFFIXES,
+    )
+    if r.status_code in REDIRECT_STATUSES:
+        with _lock:
+            _rl_stats['redirects_not_followed'] += 1
+        _warn_at_most_hourly(
+            'redirect_not_followed',
+            'cboe: %s answered %d with Location %s; not followed (%s). '
+            'Set MRD_CBOE_BASE_URL if the new location is legitimate.',
+            url, r.status_code, r.location, r.error,
+        )
+    elif r.redirects:
+        with _lock:
+            _rl_stats['redirects_followed'] += 1
+        _warn_at_most_hourly(
+            'redirect_followed',
+            'cboe: %s redirects to %s; set MRD_CBOE_BASE_URL to the new '
+            'location to skip the extra hop.',
+            url, r.final_url,
+        )
+    return r
 
 
 # ---------------------------------------------------------------------------
@@ -434,8 +557,17 @@ def get_options_positioning(symbol: str, last_price: float, *,
     #      snap-worker thread for an unbounded amount of time.
     #   5. Sleep the required gap OUTSIDE the lock.
     sleep_for = 0.0
+    fetch_cap = _max_fetches_per_minute()
     with _lock:
         fresh_now = _now()
+        # Per-minute fetch cap: drop reservations older than the window,
+        # then refuse when the window is full. No sleeping; the caller
+        # falls through to the Yahoo cascade.
+        while _fetch_times and fresh_now - _fetch_times[0] >= _FETCH_WINDOW_S:
+            _fetch_times.popleft()
+        if len(_fetch_times) >= fetch_cap:
+            _rl_stats['throttled_per_minute'] += 1
+            return None
         # Reserve our slot.  `target_ts` is the earliest wall-clock
         # time at which we may fire our request.
         target_ts = max(_last_request_ts + _MIN_GAP_SECONDS, fresh_now)
@@ -455,6 +587,7 @@ def get_options_positioning(symbol: str, last_price: float, *,
         # Commit the reservation BEFORE releasing the lock so the
         # next caller stacks behind our slot, not on top of it.
         _last_request_ts = target_ts
+        _fetch_times.append(target_ts)
         if sleep_for > 0:
             _rl_stats['slept_for_gap'] += 1
         else:
@@ -475,17 +608,18 @@ def get_options_positioning(symbol: str, last_price: float, *,
 
     payload: dict | None = None
     last_status: int = 0
+    base_url = _base_url()
     for prefix in prefix_candidates:
-        url = _BASE_URL.format(symbol=f'{prefix}{sym}')
+        url = base_url.format(symbol=f'{prefix}{sym}')
         try:
             # Phase 26.18.c: resilient_get gives us retries + backoff +
             # UA rotation + Retry-After honoring on transient 5xx/429.
-            from app.services.http_client import resilient_get, ResilientGetConfig
+            from app.services.http_client import REDIRECT_STATUSES, ResilientGetConfig
             cfg = ResilientGetConfig(
                 max_attempts=3, connect_timeout=3.0,
                 read_timeout=_REQUEST_TIMEOUT, retry_after_cap_seconds=3.0,
             )
-            r = resilient_get(url, headers=dict(_BROWSER_HEADERS), cfg=cfg, client='httpx')
+            r = _fetch_chain(url, dict(_BROWSER_HEADERS), cfg)
             last_status = r.status_code
             # Phase 26.19: Cloudflare in front of CBOE occasionally serves
             # a transient 403 to programmatic clients. resilient_get does
@@ -500,7 +634,7 @@ def get_options_positioning(symbol: str, last_price: float, *,
                 _t.sleep(0.6)
                 retry_headers = dict(_BROWSER_HEADERS)
                 retry_headers.pop('User-Agent', None)
-                r = resilient_get(url, headers=retry_headers, cfg=cfg, client='httpx')
+                r = _fetch_chain(url, retry_headers, cfg)
                 last_status = r.status_code
             if r.status_code == 200:
                 try:
@@ -512,6 +646,17 @@ def get_options_positioning(symbol: str, last_price: float, *,
                 break
             elif r.status_code == 404:
                 continue  # try next prefix
+            elif r.status_code in REDIRECT_STATUSES:
+                # A redirect that resilient_get refused to follow (host
+                # outside .cboe.com, too many hops, no Location, or an
+                # https -> http downgrade). Report it as its own outcome
+                # rather than a generic http_3xx.
+                reason = (r.error or '').replace('redirect_not_followed: ', '')
+                providers_base.record_error(
+                    'cboe_options',
+                    f'redirected: {r.status_code} -> {r.location or "?"} ({reason or "not_followed"})',
+                )
+                return None
             elif r.status_code == 403:
                 # Phase 26.23: both the primary call and the one-shot
                 # fresh-UA retry came back 403 — Cloudflare is
