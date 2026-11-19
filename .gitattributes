@@ -1,0 +1,5 @@
+# Windows batch files need CRLF endings: cmd.exe can mis-resolve goto and
+# call labels in LF-only files.  Git stores them with LF and writes CRLF
+# on checkout and in archives.
+*.bat text eol=crlf
+*.cmd text eol=crlf
