@@ -23,6 +23,9 @@ import time
 import pytest
 import requests
 
+# Needs a running server (see backend_url in conftest.py); deselected by default.
+pytestmark = pytest.mark.integration
+
 # --------------------------------------------------------------------------- #
 # Config
 # --------------------------------------------------------------------------- #

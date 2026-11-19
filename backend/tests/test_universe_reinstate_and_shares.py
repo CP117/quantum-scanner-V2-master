@@ -10,6 +10,9 @@ import io
 import pytest
 import requests
 
+# Needs a running server (see backend_url in conftest.py); deselected by default.
+pytestmark = pytest.mark.integration
+
 # Prefer localhost for backend routes; frontend HTML also served through the ingress
 BACKEND = "http://localhost:8001"
 PREVIEW = os.environ.get(
