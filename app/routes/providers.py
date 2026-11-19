@@ -165,7 +165,9 @@ def _circuit_breaker_rows(provider_rows: list[dict], stooq_diag: dict) -> list[d
             'remaining_seconds': float(stooq_diag.get('circuit_remaining_seconds') or 0.0),
             'trip_count': int(stooq_diag.get('circuit_trip_count') or 0),
             'last_trip_utc': None,
-            'open_until_utc': None,
+            # Phase 2B: stats_snapshot() now reports the wall-clock reopen
+            # time (UTC midnight for a quota hit, the ladder step otherwise).
+            'open_until_utc': stooq_diag.get('circuit_reopens_at_utc') if circuit_open else None,
         })
     # Tripped circuits first, then by trip count desc.
     out.sort(key=lambda r: (r['state'] != 'open', -r.get('trip_count', 0), r['provider']))
@@ -268,7 +270,7 @@ def _classify_health(calls: int, hits: int, errors: int,
 # Providers that auto-skip when no API key is configured. The UI uses
 # this to render them as 'idle' rather than 'critical' so a missing key
 # doesn't paint the row red.
-_KEY_GATED_PROVIDERS = {'finnhub', 'alphavantage', 'fmp', 'polygon', 'tiingo'}
+_KEY_GATED_PROVIDERS = {'finnhub', 'alphavantage', 'fmp', 'polygon', 'tiingo', 'stooq'}
 
 
 def _api_keys_configured() -> dict:
