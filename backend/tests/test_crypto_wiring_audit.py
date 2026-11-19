@@ -16,6 +16,9 @@ import time
 import pytest
 import requests
 
+# Needs a running server (see backend_url in conftest.py); deselected by default.
+pytestmark = pytest.mark.integration
+
 BASE_URL = os.environ.get("BACKEND_URL_OVERRIDE", "http://localhost:8001").rstrip("/")
 TIMEOUT = 60  # crypto fetches can be slow on fresh boot
 

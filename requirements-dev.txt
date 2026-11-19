@@ -1,0 +1,9 @@
+# Development and test dependencies. Install together with the runtime set:
+#   python -m pip install -r requirements.txt -r requirements-dev.txt
+#
+# pytest and fakeredis repeat the pins in requirements.txt so this file
+# also works on its own in CI.
+pytest==8.4.2
+fakeredis==2.30.1
+# Per-test timeout so a hung test fails instead of stalling CI (pytest.ini sets it).
+pytest-timeout==2.4.0

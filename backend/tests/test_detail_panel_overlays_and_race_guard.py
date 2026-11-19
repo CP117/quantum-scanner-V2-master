@@ -18,6 +18,9 @@ import re
 import pytest
 import requests
 
+# Needs a running server (see backend_url in conftest.py); deselected by default.
+pytestmark = pytest.mark.integration
+
 BASE_URL = os.environ.get(
     'BACKEND_TEST_BASE_URL', 'http://localhost:8001'
 ).rstrip('/')

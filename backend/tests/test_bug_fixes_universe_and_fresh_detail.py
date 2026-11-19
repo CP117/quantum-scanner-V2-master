@@ -13,6 +13,9 @@ import time
 import pytest
 import requests
 
+# Needs a running server (see backend_url in conftest.py); deselected by default.
+pytestmark = pytest.mark.integration
+
 BASE_URL = "http://localhost:8001"
 DATA_DIR = pathlib.Path("/app/data")
 ACTIVE_FILE = DATA_DIR / "active_universes.json"

@@ -13,6 +13,9 @@ import time
 import pytest
 import requests
 
+# Needs a running server (see backend_url in conftest.py); deselected by default.
+pytestmark = pytest.mark.integration
+
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
     # Fallback to preview URL declared in the review request
