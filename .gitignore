@@ -1,7 +1,26 @@
 .env
 .env.*
+!.env.example
 *.env
 credentials.json
 *.pem
 *.key
 .credentials
+
+# Python and tooling
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# SQLite write-ahead files (runtime only)
+*.db-wal
+*.db-shm
+
+# Runtime state and secrets written by the app
+data/wedge_watchdog.json
+data/user_api_keys.json
+data/admin_token.txt
+
+# Soak run output
+soak*.csv
