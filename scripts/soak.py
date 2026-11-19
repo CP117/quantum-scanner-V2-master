@@ -5,7 +5,9 @@ Polls the server every --interval seconds for --minutes minutes and writes
 one CSV row per sample:
 
 * total threads and the 10 most common thread-name prefixes
-  (/system/threads/summary);
+  (/system/threads/summary, mounted only when the server runs with
+  MRD_ENABLE_DEBUG_ROUTES=1; it is a sensitive route, so run the soak from
+  the same machine or pass --token);
 * per-provider calls, errors and rate-limit counts (/api/providers/status);
 * rows, universe size, sweeps completed, current batch and evaluations for
   stocks and crypto (/api/scan/snapshot/meta);

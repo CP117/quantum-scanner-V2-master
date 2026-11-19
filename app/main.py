@@ -484,11 +484,14 @@ app.include_router(status_router)
 # Used to debug wedges where the UI hangs and we need to see, in real
 # time, which threads are blocked and on what.  Works even when the
 # rest of the app is sluggish because the endpoint holds no locks.
-try:
-    from app.routes.threads_debug import router as threads_debug_router
-    app.include_router(threads_debug_router)
-except Exception:
-    pass
+# Phase 1 security: mounted only when MRD_ENABLE_DEBUG_ROUTES=1, and then
+# still behind the admin guard (SENSITIVE_PREFIXES in app/security.py).
+if os.environ.get('MRD_ENABLE_DEBUG_ROUTES', '0') == '1':
+    try:
+        from app.routes.threads_debug import router as threads_debug_router
+        app.include_router(threads_debug_router)
+    except Exception:
+        pass
 app.include_router(search_router)
 app.include_router(results_router)
 app.include_router(detail_router)
@@ -653,12 +656,15 @@ except Exception as exc:
 
 # Source download route: ships a self-contained zip of the project at
 # /download/source.zip for local testing / porting into tagedin.com.
-try:
-    from app.routes.source_download import router as source_download_router
-    app.include_router(source_download_router)
-except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.source_download').exception('source download mount failed: %s', exc)
+# Phase 1 security: mounted only when MRD_ENABLE_SOURCE_DOWNLOAD=1, and
+# then still behind the admin guard.
+if os.environ.get('MRD_ENABLE_SOURCE_DOWNLOAD', '0') == '1':
+    try:
+        from app.routes.source_download import router as source_download_router
+        app.include_router(source_download_router)
+    except Exception as exc:
+        import logging as _log
+        _log.getLogger('app.source_download').exception('source download mount failed: %s', exc)
 
 # Cross-Market Squeeze Radar: scans stocks + crypto simultaneously
 # and cross-ranks by SSP × PVI × cross-market-correlation.
