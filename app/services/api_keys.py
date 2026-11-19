@@ -42,6 +42,9 @@ SUPPORTED_PROVIDERS = {
     "fmp",
     "tiingo",
     "marketstack",
+    # Phase 2B: Stooq CSV downloads need a key since March 2026. The layer
+    # also needs MRD_STOOQ_ENABLED=1 (see stooq_provider.availability).
+    "stooq",
 }
 
 

@@ -268,7 +268,7 @@ def _classify_health(calls: int, hits: int, errors: int,
 # Providers that auto-skip when no API key is configured. The UI uses
 # this to render them as 'idle' rather than 'critical' so a missing key
 # doesn't paint the row red.
-_KEY_GATED_PROVIDERS = {'finnhub', 'alphavantage', 'fmp', 'polygon', 'tiingo'}
+_KEY_GATED_PROVIDERS = {'finnhub', 'alphavantage', 'fmp', 'polygon', 'tiingo', 'stooq'}
 
 
 def _api_keys_configured() -> dict:

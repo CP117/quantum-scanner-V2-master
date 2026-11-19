@@ -2515,8 +2515,9 @@ def download_quotes(symbols: List[str], market: str = 'stocks') -> Dict[str, dic
     """Multi-provider cascade for batch quote downloads.
 
     Cascade order:
-      stocks:  yfinance -> yahoo-chart -> stooq
-      crypto:  yfinance/coingecko -> cryptocompare
+      stocks:  yfinance -> yahoo-chart -> finnhub (with a key)
+               -> stooq (opt-in: MRD_STOOQ_ENABLED=1 and a key)
+      crypto:  yfinance/coingecko -> cryptocompare -> coinpaprika
 
     Each layer only tries the symbols the previous layers failed to resolve.
     Provenance is preserved per-row via the `source` field.
@@ -2547,20 +2548,19 @@ def download_quotes(symbols: List[str], market: str = 'stocks') -> Dict[str, dic
         from app.services import api_keys as _api_keys
         if _api_keys.get('finnhub'):
             chain.append(('finnhub', finnhub_provider.fetch))
-        # Phase 26.19: only insert Stooq when its dedicated circuit-breaker
-        # is closed. When Stooq's host is unreachable from the runtime
-        # network, its CB stays open for up to 1h between probes — calling
-        # the (no-op) fetch() during that window still records call+miss
-        # in the chain, dragging the aggregate cascade hit rate down by
-        # ~25 points without recovering any actual quotes. Skipping the
-        # registration entirely while the CB is open keeps the hit-rate
-        # metric honest. The CB auto-half-opens after its cooldown so
-        # Stooq slots back in automatically when the network recovers.
+        # Phase 2B: Stooq is off by default. It joins only when
+        # MRD_STOOQ_ENABLED=1, a key is configured and its dedicated
+        # circuit is closed (stooq_provider.availability()). Like Finnhub
+        # without a key, leaving it out of the chain records no call, so
+        # an idle Stooq neither drags the hit rate down nor starts a
+        # worker thread. The circuit half-opens after its cooldown, so an
+        # enabled Stooq slots back in by itself. A failing check counts
+        # as "not available".
         try:
-            if not stooq_provider.stats_snapshot().get('circuit_open'):
-                chain.append(('stooq', stooq_provider.fetch))
+            stooq_ok, _stooq_reason = stooq_provider.availability()
         except Exception:
-            # Snapshot failure should not break the cascade.
+            stooq_ok = False
+        if stooq_ok:
             chain.append(('stooq', stooq_provider.fetch))
     return run_quote_chain(symbols, market, chain)
 
