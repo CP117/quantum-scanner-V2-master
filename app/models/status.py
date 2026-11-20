@@ -38,6 +38,9 @@ class WarmerStatus(BaseModel):
     last_cycle_utc: str | None = None
     warmed_symbols: int = 0
     last_batch: int = 0
+    market: str = 'stocks'
+    # Counts from the last auto_log_scan_predictions() call, or {'error': ...}.
+    last_auto_log: dict | None = None
 
 
 class DefaultedFieldsSnapshot(BaseModel):
@@ -87,4 +90,7 @@ class SystemStatusEnvelope(BaseModel):
     # how often the sweep-boundary collect has fired, and (c) the
     # last collect duration.
     gc_stats: dict[str, Any] = Field(default_factory=dict)
+    # Phase 3: optional routers that failed to mount at startup
+    # (name -> "ExceptionType: message"); empty when everything mounted.
+    mount_errors: dict[str, str] = Field(default_factory=dict)
     state: str = "ok"

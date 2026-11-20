@@ -1,3 +1,7 @@
+import logging
+import os
+import time
+
 import yfinance as yf
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from app.config import settings
@@ -8,6 +12,8 @@ from app.services.scoring_service import score_from_prices, download_quotes, fet
 from app.services.crypto_provider_service import fetch_coingecko_snapshot
 from app.utils.normalize import normalize_result_row
 from app.utils.time import utcnow_iso
+
+log = logging.getLogger('app.detail')
 
 # Module-level pool reused across calls; sized small because each manual refresh
 # only needs 3-4 parallel slots and we don't want to compete with the scanner.
@@ -71,55 +77,156 @@ def _fetch_info(base_symbol: str) -> dict:
         return {}
 
 
+# How long a quote cached by another path (the scanner, the priority lane,
+# an earlier tick) is reused instead of starting a new provider cascade.
+# The detail panel's live tick asks every 2 seconds; 0 turns reuse off.
+_DETAIL_QUOTE_REUSE_ENV = 'MRD_DETAIL_QUOTE_REUSE_SECONDS'
+_DETAIL_QUOTE_REUSE_DEFAULT = 5.0
+# One WARNING per symbol per minute while its refresh keeps failing; the
+# rest go to DEBUG so an open panel cannot flood the log every 2 seconds.
+_REFRESH_WARN_INTERVAL_S = 60.0
+_refresh_warned_at: dict[str, float] = {}
+
+
+def _detail_quote_reuse_seconds() -> float:
+    raw = os.environ.get(_DETAIL_QUOTE_REUSE_ENV, '')
+    try:
+        return max(0.0, float(raw)) if raw.strip() else _DETAIL_QUOTE_REUSE_DEFAULT
+    except ValueError:
+        return _DETAIL_QUOTE_REUSE_DEFAULT
+
+
+def _price_pair(quote: dict | None) -> tuple[float, float] | None:
+    """(last_price, previous_close) when both are positive numbers."""
+    if not quote:
+        return None
+    try:
+        lp = float(quote.get('last_price') or 0.0)
+        pc = float(quote.get('previous_close') or 0.0)
+    except (TypeError, ValueError):
+        return None
+    if lp > 0 and pc > 0:
+        return lp, pc
+    return None
+
+
+def _warn_refresh_failure(symbol: str, message: str, *args) -> None:
+    now = time.monotonic()
+    last = _refresh_warned_at.get(symbol)
+    if last is None or now - last >= _REFRESH_WARN_INTERVAL_S:
+        _refresh_warned_at[symbol] = now
+        log.warning(message, *args)
+    else:
+        log.debug(message, *args)
+
+
 def _refresh_snapshot_quote(snap_row: dict, base_symbol: str, market: str) -> dict:
     """Fresh-quote refresh WITHOUT losing the batch-attached forward /
     Lab / Strategy / Predictive metric blocks.  Used on the require_fresh
-    path: we pull a new quote via the batched provider cache (cheap),
-    update `last_price` / `previous_close` / `change_pct` / age + tag
-    the row so the frontend sees the tick, but keep every downstream
-    overlay the batch scorer already computed.  This is what fixes the
-    2026-07-02 "detail panel Future Forecast + Lab Mode + Quantum
-    sections vanished" regression: the previous require_fresh path
-    replaced the row with a fresh score_from_prices() output that had
-    none of those overlays.
+    path: we pull a new quote, update `last_price` / `previous_close` /
+    `change_pct` / age + tag the row so the frontend sees the tick, but
+    keep every downstream overlay the batch scorer already computed.
+    This is what fixes the 2026-07-02 "detail panel Future Forecast +
+    Lab Mode + Quantum sections vanished" regression: the previous
+    require_fresh path replaced the row with a fresh score_from_prices()
+    output that had none of those overlays.
+
+    Phase 3: until now the function imported download_quotes and
+    utcnowiso from two modules that do not exist, and the except around
+    those imports returned the cached row every time, so the "fresh"
+    refresh never fetched anything.  It now uses the module-level
+    imports.  Where the quote comes from:
+
+    * a quote already cached for the symbol and captured within the last
+      MRD_DETAIL_QUOTE_REUSE_SECONDS (default 5) is reused, so several
+      open panels, or a panel on a symbol the priority lane is already
+      refreshing, do not each start their own cascade;
+    * otherwise one download_quotes() call runs the provider cascade.
+
+    On success the row is tagged detail_source 'snapshot_refreshed' and
+    detail_quote_origin 'live' or 'recent_cache'.  When no usable quote
+    comes back (a provider error, an empty result, or a price that is not
+    positive) the snapshot values are kept and the row is tagged
+    detail_source 'snapshot_fallback' with a detail_fallback_reason.
+
+    snap_row is a shallow copy of the snapshot row (lookup_snapshot_row),
+    so the nested factor_breakdown and market dicts are copied before they
+    are changed; the leaderboard's row is left alone.
     """
-    try:
-        from app.services.provider_service import download_quotes
-        from app.services.quote_cache import save_quote, get_cached_quote, cached_quote_is_usable, quote_age_seconds
-        from app.services.stateful_kit import utcnowiso
-    except Exception:  # noqa: BLE001
+    quote: dict | None = None
+    origin: str | None = None
+    reason: str | None = None
+
+    reuse_s = _detail_quote_reuse_seconds()
+    if reuse_s > 0:
+        try:
+            cached = get_cached_quote(base_symbol)
+        except Exception as exc:  # noqa: BLE001 - a cache read must not block the refresh
+            log.debug('detail refresh: quote cache read failed for %s: %s', base_symbol, exc)
+            cached = None
+        if _price_pair(cached) and quote_age_seconds(cached) <= reuse_s:
+            quote, origin = cached, 'recent_cache'
+
+    if quote is None:
+        origin = 'live'
+        try:
+            quote = (download_quotes([base_symbol], market) or {}).get(base_symbol)
+        except Exception as exc:  # noqa: BLE001 - the cascade is network code
+            reason = f'provider_error: {type(exc).__name__}: {exc}'[:200]
+            _warn_refresh_failure(
+                base_symbol, 'detail refresh: quote fetch failed for %s (%s): %s',
+                base_symbol, market, reason,
+            )
+            quote = None
+        else:
+            if not quote:
+                reason = 'no_quote'
+                _warn_refresh_failure(
+                    base_symbol, 'detail refresh: no provider returned a quote for %s (%s)',
+                    base_symbol, market,
+                )
+            elif _price_pair(quote) is None:
+                reason = 'unusable_quote'
+                _warn_refresh_failure(
+                    base_symbol, 'detail refresh: quote for %s (%s) has no positive '
+                    'last_price/previous_close pair', base_symbol, market,
+                )
+                quote = None
+
+    snap_row['score_revision_utc'] = utcnow_iso()
+    pair = _price_pair(quote)
+    if quote is None or pair is None:
+        snap_row['detail_source'] = 'snapshot_fallback'
+        snap_row['detail_fallback_reason'] = reason or 'no_quote'
+        snap_row['fresh_rescore'] = False
         return snap_row
-    quote = None
-    try:
-        quote = (download_quotes([base_symbol], market) or {}).get(base_symbol)
-    except Exception:  # noqa: BLE001
-        quote = None
-    if quote:
+
+    _refresh_warned_at.pop(base_symbol, None)
+    if origin == 'live':
         try:
             save_quote(base_symbol, quote)
-        except Exception:  # noqa: BLE001
-            pass
-        try:
-            lp = float(quote.get('last_price') or 0.0)
-            pc = float(quote.get('previous_close') or 0.0)
-        except (TypeError, ValueError):
-            lp, pc = 0.0, 0.0
-        market_fb = (snap_row.get('factor_breakdown') or {}).get('market') or {}
-        if lp > 0 and pc > 0:
-            market_fb['last_price'] = lp
-            market_fb['previous_close'] = pc
-            market_fb['change_pct'] = ((lp - pc) / pc) * 100.0 if pc > 0 else 0.0
-            market_fb['age_seconds'] = 0
-            market_fb['source'] = quote.get('provider') or 'yfinance'
-            snap_row['factor_breakdown']['market'] = market_fb
-            snap_row['as_of_utc'] = quote.get('captured_at_utc') or utcnowiso()
-            snap_row['quote_as_of_utc'] = quote.get('quote_time_utc') or None
-            snap_row['age_seconds'] = 0
-            snap_row['freshness_label'] = 'fresh'
-            snap_row['stale'] = False
-    snap_row['score_revision_utc'] = utcnow_iso()
+        except Exception as exc:  # noqa: BLE001 - caching is best effort
+            log.debug('detail refresh: save_quote failed for %s: %s', base_symbol, exc)
+    lp, pc = pair
+    age = 0 if origin == 'live' else quote_age_seconds(quote)
+    fb = dict(snap_row.get('factor_breakdown') or {})
+    market_fb = dict(fb.get('market') or {})
+    market_fb['last_price'] = round(lp, 4)
+    market_fb['previous_close'] = round(pc, 4)
+    market_fb['change_pct'] = round((lp - pc) / pc * 100.0, 4)
+    market_fb['age_seconds'] = age
+    market_fb['source'] = quote.get('source') or quote.get('provider') or 'unknown'
+    fb['market'] = market_fb
+    snap_row['factor_breakdown'] = fb
+    snap_row['as_of_utc'] = quote.get('captured_at_utc') or utcnow_iso()
+    snap_row['quote_as_of_utc'] = quote.get('quote_time_utc') or None
+    snap_row['age_seconds'] = age
+    snap_row['freshness_label'] = 'fresh'
+    snap_row['stale'] = False
     snap_row['detail_source'] = 'snapshot_refreshed'
-    snap_row['fresh_rescore'] = bool(quote)
+    snap_row['detail_quote_origin'] = origin
+    snap_row.pop('detail_fallback_reason', None)
+    snap_row['fresh_rescore'] = True
     return snap_row
 
 

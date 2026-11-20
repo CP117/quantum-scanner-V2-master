@@ -476,6 +476,14 @@ def system_variant():
     return payload
 
 
+# Phase 3: each optional router below keeps its own try/except so one
+# broken module cannot take the whole app down, and each handler records
+# its failure through _record_mount_error (see app/mount_errors.py):
+# /system/status reports them as mount_errors, and MRD_STRICT_MOUNT=1
+# stops startup instead.
+from app.mount_errors import MOUNT_ERRORS, record_mount_error as _record_mount_error  # noqa: E402
+
+
 app.mount('/frontend', StaticFiles(directory=str(FRONTEND_DIR)), name='frontend')
 
 app.include_router(health_router)
@@ -490,8 +498,8 @@ if os.environ.get('MRD_ENABLE_DEBUG_ROUTES', '0') == '1':
     try:
         from app.routes.threads_debug import router as threads_debug_router
         app.include_router(threads_debug_router)
-    except Exception:
-        pass
+    except Exception as exc:
+        _record_mount_error('threads_debug', exc)
 app.include_router(search_router)
 app.include_router(results_router)
 app.include_router(detail_router)
@@ -509,8 +517,7 @@ try:
     from app.routes.future_mode import router as future_mode_router
     app.include_router(future_mode_router)
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.future_mode').exception('future_mode router failed to mount: %s', exc)
+    _record_mount_error('future_mode', exc, logger='app.future_mode')
 
 # Phase 26.61: Metrics Hub (algorithm catalog, cache health, weight tuner).
 try:
@@ -521,8 +528,7 @@ try:
     def metrics_hub_page():
         return FileResponse(FRONTEND_DIR / 'metrics-hub.html')
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.metrics_hub').exception('metrics_hub router failed to mount: %s', exc)
+    _record_mount_error('metrics_hub', exc, logger='app.metrics_hub')
 
 
 # Phase 7: Regulatory Interest & Contract Monitor (insider filings, contract awards,
@@ -536,8 +542,7 @@ try:
     def regulatory_page():
         return FileResponse(FRONTEND_DIR / 'regulatory.html')
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.regulatory').exception('regulatory router failed to mount: %s', exc)
+    _record_mount_error('regulatory', exc, logger='app.regulatory')
 
 # Phase 15: user-supplied API keys (Finnhub, Polygon, etc.) for unlocking
 # additional providers. Mounted under /api/api-keys/*.
@@ -545,8 +550,7 @@ try:
     from app.routes.api_keys import router as api_keys_router
     app.include_router(api_keys_router)
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.api_keys').exception('api_keys router failed to mount: %s', exc)
+    _record_mount_error('api_keys', exc, logger='app.api_keys')
 
 # Phase 18: 10-day price-point prediction (aggregates every factor family
 # into a single forward target + 95% CI). Mounted under /api/predict/*.
@@ -554,8 +558,7 @@ try:
     from app.routes.price_prediction import router as predict_router
     app.include_router(predict_router)
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.predict').exception('predict router failed to mount: %s', exc)
+    _record_mount_error('price_prediction', exc, logger='app.predict')
 
 # Phase 22: user-saved prediction tracker.  Persists generated forecasts
 # to a small SQLite DB (data/saved_predictions.db) and auto-evaluates
@@ -578,10 +581,7 @@ try:
     def predictions_js():
         return FileResponse(FRONTEND_DIR / 'predictions.js', media_type='application/javascript')
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.prediction_tracker').exception(
-        'prediction_tracker router failed to mount: %s', exc,
-    )
+    _record_mount_error('prediction_tracker', exc, logger='app.prediction_tracker')
 
 # Phase 26: dedicated Data Providers Health page (/providers.html) and the
 # /api/providers/status endpoint that powers its 10s auto-refresh.
@@ -597,8 +597,7 @@ try:
     def providers_js():
         return FileResponse(FRONTEND_DIR / 'providers.js', media_type='application/javascript')
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.providers').exception('providers router failed to mount: %s', exc)
+    _record_mount_error('providers', exc, logger='app.providers')
 
 # Phase 26.5: surface the cloudflared / LAN public URL captured by the
 # start.bat / start.sh launchers so the dashboard can show it under the title.
@@ -606,8 +605,7 @@ try:
     from app.routes.public_url import router as public_url_router
     app.include_router(public_url_router)
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.public_url').exception('public_url router failed to mount: %s', exc)
+    _record_mount_error('public_url', exc, logger='app.public_url')
 
 # Phase 26.6: backend-managed cloudflared tunnel (regenerate-on-demand) +
 # long-run housekeeping (counter rotation + DB pruning).
@@ -617,8 +615,7 @@ try:
     app.include_router(public_url_admin_router)
     app.include_router(admin_router)
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.maintenance').exception('maintenance/admin mount failed: %s', exc)
+    _record_mount_error('public_url_admin+admin', exc, logger='app.maintenance')
 
 # Cache deduplication subsystem: admin/debug endpoints + non-blocking
 # startup audit pass (reaction clustering / options chain / daily history).
@@ -628,8 +625,7 @@ try:
     app.include_router(cache_admin_router)
     start_startup_audit()
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.cache_dedupe').exception('cache dedupe mount failed: %s', exc)
+    _record_mount_error('cache_admin', exc, logger='app.cache_dedupe')
 
 # Future Forecast Activator: per-row forecast execution route used by the
 # scanner table's details-column button.
@@ -637,8 +633,7 @@ try:
     from app.routes.forecast_activator import router as forecast_activator_router
     app.include_router(forecast_activator_router)
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.forecast_activator').exception('forecast activator mount failed: %s', exc)
+    _record_mount_error('forecast_activator', exc, logger='app.forecast_activator')
 
 # Social-share landing route: serves an OG-tagged HTML card at
 # /share/{symbol} that Facebook / LinkedIn / Twitter can scrape for link
@@ -651,8 +646,7 @@ try:
     def shared_analyses_page():
         return FileResponse(FRONTEND_DIR / 'shared-analyses.html')
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.social_share').exception('social share mount failed: %s', exc)
+    _record_mount_error('social_share', exc, logger='app.social_share')
 
 # Source download route: ships a self-contained zip of the project at
 # /download/source.zip for local testing / porting into tagedin.com.
@@ -663,8 +657,7 @@ if os.environ.get('MRD_ENABLE_SOURCE_DOWNLOAD', '0') == '1':
         from app.routes.source_download import router as source_download_router
         app.include_router(source_download_router)
     except Exception as exc:
-        import logging as _log
-        _log.getLogger('app.source_download').exception('source download mount failed: %s', exc)
+        _record_mount_error('source_download', exc, logger='app.source_download')
 
 # Cross-Market Squeeze Radar: scans stocks + crypto simultaneously
 # and cross-ranks by SSP × PVI × cross-market-correlation.
@@ -676,8 +669,7 @@ try:
     def cross_market_squeeze_page():
         return FileResponse(FRONTEND_DIR / 'cross-market-squeeze.html')
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.cross_market_radar').exception('cross-market radar mount failed: %s', exc)
+    _record_mount_error('cross_market_radar', exc, logger='app.cross_market_radar')
 
 # Phase 24: blacklist admin endpoints for the persistently-failing symbol
 # audit page.  Read-only by default; the manual unblock endpoint is the
@@ -686,10 +678,7 @@ try:
     from app.routes.blacklist import router as blacklist_router
     app.include_router(blacklist_router)
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.blacklist').exception(
-        'blacklist router failed to mount: %s', exc,
-    )
+    _record_mount_error('blacklist', exc, logger='app.blacklist')
 
 # Phase 16: clear any stale failure-cooldowns for crypto -USD symbols so
 # the new CryptoCompare daily-history fallback gets a chance to fill the
@@ -697,8 +686,8 @@ except Exception as exc:
 try:
     from app.services.daily_history_service import invalidate_failed_crypto
     invalidate_failed_crypto()
-except Exception:
-    pass
+except Exception as exc:
+    logging.getLogger('app.startup').warning('invalidate_failed_crypto failed: %s', exc)
 
 # Phase 12: server-side broadcast snapshot.  Mount the /api/scan/snapshot
 # endpoint AND launch the single background scan loop so secondary devices
@@ -718,8 +707,7 @@ try:
     from app.services.snapshot_store import start_scan_loop
     start_scan_loop()
 except Exception as exc:
-    import logging as _log
-    _log.getLogger('app.snapshot').exception('snapshot loop failed to start: %s', exc)
+    _record_mount_error('snapshot', exc, logger='app.snapshot')
 
 # Phase 26.39: leveraged-variant-only top-10 priority lane.  Gated
 # internally by `is_leveraged_variant()` — the main-app build is a
@@ -762,8 +750,8 @@ except Exception as exc:
 try:
     from app.services.universe_extras import refresh_nasdaq_in_background
     refresh_nasdaq_in_background()
-except Exception:
-    pass
+except Exception as exc:
+    logging.getLogger('app.startup').warning('NASDAQ listing refresh failed to start: %s', exc)
 
 # Phase 28: Tiered Universe Architecture
 # Initialise supporting services first, then start each scanner tier.
@@ -825,5 +813,4 @@ try:
     _tier_log.info('tiered scanner: routes mounted (/api/tier-status, /api/watchlist, /api/symbol)')
 
 except Exception as _tier_exc:
-    import logging as _log
-    _log.getLogger('app.startup').exception('tiered scanner init failed: %s', _tier_exc)
+    _record_mount_error('tiered_scanner', _tier_exc, logger='app.startup')

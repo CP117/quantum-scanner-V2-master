@@ -15,9 +15,10 @@ never imports them) and checks:
   then ``tracker.list_predictions(...)``: the attribute must be bound at
   the aliased module's top level.
 
-``KNOWN_BROKEN`` lists the failures that existed when this test was
-added.  The suite fails on any failure that is not in the list, and also
-when a listed entry starts resolving, so the list can only shrink.
+``KNOWN_BROKEN`` listed the failures that existed when this test was
+added.  Phase 3 fixed the last of them, so it is empty: any failure
+fails the suite.  A listed entry that starts resolving also fails it,
+so the list can only shrink.
 """
 from __future__ import annotations
 
@@ -29,24 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 APP_DIR = REPO_ROOT / 'app'
 
 # (file relative to the repo root, dotted target that does not resolve)
-KNOWN_BROKEN: set[tuple[str, str]] = {
-    # detail_service imports modules that were never added to the repo.
-    ('app/services/detail_service.py', 'app.services.provider_service'),
-    ('app/services/detail_service.py', 'app.services.stateful_kit'),
-    # future_mode's "scan now" path imports a function and a module that do not exist.
-    ('app/routes/future_mode.py', 'app.services.active_scan_service.request_immediate_iteration'),
-    ('app/routes/future_mode.py', 'app.services.scan_worker'),
-    # future_mode's reset is hasattr-guarded, but neither helper exists: the lane's
-    # monitor-only flag is a loop-local variable, so the reset reports success and clears nothing.
-    ('app/routes/future_mode.py', 'app.services.top10_priority_service.reset_monitor_state'),
-    ('app/routes/future_mode.py', 'app.services.wedge_watchdog.reset_state'),
-    # main.py tries to start a prediction evaluator that the service never defined.
-    ('app/main.py', 'app.services.prediction_tracker_service.start_evaluator'),
-    # The prediction tracker routes call service functions that do not exist.
-    ('app/routes/prediction_tracker.py', 'app.services.prediction_tracker_service.list_predictions'),
-    ('app/routes/prediction_tracker.py', 'app.services.prediction_tracker_service.delete_prediction'),
-    ('app/routes/prediction_tracker.py', 'app.services.prediction_tracker_service.evaluate_expired_predictions'),
-}
+KNOWN_BROKEN: set[tuple[str, str]] = set()
 
 _MODULE_ATTRS = {
     '__name__', '__file__', '__doc__', '__dict__', '__spec__', '__path__',

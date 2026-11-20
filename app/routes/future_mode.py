@@ -14,17 +14,19 @@ Two endpoints:
 
       ?mode=soft  →  clear in-memory state only:
         - snapshot buckets + thin caches
-        - circuit breakers + rate-limit stats
-        - Future Mode caches (AdvancedSignals + LabSignals)
-        - priority-lane monitor_only flag
+        - open / half-open provider circuit breakers + CBOE rate-limit stats
+        - Future Mode caches (Advanced, Lab, Strategy, Predictive)
       ?mode=hard  →  soft reset PLUS delete on-disk shard caches
         (anything under `data/cache/*.json`).  Daily-history cache
         and the regulatory SQLite DB are PRESERVED — they're
         expensive to rebuild and not implicated in any wedge we've
         seen.
 
-Both modes immediately kick a fresh scan iteration so the dashboard
-re-populates from the most-recent cached data within seconds.
+Neither mode needs to wake the scanner: the snapshot loop sleeps at most
+a few seconds between batches (SNAPSHOT_INTER_BATCH_SLEEP 0.5 s,
+SNAPSHOT_INTER_MARKET_SLEEP 0.75 s, 5 s when its worker pool is
+saturated or a batch failed), so the next batch refills the cleared
+snapshot on its own.
 """
 from __future__ import annotations
 
@@ -165,40 +167,30 @@ def future_mode_deep_refresh(
 # 2) Soft / hard system reset
 # ---------------------------------------------------------------------------
 
-def _kick_scan_loop() -> bool:
-    """Best-effort: nudge whatever scheduler / scan-worker loop the
-    backend runs so the snapshot repopulates immediately after the
-    reset rather than waiting for the next regular tick.  Returns
-    True if a kick was performed, False if no hook is available
-    (in which case the next regular tick recovers naturally)."""
-    # Try a couple of known kick points without forcing a dependency.
-    try:
-        from app.services.active_scan_service import request_immediate_iteration
-        request_immediate_iteration()
-        return True
-    except Exception:  # noqa: BLE001
-        pass
-    try:
-        from app.services.scan_worker import request_immediate_sweep
-        request_immediate_sweep()
-        return True
-    except Exception:  # noqa: BLE001
-        pass
-    return False
-
-
 def _reset_in_memory_state() -> dict:
-    """Clear in-memory caches + reset circuit-breaker/state for every
-    pipeline component the wedge analysis identified as recoverable
-    via a kick.  Returns a small report payload."""
+    """Clear the in-memory caches and close the provider circuit breakers.
+
+    Returns what was actually done, for the response and the toast.
+
+    Phase 3 removed three blocks that reported work they did not do:
+    the scan kick (neither kick function exists, and the snapshot loop
+    refills on its own within seconds), the priority-lane monitor-only
+    reset (that flag is a local variable inside the lane's loop; the old
+    fallback set module attributes that do not exist and still reported
+    True, and the lane leaves monitor-only by itself after its 60 s
+    pause and three fast ticks), and the wedge-watchdog reset (the
+    watchdog keeps no state; it only rewrites data/wedge_watchdog.json
+    every 30 s).
+    """
     cleared = {
         'snapshot_rows': 0,
         'advanced_cache': 0,
         'lab_cache': 0,
+        'strategy_cache': 0,
+        'predictive_cache': 0,
         'circuit_breakers_reset': 0,
-        'priority_lane_monitor_only_cleared': False,
+        'circuit_breakers_closed': [],
         'rate_limit_stats_reset': False,
-        'wedge_watchdog_state_reset': False,
     }
     # --- 1) Snapshot buckets ----------------------------------------
     try:
@@ -206,26 +198,21 @@ def _reset_in_memory_state() -> dict:
         for mkt in ('stocks', 'crypto'):
             try:
                 with ss._locks.get(mkt, ss._locks['stocks']):
-                    bucket = ss._snapshot.get(mkt, {})
-                    cleared['snapshot_rows'] += len(bucket)
-                    bucket.clear()
-                    # Drop cached thin/sorted views.
-                    if hasattr(ss, '_invalidate_sorted_view'):
-                        ss._invalidate_sorted_view(mkt)
-            except Exception:  # noqa: BLE001
-                pass
-        # Reset progress / meta counters so the UI shows "rescanning".
-        try:
-            for mkt in ('stocks', 'crypto'):
-                meta = ss._snapshot_meta.get(mkt)
-                if isinstance(meta, dict):
-                    meta.update({
-                        'current_sweep_scanned': 0,
-                        'current_batch_index': 0,
-                        'highest_completed_batch': 0,
-                    })
-        except Exception:  # noqa: BLE001
-            pass
+                    cleared['snapshot_rows'] += len(ss._snapshot.get(mkt, {}))
+                # clear_snapshot also drops the sorted view, the thin-row
+                # cache and the Redis copy, and zeroes rows_scored.
+                ss.clear_snapshot(mkt)
+                # Reset the sweep counters so the UI shows "rescanning".
+                with ss._locks.get(mkt, ss._locks['stocks']):
+                    meta = ss._snapshot_meta.get(mkt)
+                    if isinstance(meta, dict):
+                        meta.update({
+                            'current_sweep_scanned': 0,
+                            'current_batch_index': 0,
+                            'highest_completed_batch': -1,
+                        })
+            except Exception as exc:  # noqa: BLE001
+                log.warning('snapshot reset failed for %s: %s', mkt, exc)
     except Exception as exc:  # noqa: BLE001
         log.warning('snapshot reset partial: %s', exc)
 
@@ -235,48 +222,26 @@ def _reset_in_memory_state() -> dict:
         stats = clear_future_mode_caches()
         cleared['advanced_cache'] = stats.get('cleared_advanced', 0)
         cleared['lab_cache'] = stats.get('cleared_lab', 0)
+        cleared['strategy_cache'] = stats.get('cleared_strategy', 0)
+        cleared['predictive_cache'] = stats.get('cleared_predictive_expansion', 0)
     except Exception as exc:  # noqa: BLE001
         log.warning('future-mode cache reset partial: %s', exc)
 
     # --- 3) Provider circuit breakers --------------------------------
-    # The breakers live in `app.services.providers.base`.  We reconfig
-    # each known provider with its default threshold to drop the failure
-    # counter + clear any active cooldown.
+    # Close every open or half-open breaker in app.services.providers.base
+    # and restart its backoff ladder.  (Before Phase 3 this called
+    # configure_circuit for a hardcoded list of seven names, which only
+    # rewrote their thresholds to 8 / 120 s, closed nothing, and missed
+    # yahoo-chart and yfinance+coingecko; it reported 7 every time.)
     try:
         from app.services.providers import base as providers_base
-        for name in (
-            'cboe_options', 'finnhub', 'coinpaprika', 'stooq', 'yfinance',
-            'cryptocompare', 'coingecko',
-        ):
-            try:
-                providers_base.configure_circuit(name, threshold=8, cooldown_seconds=120.0)
-                cleared['circuit_breakers_reset'] += 1
-            except Exception:  # noqa: BLE001
-                continue
-    except Exception:  # noqa: BLE001
-        pass
+        closed = providers_base.reset_circuits()
+        cleared['circuit_breakers_closed'] = closed
+        cleared['circuit_breakers_reset'] = len(closed)
+    except Exception as exc:  # noqa: BLE001
+        log.warning('circuit breaker reset failed: %s', exc)
 
-    # --- 4) Priority lane monitor-only flag --------------------------
-    try:
-        from app.services import top10_priority_service as tps
-        if hasattr(tps, 'reset_monitor_state'):
-            tps.reset_monitor_state()
-            cleared['priority_lane_monitor_only_cleared'] = True
-        else:
-            # No public helper — best-effort reset of well-known
-            # module-level state variables.
-            for attr in ('_monitor_only', '_consecutive_slow', '_paused_until'):
-                if hasattr(tps, attr):
-                    cur = getattr(tps, attr)
-                    if isinstance(cur, bool):
-                        setattr(tps, attr, False)
-                    elif isinstance(cur, (int, float)):
-                        setattr(tps, attr, 0)
-            cleared['priority_lane_monitor_only_cleared'] = True
-    except Exception:  # noqa: BLE001
-        pass
-
-    # --- 5) Rate-limit telemetry counters ---------------------------
+    # --- 4) Rate-limit telemetry counters ---------------------------
     try:
         from app.services.providers import cboe_options_provider as cp
         with cp._lock:
@@ -284,17 +249,8 @@ def _reset_in_memory_state() -> dict:
                 cp._rl_stats[k] = 0
             cp._last_request_ts = 0.0
         cleared['rate_limit_stats_reset'] = True
-    except Exception:  # noqa: BLE001
-        pass
-
-    # --- 6) Wedge watchdog state ------------------------------------
-    try:
-        from app.services import wedge_watchdog as ww
-        if hasattr(ww, 'reset_state'):
-            ww.reset_state()
-            cleared['wedge_watchdog_state_reset'] = True
-    except Exception:  # noqa: BLE001
-        pass
+    except Exception as exc:  # noqa: BLE001
+        log.warning('CBOE rate-limit stats reset failed: %s', exc)
 
     return cleared
 
@@ -379,19 +335,16 @@ def system_reset(
     if mode == 'hard':
         disk = _wipe_disk_shards()
 
-    kicked = _kick_scan_loop()
-
     elapsed_ms = int((time.monotonic() - t0) * 1000)
     return {
         'mode': mode,
         'in_memory_cleared': in_mem,
         'disk_caches': disk,
-        'scan_kicked': kicked,
         'elapsed_ms': elapsed_ms,
         'note': (
-            'Cached data continues to serve the dashboard until the '
-            'fresh scan iteration repopulates the snapshot.  Watch '
-            '/api/scan/snapshot/meta for the next sweep tick.'
+            'The snapshot refills as the scanner finishes its next '
+            'batches (it pauses at most a few seconds between them).  '
+            'Watch /api/scan/snapshot/meta for the next sweep tick.'
         ),
     }
 

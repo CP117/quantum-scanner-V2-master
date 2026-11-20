@@ -112,9 +112,11 @@ async def saved_prediction_accuracy(
 
 @router.post('/evaluate-now')
 async def evaluate_now():
-    """Manual trigger for the auto-evaluation pass.  Useful when the
-    daily-history cache was empty when the scheduled tick fired.
-    Returns the same stats the scheduled pass would have logged.
+    """Run one evaluation pass now instead of waiting for the next tick.
+
+    The background evaluator runs the same pass every 15 minutes. Returns
+    its counts; busy=True means a pass was already running and this one
+    did nothing.
     """
     loop = asyncio.get_running_loop()
     stats = await loop.run_in_executor(None, tracker.evaluate_expired_predictions)

@@ -80,10 +80,11 @@
 
     <p class="muted" style="margin:-8px 0 14px 0;font-size:.88rem;">
       Saved 10-day forward predictions persist locally in
-      <code>data/saved_predictions.db</code>. When a prediction's expiration
-      date passes, the system auto-fetches the actual close from the
-      daily-history cache and computes hit/miss + magnitude accuracy.
-      Refresh every ~60s while running for fresh evaluations.
+      <code>data/saved_predictions.db</code>. Every 15 minutes the server
+      looks up the official close of the first trading day on or after each
+      expired prediction's expiry date and scores direction (bull above the
+      anchor, bear below it) and magnitude (close within the tolerance of the
+      target). The page refreshes every 60s.
     </p>
 
     <div id="sourceCompare" class="source-compare" data-testid="source-compare">
@@ -111,9 +112,9 @@
         <option value="unresolved">Unresolved</option>
       </select>
       <label class="muted" style="font-size:.85rem">Source</label>
-      <select id="filterSource" data-testid="filter-source" title="Auto (scanner) = every symbol the scanner scores, logged automatically with no human picking favorites -- the honest accuracy read. My saved picks = whatever you've manually clicked Save on, which skews toward forecasts that already looked good.">
+      <select id="filterSource" data-testid="filter-source" title="Auto (scanner) = each fully scored symbol, logged automatically with no human picking favorites -- the fairer accuracy read. My saved picks = whatever you've manually clicked Save on, which skews toward forecasts that already looked good.">
         <option value="">All (blended)</option>
-        <option value="auto_scan">Auto (scanner) -- unbiased</option>
+        <option value="auto_scan">Auto (scanner)</option>
         <option value="user">My saved picks -- biased sample</option>
       </select>
       <button id="refreshBtn" data-testid="refresh-list">Refresh</button>

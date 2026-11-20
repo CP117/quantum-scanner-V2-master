@@ -115,10 +115,12 @@
     const fmtPct = (v) => (v != null ? `${v}%` : '\u2014 (not enough evaluated yet)');
     el.innerHTML = `
       <div class="source-card unbiased" data-testid="source-card-auto">
-        <h4>\u2713 Scanner accuracy (auto-logged, unbiased)</h4>
+        <h4>\u2713 Scanner accuracy (auto-logged)</h4>
         <div class="big">${fmtPct(auto.directional_accuracy_pct)}</div>
         <div class="note">${auto.evaluated ?? 0} evaluated of ${auto.total_saved ?? 0} logged \u00b7
-          every symbol the scanner scores gets logged automatically -- no cherry-picking.</div>
+          the scanner logs each fully scored symbol automatically, one open window
+          at a time -- no hand-picking, though only symbols that ranked in the
+          top part of a scoring batch at least once get a full score.</div>
       </div>
       <div class="source-card biased" data-testid="source-card-user">
         <h4>My saved picks (manual, selection-biased)</h4>
@@ -144,10 +146,10 @@
         sub: 'sign matched',          cls: 'green' },
       { label: 'Magnitude accuracy',
         value: a.magnitude_accuracy_pct != null ? `${a.magnitude_accuracy_pct}%` : '\u2014',
-        sub: 'inside 95% band',       cls: 'blue'  },
+        sub: `within \u00b1${a.magnitude_tolerance_pct ?? 2}% of target`, cls: 'blue'  },
       { label: 'Mean abs error',
         value: a.mean_abs_error_pct != null ? `${a.mean_abs_error_pct}%` : '\u2014',
-        sub: '|actual - target| / anchor', cls: 'amber' },
+        sub: '|actual - target| / target', cls: 'amber' },
       { label: 'Median abs error',
         value: a.median_abs_error_pct != null ? `${a.median_abs_error_pct}%` : '\u2014',
         sub: 'robust to outliers',    cls: 'amber' },
@@ -197,14 +199,14 @@
       const dhCell = dh === true ? '<span class="hit-yes" data-testid="dir-hit-yes">\u2713 hit</span>'
                   : dh === false ? '<span class="hit-no" data-testid="dir-hit-no">\u2717 miss</span>'
                   : '<span class="hit-na">\u2014</span>';
-      const mhCell = mh === true ? '<span class="hit-yes">\u2713 in-band</span>'
-                  : mh === false ? '<span class="hit-no">\u2717 out</span>'
+      const mhCell = mh === true ? '<span class="hit-yes">\u2713 within</span>'
+                  : mh === false ? '<span class="hit-no">\u2717 outside</span>'
                   : '<span class="hit-na">\u2014</span>';
       const errCell = r.error_pct != null
         ? `<span class="${r.error_pct >= 0 ? 'dir-bull' : 'dir-bear'}">${r.error_pct >= 0 ? '+' : ''}${fmtNum(r.error_pct, 2)}%</span>`
         : '\u2014';
       const sourceCell = r.source === 'auto_scan'
-        ? '<span class="hit-yes" title="Logged automatically by the scanner for every symbol it scores -- no cherry-picking">auto</span>'
+        ? '<span class="hit-yes" title="Logged automatically by the scanner for a fully scored symbol -- no hand-picking">auto</span>'
         : '<span class="hit-na" title="Manually saved by a user -- selection-biased, not a fair accuracy read">manual</span>';
       return `<tr data-testid="row-${r.id}">
         <td class="sym" data-testid="row-symbol-${r.id}">${r.symbol}</td>
@@ -423,7 +425,7 @@
     ctx.fillStyle = '#9ca3af';
     ctx.textAlign = 'left';
     ctx.font = '11px Arial';
-    ctx.fillText('\u25A0 directional   \u25A0 magnitude (in-band)', padding.left, padding.top - 6);
+    ctx.fillText('\u25A0 directional   \u25A0 magnitude (within tolerance)', padding.left, padding.top - 6);
   }
 
   // ---- Public handlers used by inline onclick --------------------------

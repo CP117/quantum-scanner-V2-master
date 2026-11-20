@@ -7,6 +7,7 @@ from app.models.status import (
     DefaultedFieldsSnapshot,
     LastKnownGoodSummary,
 )
+from app.mount_errors import mount_errors
 from app.services.status_service import get_system_status
 
 router = APIRouter(prefix='/system', tags=['system'])
@@ -41,5 +42,6 @@ def system_status(batch: int = Query(0, ge=0)):
         active_scan_pool=payload.get('active_scan_pool') or {},
         gc_stats=payload.get('gc_stats') or {},
         yf_batch_executor=payload.get('yf_batch_executor') or {},
+        mount_errors=mount_errors(),
         state=payload['state'],
     )
