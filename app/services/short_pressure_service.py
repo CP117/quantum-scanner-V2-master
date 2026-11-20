@@ -10,6 +10,7 @@ transparency is preserved via the `source` flag
 from __future__ import annotations
 
 import logging
+import math
 from typing import Any
 
 log = logging.getLogger('app.short_pressure')
@@ -101,10 +102,18 @@ def compute_short_selling_pressure(
     # ---- daily-history proxies ------------------------------------------
     hist_ok = False
     try:
-        if daily_hist is not None and not getattr(daily_hist, 'empty', True) and len(daily_hist) >= 15:
-            closes = daily_hist['Close'].astype(float).tolist()
-            opens = daily_hist['Open'].astype(float).tolist() if 'Open' in daily_hist else closes
-            vols = daily_hist['Volume'].astype(float).tolist() if 'Volume' in daily_hist else []
+        sessions = None
+        if daily_hist is not None and not getattr(daily_hist, 'empty', True):
+            # A row without a close is a session still in progress: after
+            # the bell Yahoo's daily bar can carry an open, high, low and
+            # volume but no close. Its NaN close made the trend NaN, and
+            # the NaN in the row made the detail response a 500. Only
+            # sessions with a close count, as in the quote paths.
+            sessions = daily_hist[daily_hist['Close'].astype(float).map(math.isfinite)]
+        if sessions is not None and len(sessions) >= 15:
+            closes = sessions['Close'].astype(float).tolist()
+            opens = sessions['Open'].astype(float).tolist() if 'Open' in sessions else closes
+            vols = sessions['Volume'].astype(float).tolist() if 'Volume' in sessions else []
             n = len(closes)
             hist_ok = True
             avg_vol = (sum(vols[-20:]) / max(1, len(vols[-20:]))) if vols else 0.0
