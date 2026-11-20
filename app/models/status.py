@@ -87,4 +87,7 @@ class SystemStatusEnvelope(BaseModel):
     # how often the sweep-boundary collect has fired, and (c) the
     # last collect duration.
     gc_stats: dict[str, Any] = Field(default_factory=dict)
+    # Phase 3: optional routers that failed to mount at startup
+    # (name -> "ExceptionType: message"); empty when everything mounted.
+    mount_errors: dict[str, str] = Field(default_factory=dict)
     state: str = "ok"
