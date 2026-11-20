@@ -93,4 +93,8 @@ class SystemStatusEnvelope(BaseModel):
     # Phase 3: optional routers that failed to mount at startup
     # (name -> "ExceptionType: message"); empty when everything mounted.
     mount_errors: dict[str, str] = Field(default_factory=dict)
+    # Phase 4: Python thread count (total, daemon), the OS count on Linux,
+    # the 10 most common name prefixes, the MRD_THREAD_ALARM threshold and
+    # level (ok, warning, error) and process RSS in MB.
+    threads: dict[str, Any] = Field(default_factory=dict)
     state: str = "ok"
