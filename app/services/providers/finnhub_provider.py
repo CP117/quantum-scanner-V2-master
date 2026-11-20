@@ -28,7 +28,7 @@ from typing import Iterable
 
 import httpx
 
-from app.services import api_keys
+from app.services import api_keys, quote_math
 from app.services.providers.base import count_error, count_rate_limit, count_timeout
 
 log = logging.getLogger("app.providers.finnhub")
@@ -127,22 +127,24 @@ def _fetch_one(client: httpx.Client, symbol: str, token: str) -> dict | None:
             _stats["errors"] += 1
         return None
     # Finnhub /quote returns {c: current, h: high, l: low, o: open,
-    # pc: previous close, t: timestamp, d: change, dp: change %, v: volume?}
-    px = float(body.get("c") or 0)
-    prev = float(body.get("pc") or 0)
-    if px <= 0 or prev <= 0:
+    # pc: previous close, t: timestamp, d: change, dp: change %}. pc is
+    # Finnhub's own previous-session close and o/h/l are the current
+    # session's, so they already pair correctly. Phase 2C: o/h/l of 0 (no
+    # trades yet) stay unknown instead of being copied from pc or c, and t
+    # becomes quote_time_utc. /quote carries no volume.
+    try:
+        return quote_math.build_quote(
+            last_price=body.get("c"),
+            previous_close=body.get("pc"),
+            open=body.get("o"),
+            day_high=body.get("h"),
+            day_low=body.get("l"),
+            volume=body.get("v") or 0,
+            quote_time_utc=body.get("t"),
+            source="finnhub",
+        )
+    except Exception:
         return None
-    return {
-        "last_price": px,
-        "previous_close": prev,
-        "open": float(body.get("o") or prev),
-        "day_high": float(body.get("h") or px),
-        "day_low": float(body.get("l") or px),
-        "volume": float(body.get("v") or 0),
-        "source": "finnhub",
-        "provider_outcome": "live_success",
-        "preview_only": False,
-    }
 
 
 def fetch(symbols: Iterable[str], market: str) -> dict[str, dict]:

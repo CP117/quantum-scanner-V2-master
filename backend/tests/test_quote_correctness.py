@@ -27,12 +27,16 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
+import httpx
 import pandas as pd
 import pytest
 
 from app.services import http_client, quote_math, scoring_service
 from app.services.http_client import ResilientResponse
-from app.services.providers import yahoo_chart_provider
+from app.services.providers import base as providers_base
+from app.services.providers import coinpaprika_provider, cryptocompare_provider
+from app.services.providers import finnhub_provider, yahoo_chart_provider
+from app.services.providers import stooq_provider as stooq
 
 FIXTURES = Path(__file__).parent / 'fixtures'
 NAN = float('nan')
@@ -529,3 +533,118 @@ def test_intraday_shape_never_uses_the_first_bar_as_previous_close(fake_yf):
     shape = scoring_service.fetch_intraday_shape('AAPL', 'stocks')
     assert shape['previousClose'] == 0
     assert shape['open'] == 351.87
+
+
+# ---------------------------------------------------------------------------
+# Stooq, Finnhub, CryptoCompare, CoinPaprika
+# ---------------------------------------------------------------------------
+@pytest.fixture
+def fresh_stooq(monkeypatch):
+    fresh = {k: (None if k in ('last_block_reason', 'last_block_utc') else
+                 False if k == 'half_open' else
+                 0.0 if isinstance(v, float) else 0)
+             for k, v in stooq._diag.items()}
+    monkeypatch.setattr(stooq, '_diag', fresh)
+    saved = providers_base._stats.pop('stooq', None)
+    yield fresh
+    providers_base._stats.pop('stooq', None)
+    if saved is not None:
+        providers_base._stats['stooq'] = saved
+
+
+def _serve(monkeypatch, text: str, content_type: str = 'text/csv') -> None:
+    def fake_get(url, params=None, headers=None, cfg=None):
+        return ResilientResponse(status_code=200, text=text, headers={'Content-Type': content_type},
+                                 url=url, attempts=1)
+    monkeypatch.setattr(http_client, 'resilient_get', fake_get)
+
+
+def test_stooq_pairs_the_newest_row_with_the_row_before(monkeypatch, fresh_stooq):
+    _serve(monkeypatch, (FIXTURES / 'stooq_aapl_daily.csv').read_text())
+    sym, q = stooq._fetch_one('AAPL', 'stocks', '2023-12-29T22:00:00+00:00', 'k' * 32)
+    assert (q['last_price'], q['previous_close']) == (192.53, 193.58)
+    assert (q['open'], q['day_high'], q['day_low'], q['volume']) == (192.90, 193.15, 191.72, 42_628_800)
+    assert q['change_pct'] == pytest.approx((192.53 / 193.58 - 1) * 100, abs=1e-6)
+    assert q['quote_time_utc'] == '2023-12-29T05:00:00+00:00'
+    assert q['market_cap'] == 0.0 and q['source'] == 'stooq'
+    assert fresh_stooq['successes'] == 1
+
+
+def test_stooq_single_row_is_no_quote(monkeypatch, fresh_stooq):
+    # It used to pair the row with itself: a made-up 0% change.
+    _serve(monkeypatch, 'Date,Open,High,Low,Close,Volume\n2023-12-29,192.90,193.15,191.72,192.53,42628800\n')
+    sym, q = stooq._fetch_one('AAPL', 'stocks', '2023-12-29T22:00:00+00:00', 'k' * 32)
+    assert q is None
+    assert fresh_stooq['parse_errors'] == 1 and fresh_stooq['successes'] == 0
+
+
+def _finnhub(monkeypatch, body: dict) -> httpx.Client:
+    monkeypatch.setattr(finnhub_provider, '_rate_limited_until', 0.0)
+    monkeypatch.setattr(finnhub_provider, '_last_request_ts', 0.0)
+    return httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(200, json=body)))
+
+
+def test_finnhub_quote(monkeypatch):
+    body = {'c': 352.45, 'pc': 351.91, 'o': 351.87, 'h': 356.42, 'l': 351.471, 't': 1795035601, 'd': 0.54, 'dp': 0.1534}
+    q = finnhub_provider._fetch_one(_finnhub(monkeypatch, body), 'AAPL', 'token')
+    assert (q['last_price'], q['previous_close'], q['open'], q['day_high'], q['day_low']) == (
+        352.45, 351.91, 351.87, 356.42, 351.471)
+    assert q['change_pct'] == pytest.approx(body['dp'], abs=0.001)
+    assert q['volume'] == 0.0
+    assert q['quote_time_utc'] == '2026-11-18T21:00:01+00:00'
+    assert q['source'] == 'finnhub' and 'market_cap' not in q
+
+
+def test_finnhub_zero_fields_stay_unknown(monkeypatch):
+    # Before the open Finnhub sends o/h/l of 0. They used to be replaced
+    # with the previous close and the current price.
+    body = {'c': 100.0, 'pc': 99.0, 'o': 0, 'h': 0, 'l': 0, 't': 0}
+    q = finnhub_provider._fetch_one(_finnhub(monkeypatch, body), 'AAPL', 'token')
+    assert (q['open'], q['day_high'], q['day_low'], q['quote_time_utc']) == (None, None, None, None)
+    assert finnhub_provider._fetch_one(_finnhub(monkeypatch, {'c': 100.0, 'pc': 0}), 'AAPL', 'token') is None
+
+
+def test_cryptocompare_values_unchanged_plus_quote_time(monkeypatch):
+    raw = {'RAW': {'BTC': {'USD': {
+        'PRICE': 62758.1, 'OPEN24HOUR': 62987.285, 'HIGH24HOUR': 63210.613, 'LOW24HOUR': 62382.484,
+        'VOLUME24HOUR': 12_345.6, 'MKTCAP': 1.24e12, 'LASTUPDATE': 1795054644,
+    }}}}
+    _serve(monkeypatch, json.dumps(raw), 'application/json')
+    q = cryptocompare_provider.fetch(['BTC-USD'], 'crypto')['BTC-USD']
+    # The same rolling 24-hour window as before 2C.
+    assert (q['last_price'], q['previous_close'], q['open'], q['day_high'], q['day_low']) == (
+        62758.1, 62987.285, 62987.285, 63210.613, 62382.484)
+    assert (q['volume'], q['market_cap']) == (12_345.6, 1.24e12)
+    assert q['quote_time_utc'] == '2026-11-19T02:17:24+00:00'
+    assert q['change_pct'] == pytest.approx((62758.1 / 62987.285 - 1) * 100, abs=1e-6)
+    assert q['source'] == 'cryptocompare'
+
+
+def test_coinpaprika_values_unchanged_plus_quote_time(monkeypatch):
+    payload = {'id': 'btc-bitcoin', 'last_updated': '2026-11-19T02:17:24Z', 'quotes': {'USD': {
+        'price': 62758.1, 'percent_change_24h': -0.36, 'volume_24h': 3.06e10, 'market_cap': 1.24e12}}}
+    client = httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(200, json=payload)))
+    monkeypatch.setattr(coinpaprika_provider, '_HTTPX_CLIENT', client)
+    monkeypatch.setattr(coinpaprika_provider, '_throttle', lambda: None)
+    monkeypatch.setattr(coinpaprika_provider, '_load_id_cache', lambda: {'BTC': 'btc-bitcoin'})
+    q = coinpaprika_provider.fetch(['BTC-USD'], 'crypto')['BTC-USD']
+    prev = 62758.1 / (1.0 - 0.0036)
+    assert q['last_price'] == 62758.1
+    assert q['previous_close'] == pytest.approx(prev) and q['open'] == pytest.approx(prev)
+    assert q['day_low'] == pytest.approx(62758.1 * (1 - 0.36 / 200))
+    assert q['day_high'] == pytest.approx(62758.1 * (1 + 0.36 / 200))
+    assert (q['volume'], q['market_cap']) == (3.06e10, 1.24e12)
+    assert q['quote_time_utc'] == '2026-11-19T02:17:24+00:00'
+    assert q['change_pct'] == pytest.approx(-0.36, abs=1e-6)
+
+
+def test_coingecko_batch_values_unchanged_plus_quote_time(monkeypatch):
+    snap = {'BTC-USD': {'currentPrice': 62758.1, 'previousClose': 62987.285, 'open': 62987.285,
+                        'dayLow': 62382.484, 'dayHigh': 63210.613, 'volume': 3.06e10, 'marketCap': 1.24e12,
+                        'lastUpdated': '2026-11-19T02:17:24.512Z'}}
+    monkeypatch.setattr(scoring_service, 'fetch_coingecko_snapshots', lambda symbols: snap)
+    q = scoring_service.download_quotes_yfinance_only(['BTC-USD'], 'crypto')['BTC-USD']
+    assert (q['last_price'], q['previous_close'], q['open']) == (62758.1, 62987.285, 62987.285)
+    assert (q['day_low'], q['day_high'], q['volume'], q['market_cap']) == (62382.484, 63210.613, 3.06e10, 1.24e12)
+    assert q['quote_time_utc'] == '2026-11-19T02:17:24+00:00'
+    assert q['source'] == 'coingecko'

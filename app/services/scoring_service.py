@@ -2481,19 +2481,23 @@ def download_quotes_yfinance_only(symbols: List[str], market: str = 'stocks') ->
         captured_at = utcnowiso()
         for sym, cg in snapshots.items():
             if cg.get('currentPrice'):
-                result[sym] = {
-                    'last_price': safe_float(cg.get('currentPrice')),
-                    'previous_close': safe_float(cg.get('previousClose') or cg.get('currentPrice')),
-                    'open': safe_float(cg.get('open') or cg.get('previousClose') or cg.get('currentPrice')),
-                    'day_low': safe_float(cg.get('dayLow')),
-                    'day_high': safe_float(cg.get('dayHigh')),
-                    'volume': safe_float(cg.get('volume') or cg.get('regularMarketVolume')),
-                    'market_cap': safe_float(cg.get('marketCap')),
-                    'captured_at_utc': captured_at,
-                    'source': 'coingecko',
-                    'provider_outcome': 'live_success',
-                    'preview_only': False,
-                }
+                # Phase 2C: values unchanged (CoinGecko's rolling 24-hour
+                # window throughout); last_updated becomes quote_time_utc.
+                quote = quote_math.build_quote(
+                    last_price=safe_float(cg.get('currentPrice')),
+                    previous_close=safe_float(cg.get('previousClose') or cg.get('currentPrice')),
+                    open=safe_float(cg.get('open') or cg.get('previousClose') or cg.get('currentPrice')),
+                    day_low=safe_float(cg.get('dayLow')),
+                    day_high=safe_float(cg.get('dayHigh')),
+                    volume=safe_float(cg.get('volume') or cg.get('regularMarketVolume')),
+                    market_cap=safe_float(cg.get('marketCap')),
+                    quote_time_utc=cg.get('lastUpdated'),
+                    captured_at_utc=captured_at,
+                    source='coingecko',
+                    tz_name=quote_math.CRYPTO_TZ,
+                )
+                if quote:
+                    result[sym] = quote
         if result:
             return result
     if not provider_budget_allowance(max(1, min(len(symbols), 5))):

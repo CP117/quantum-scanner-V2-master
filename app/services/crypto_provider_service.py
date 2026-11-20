@@ -452,6 +452,7 @@ def fetch_coingecko_snapshots(symbols: list[str]) -> dict[str, dict]:
                 'market_cap_rank': int(row.get('market_cap_rank') or 0),
                 'provider_source': 'coingecko',
                 'coingecko_id': cid,
+                'lastUpdated': row.get('last_updated'),
             }
         return out
     except Exception as exc:

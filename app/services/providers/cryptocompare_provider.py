@@ -14,6 +14,7 @@ import logging
 import requests
 
 from app.services.providers.base import record_rate_limit, record_timeout, record_error
+from app.services import quote_math
 from app.utils.time import utcnowiso
 
 log = logging.getLogger('app.providers.cryptocompare')
@@ -72,19 +73,24 @@ def fetch(symbols: list[str], market: str) -> dict[str, dict]:
         if price <= 0:
             continue
         full_sym = f'{base_sym}-USD'
-        out[full_sym] = {
-            'last_price': price,
-            'previous_close': float(usd.get('OPEN24HOUR') or price),
-            'open': float(usd.get('OPEN24HOUR') or price),
-            'day_low': float(usd.get('LOW24HOUR') or price),
-            'day_high': float(usd.get('HIGH24HOUR') or price),
-            'volume': float(usd.get('VOLUME24HOUR') or 0),
-            'market_cap': float(usd.get('MKTCAP') or 0),
-            'captured_at_utc': captured_at,
-            'source': 'cryptocompare',
-            'provider_outcome': 'live_success',
-            'preview_only': False,
-        }
+        # Phase 2C: values unchanged. Every field is the same rolling
+        # 24-hour window (change, open, high, low and volume), so nothing
+        # mixes days; LASTUPDATE becomes quote_time_utc.
+        quote = quote_math.build_quote(
+            last_price=price,
+            previous_close=float(usd.get('OPEN24HOUR') or price),
+            open=float(usd.get('OPEN24HOUR') or price),
+            day_low=float(usd.get('LOW24HOUR') or price),
+            day_high=float(usd.get('HIGH24HOUR') or price),
+            volume=float(usd.get('VOLUME24HOUR') or 0),
+            market_cap=float(usd.get('MKTCAP') or 0),
+            quote_time_utc=usd.get('LASTUPDATE'),
+            captured_at_utc=captured_at,
+            source='cryptocompare',
+            tz_name=quote_math.CRYPTO_TZ,
+        )
+        if quote:
+            out[full_sym] = quote
     return out
 
 
