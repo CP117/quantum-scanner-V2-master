@@ -1,5 +1,6 @@
 
 from __future__ import annotations
+import logging
 from threading import Lock
 from collections import Counter
 from app.config import settings
@@ -12,8 +13,11 @@ from app.services.options_chain_service import stats_snapshot as options_chain_s
 from app.services.daily_history_service import stats_snapshot as daily_history_stats
 from app.services.reaction_clustering_service import stats_snapshot as reaction_clustering_stats
 from app.services.active_scan_pool import pool_stats
+from app.services.thread_monitor import thread_summary
 from app.utils.normalize import get_defaulted_fields_snapshot
 from app.utils.time import utcnow_iso
+
+log = logging.getLogger('app.status')
 
 _runtime_lock = Lock()
 _runtime = {
@@ -111,6 +115,7 @@ def get_system_status(batch: int = 0) -> dict:
         'reaction_clustering_stats': reaction_clustering_stats(),
         'active_scan_pool': pool_stats(),
         'gc_stats': _gc_stats_safe(),
+        'threads': _thread_summary_safe(),
         'state': 'ok' if not degraded else 'degraded',
     }
 
@@ -122,6 +127,17 @@ def _gc_stats_safe() -> dict:
         from app.services.gc_service import gc_stats
         return gc_stats()
     except Exception:  # noqa: BLE001
+        return {}
+
+
+def _thread_summary_safe() -> dict:
+    """Phase 4: thread count, top name prefixes, alarm level and RSS. A
+    failure is logged and leaves the block empty rather than failing the
+    status endpoint."""
+    try:
+        return thread_summary()
+    except Exception as exc:  # noqa: BLE001
+        log.warning('status: thread summary failed: %s: %s', type(exc).__name__, exc)
         return {}
 
 

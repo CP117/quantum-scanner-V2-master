@@ -25,41 +25,85 @@ from app.utils.time import utcnowiso, freshness_label_from_age
 log = logging.getLogger('app.scoring')
 
 # ---------------------------------------------------------------------------
-# Phase 26.34: hard-timeout wrapper for yf.download()
+# yf.download(): a wall-clock ceiling (Phase 26.34) and bounded threads
+# (Phase 4)
 # ---------------------------------------------------------------------------
-# The root cause of the user-reported "pass-2 wedge at 0 % CPU" was here.
-# `yf.download(tickers=..., threads=True, timeout=N)` accepts a `timeout`
-# parameter — but that only applies to *individual* HTTP requests inside
-# yfinance's internal thread pool.  The OVERALL call has no ceiling.  Once
-# Yahoo starts rate-limiting (which happens reliably after the first
-# universal pass builds penalty state), yfinance retries the same hung
-# sockets internally and `yf.download` can block for tens of minutes
-# while every snap-worker waits on it at 0 % CPU.
+# `yf.download(..., timeout=N)` applies N to each HTTP request, not to the
+# whole call. Once Yahoo rate-limits, a download can block for tens of
+# minutes while every snap-worker waits on it at 0 % CPU (the "pass-2
+# wedge"). So each call runs on a small executor and the caller stops
+# waiting after _YF_BATCH_TIMEOUT_SECONDS; the cascade then falls through
+# to the next provider. A Python thread cannot be killed, so an abandoned
+# call keeps its worker until its sockets time out.
 #
-# Fix: route every `yf.download` through a dedicated executor with a
-# wall-clock ceiling.  The hung yfinance internal threads keep running
-# in the background (they're daemon threads — they'll exit when their
-# sockets time out at the OS layer or when the process dies), but the
-# snap-worker is freed at the timeout deadline and falls through to the
-# next provider in the cascade (yahoo-chart → stooq → finnhub).
-#
-# 32 workers: shared by yf.download (called by 2 snap-workers, one per
-# batch) AND yf.Ticker.history() (called by up to 10 dh-prefetch workers
-# concurrently — see daily_history_service.get_daily_history).  When
-# Yahoo hangs, we need enough headroom to absorb the in-flight calls
-# without queueing the next caller behind a dead one.  Each idle
-# thread is ~8 KB of stack — cheap.
-_YF_BATCH_EXECUTOR_LOCK = _threading.Lock()
-_YF_BATCH_EXECUTOR = _ScoringTpe(
-    max_workers=32, thread_name_prefix='yf-batch-timeout',
-)
+# Phase 4: under yfinance 0.2.66 every threaded download started
+# non-daemon `Thread-N (_run_via_pool)` threads through the multitasking
+# package, nothing limited how many downloads ran at once, and the old
+# 32-worker executor (shared with daily history) let abandoned calls pile
+# up. A soak went from about 100 threads to 1,494 in 13 minutes. Now:
+#   * each download gets YF_DOWNLOAD_THREADS workers
+#     (MRD_YF_DOWNLOAD_THREADS, default 4). yfinance 1.8.0 runs them on a
+#     pool of its own, which download() joins before it returns;
+#   * at most YF_MAX_CONCURRENT_DOWNLOADS run at once
+#     (MRD_YF_MAX_CONCURRENT_DOWNLOADS, default 1). A caller waits up to
+#     YF_SLOT_TIMEOUT_SECONDS for a slot, then gets None (counted as
+#     yf_download_busy) and the cascade falls through;
+#   * the executor has one worker more than there are slots, so an
+#     abandoned call can finish in the background without holding up the
+#     next one. While YF_ABANDONED_LIMIT abandoned calls are still running,
+#     new downloads are refused (yf_download_refused).
+# With the defaults this path never holds more than (1 + 1) * (4 + 1) = 10
+# threads: each of the 2 workers, plus the 4 its download starts.
+YF_SLOT_TIMEOUT_SECONDS = 5.0
+YF_ABANDONED_LIMIT = 2
 # 30 s is generous (a healthy batch of 100 symbols completes in 2-6 s)
-# and matches our outer provider-cascade budget.  Overridable via env
-# for operators who hit a faster/slower link.
+# and matches the outer provider-cascade budget.
 _YF_BATCH_TIMEOUT_SECONDS = float(_os.environ.get('YF_BATCH_TIMEOUT_SECONDS', '30.0'))
+_YF_BATCH_EXECUTOR_LOCK = _threading.Lock()
 _YF_BATCH_STATS = {
     'submits': 0, 'completions': 0, 'timeouts': 0, 'errors': 0,
+    'yf_download_busy': 0, 'yf_download_abandoned': 0, 'yf_download_refused': 0,
 }
+_YF_ABANDONED_RUNNING = 0
+_YF_REFUSAL_LOGGED_AT = 0.0
+_YF_REFUSAL_LOG_INTERVAL_SECONDS = 60.0
+
+
+def _env_int(name: str, default: int, *, minimum: int = 1) -> int:
+    raw = _os.environ.get(name)
+    if raw is None or not str(raw).strip():
+        return default
+    try:
+        return max(minimum, int(str(raw).strip()))
+    except ValueError:
+        log.warning('%s=%r is not a whole number; using %d', name, raw, default)
+        return default
+
+
+def configure_yf_download_limits() -> None:
+    """Read MRD_YF_DOWNLOAD_THREADS and MRD_YF_MAX_CONCURRENT_DOWNLOADS and
+    build the download slots and executor to match.
+
+    Runs at import. Tests call it again after changing the environment; it
+    is not meant to run while downloads are in flight.
+    """
+    global YF_DOWNLOAD_THREADS, YF_MAX_CONCURRENT_DOWNLOADS
+    global _YF_DOWNLOAD_SLOTS, _YF_BATCH_EXECUTOR
+    threads = _env_int('MRD_YF_DOWNLOAD_THREADS', 4)
+    max_concurrent = _env_int('MRD_YF_MAX_CONCURRENT_DOWNLOADS', 1)
+    with _YF_BATCH_EXECUTOR_LOCK:
+        old = globals().get('_YF_BATCH_EXECUTOR')
+        YF_DOWNLOAD_THREADS = threads
+        YF_MAX_CONCURRENT_DOWNLOADS = max_concurrent
+        _YF_DOWNLOAD_SLOTS = _threading.BoundedSemaphore(max_concurrent)
+        _YF_BATCH_EXECUTOR = _ScoringTpe(
+            max_workers=max_concurrent + 1, thread_name_prefix='yf-download',
+        )
+    if old is not None:
+        old.shutdown(wait=False, cancel_futures=True)
+
+
+configure_yf_download_limits()
 
 # Phase 26.60: persistent module-level intraday-fetch executor.
 # Previously an ephemeral ThreadPoolExecutor(max_workers=12) was created
@@ -76,54 +120,126 @@ _INTRADAY_POOL = _ScoringTpe(
 
 
 def yf_batch_executor_stats() -> dict:
-    """Operator telemetry for the yfinance batch-download timeout
-    executor.  Surfaced under
-    `/system/status.provider_stats.yfinance.batch_timeout_executor.*`.
+    """Counters and limits for `_yf_download_with_timeout`, shown as
+    `yf_batch_executor` in /system/status.
+
+    timeouts counts every call the caller stopped waiting for;
+    yf_download_abandoned counts the ones that had already started (their
+    worker keeps running), and abandoned_running how many of those are
+    still going.
     """
     with _YF_BATCH_EXECUTOR_LOCK:
-        return dict(_YF_BATCH_STATS)
+        snap = dict(_YF_BATCH_STATS)
+        snap.update(
+            abandoned_running=_YF_ABANDONED_RUNNING,
+            abandoned_limit=YF_ABANDONED_LIMIT,
+            max_concurrent=YF_MAX_CONCURRENT_DOWNLOADS,
+            threads_per_download=YF_DOWNLOAD_THREADS,
+            workers=YF_MAX_CONCURRENT_DOWNLOADS + 1,
+            slot_timeout_seconds=YF_SLOT_TIMEOUT_SECONDS,
+            timeout_seconds=_YF_BATCH_TIMEOUT_SECONDS,
+        )
+    return snap
+
+
+def _yf_download_refused() -> bool:
+    """True, counted and (once a minute) logged, while YF_ABANDONED_LIMIT or
+    more abandoned downloads are still running."""
+    global _YF_REFUSAL_LOGGED_AT
+    with _YF_BATCH_EXECUTOR_LOCK:
+        running = _YF_ABANDONED_RUNNING
+        if running < YF_ABANDONED_LIMIT:
+            return False
+        _YF_BATCH_STATS['yf_download_refused'] += 1
+        now = _time.monotonic()
+        log_now = now - _YF_REFUSAL_LOGGED_AT >= _YF_REFUSAL_LOG_INTERVAL_SECONDS
+        if log_now:
+            _YF_REFUSAL_LOGGED_AT = now
+    if log_now:
+        log.warning(
+            'yf.download refused: %d abandoned downloads are still running '
+            '(limit %d); falling through to the next cascade provider',
+            running, YF_ABANDONED_LIMIT,
+        )
+    return True
+
+
+def _yf_abandoned_download_finished(_future) -> None:
+    global _YF_ABANDONED_RUNNING
+    with _YF_BATCH_EXECUTOR_LOCK:
+        _YF_ABANDONED_RUNNING = max(0, _YF_ABANDONED_RUNNING - 1)
 
 
 def _yf_download_with_timeout(**kwargs):
-    """Wrapper around `yf.download(**kwargs)` with a hard wall-clock
-    ceiling.  Returns whatever `yf.download` returned, or None on
-    timeout / error.  The hung internal thread is abandoned (daemon —
-    will exit when its socket eventually times out).
+    """Run `yf.download(**kwargs)` within the bounds described above.
+
+    Always passes threads=YF_DOWNLOAD_THREADS and progress=False. Returns
+    the frame, or None when no slot frees up within YF_SLOT_TIMEOUT_SECONDS
+    (busy), while too many abandoned calls are still running (refused), on
+    timeout, or on error. Timeouts and errors also mark a provider failure;
+    busy and refused are this process's own backpressure, so they do not.
     """
+    global _YF_ABANDONED_RUNNING
     # Pop wrapper-only kwargs that yfinance doesn't accept.
     market_hint = kwargs.pop('_market_hint', 'unknown')
+    kwargs['threads'] = YF_DOWNLOAD_THREADS
+    kwargs['progress'] = False
     with _YF_BATCH_EXECUTOR_LOCK:
-        _YF_BATCH_STATS['submits'] += 1
+        slots = _YF_DOWNLOAD_SLOTS
         executor = _YF_BATCH_EXECUTOR
-    try:
-        fut = executor.submit(yf.download, **kwargs)
-    except RuntimeError:
-        # Executor is dead — should never happen, but degrade gracefully.
+    if not slots.acquire(timeout=YF_SLOT_TIMEOUT_SECONDS):
         with _YF_BATCH_EXECUTOR_LOCK:
-            _YF_BATCH_STATS['errors'] += 1
+            _YF_BATCH_STATS['yf_download_busy'] += 1
         return None
     try:
-        out = fut.result(timeout=_YF_BATCH_TIMEOUT_SECONDS)
+        # Checked after the slot wait, so a call abandoned meanwhile counts.
+        if _yf_download_refused():
+            return None
+        with _YF_BATCH_EXECUTOR_LOCK:
+            _YF_BATCH_STATS['submits'] += 1
+        try:
+            fut = executor.submit(yf.download, **kwargs)
+        except RuntimeError:
+            # Executor shut down (only configure_yf_download_limits does that).
+            with _YF_BATCH_EXECUTOR_LOCK:
+                _YF_BATCH_STATS['errors'] += 1
+            mark_provider_failure('yf.download_timeout_or_error')
+            return None
+        try:
+            out = fut.result(timeout=_YF_BATCH_TIMEOUT_SECONDS)
+        except _ScoringFTimeout:
+            # cancel() succeeds only for a call that never started.
+            abandoned = not fut.cancel()
+            with _YF_BATCH_EXECUTOR_LOCK:
+                _YF_BATCH_STATS['timeouts'] += 1
+                if abandoned:
+                    _YF_BATCH_STATS['yf_download_abandoned'] += 1
+                    _YF_ABANDONED_RUNNING += 1
+            if abandoned:
+                # Runs at once if the call finished in the meantime.
+                fut.add_done_callback(_yf_abandoned_download_finished)
+            log.warning(
+                'yf.download timed out after %.0fs (%d symbols, market=%s); '
+                '%s and falling through to the next cascade provider',
+                _YF_BATCH_TIMEOUT_SECONDS,
+                len(kwargs.get('tickers', '').split()) if isinstance(kwargs.get('tickers'), str) else 0,
+                market_hint,
+                'abandoning the running call' if abandoned else 'it never started',
+            )
+            mark_provider_failure('yf.download_timeout_or_error')
+            return None
+        except Exception as exc:  # noqa: BLE001
+            with _YF_BATCH_EXECUTOR_LOCK:
+                _YF_BATCH_STATS['errors'] += 1
+            log.debug('yf.download raised: %s: %s', exc.__class__.__name__, exc)
+            mark_provider_failure('yf.download_timeout_or_error')
+            return None
         with _YF_BATCH_EXECUTOR_LOCK:
             _YF_BATCH_STATS['completions'] += 1
         return out
-    except _ScoringFTimeout:
-        with _YF_BATCH_EXECUTOR_LOCK:
-            _YF_BATCH_STATS['timeouts'] += 1
-        log.warning(
-            'yf.download timed out after %.0fs (%d symbols, market=%s); '
-            'abandoning hung internal threads and falling through to '
-            'the next cascade provider',
-            _YF_BATCH_TIMEOUT_SECONDS,
-            len(kwargs.get('tickers', '').split()) if isinstance(kwargs.get('tickers'), str) else 0,
-            market_hint,
-        )
-        return None
-    except Exception as exc:  # noqa: BLE001
-        with _YF_BATCH_EXECUTOR_LOCK:
-            _YF_BATCH_STATS['errors'] += 1
-        log.debug('yf.download raised: %s: %s', exc.__class__.__name__, exc)
-        return None
+    finally:
+        slots.release()
+
 
 def chunks(items: list, size: int):
     for i in range(0, len(items), size):
@@ -2148,11 +2264,12 @@ def merge_market_shape(primary: dict | None = None, secondary: dict | None = Non
 def _fast_previous_close(fast) -> float:
     """fast_info's previous close, taken from regular-session daily bars.
 
-    Phase 2C: yfinance 0.2.66's `previous_close` is the last close of the
-    previous date in 1-hour bars *including* pre- and post-market, so it
-    carries after-hours prints, and reading it costs an extra 5d/1h
-    request. `regular_market_previous_close` is the prior daily bar's close
-    from the same 1y daily series `last_price`, `open` and `day_high` read.
+    Phase 2C: yfinance's `previous_close` (0.2.66, and still 1.8.0) is the
+    last close of the previous date in 1-hour bars *including* pre- and
+    post-market, so it carries after-hours prints, and reading it costs an
+    extra request for a week of 1-hour bars. `regular_market_previous_close`
+    is the prior daily bar's close from the same 1y daily series
+    `last_price`, `open` and `day_high` read.
     """
     if hasattr(fast, 'regular_market_previous_close'):
         return safe_float(getattr(fast, 'regular_market_previous_close', None))
@@ -2504,26 +2621,20 @@ def download_quotes_yfinance_only(symbols: List[str], market: str = 'stocks') ->
         return result
     warm_provider_session()
     joined = ' '.join(symbols)
-    # Phase 26.34: hard wall-clock ceiling around yf.download to keep
-    # yfinance's internal thread pool from wedging the entire snap-worker
-    # at 0 % CPU when Yahoo rate-limits.  See comment block above
-    # `_yf_download_with_timeout`.
+    # Phase 26.34 / Phase 4: a wall-clock ceiling, a bounded thread count
+    # and one download at a time. See the comment block above
+    # `_yf_download_with_timeout`, which also sets threads and progress and
+    # marks provider failures. None means busy, refused, timed out or
+    # failed; the cascade moves on to the next provider either way.
     data = _yf_download_with_timeout(
         tickers=joined,
         period='5d',
         interval='1d',
         group_by='ticker',
         auto_adjust=False,
-        progress=False,
-        threads=True,
         timeout=settings.provider_timeout_seconds,
         _market_hint=market,
     )
-    if data is None:
-        # The wrapper already logged the timeout / error.  Mark a
-        # provider failure so the upstream cascade can record it.
-        mark_provider_failure('yf.download_timeout_or_error')
-        return result
     if data is None or getattr(data, 'empty', True):
         return result
     captured_at = utcnowiso()
@@ -2552,12 +2663,12 @@ def download_quotes_yfinance_only(symbols: List[str], market: str = 'stocks') ->
 def _yf_symbol_frame(data, sym: str, *, single: bool):
     """One symbol's OHLCV columns from a `yf.download(group_by='ticker')` result.
 
-    yfinance 0.2.66 returns (ticker, field) MultiIndex columns even for a
-    single ticker, so the old `data['Close']` single-symbol branch raised
-    KeyError (and its `pd.Series` fallbacks a NameError: this module never
-    imported `pd`), which `except Exception: pass` hid. It never produced
-    a quote. Flat columns (older yfinance) are accepted for a
-    single-symbol download only.
+    yfinance (0.2.66, and 1.8.0 unless multi_level_index=False) returns
+    (ticker, field) MultiIndex columns even for a single ticker, so the old
+    `data['Close']` single-symbol branch raised KeyError (and its
+    `pd.Series` fallbacks a NameError: this module never imported `pd`),
+    which `except Exception: pass` hid. It never produced a quote. Flat
+    columns (older yfinance) are accepted for a single-symbol download only.
     """
     columns = getattr(data, 'columns', None)
     if _pd is not None and isinstance(columns, _pd.MultiIndex):

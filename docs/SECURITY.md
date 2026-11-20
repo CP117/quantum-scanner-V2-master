@@ -105,7 +105,7 @@ Exception messages are not sent to the client.
 
 | Variable | Mounts |
 |---|---|
-| `MRD_ENABLE_DEBUG_ROUTES=1` | `/system/threads`, `/system/threads/summary` (live thread stacks). `scripts/soak.py` uses the summary for thread counts. |
+| `MRD_ENABLE_DEBUG_ROUTES=1` | `/system/threads`, `/system/threads/summary` (live thread stacks). `scripts/soak.py` uses the summary for thread counts when it is mounted, and the `threads` block of `/system/status` (counts and name prefixes, no stacks) when it is not. |
 | `MRD_ENABLE_SOURCE_DOWNLOAD=1` | `/download/source.zip`, `/api/download/source.zip`, `/api/download/source/info`. |
 
 Both default to `0`. When mounted, these routes still need the token from

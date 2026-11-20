@@ -100,7 +100,19 @@ _SHARD_DIR = _DATA_DIR / 'daily_history_cache'
 # already cached or recently failed are dropped at enqueue-time so the
 # queue never fills with no-op work.
 import queue
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as _FutureTimeout
+
+# Phase 4: yfinance's history() has only a per-request timeout, so each call
+# runs on this executor and the caller stops waiting after
+# _YF_HISTORY_TIMEOUT_SECONDS. It used to borrow scoring_service's 32-worker
+# yf.download executor. With a pool of its own, one worker per in-flight
+# slot, the two cannot starve each other, and stalled history calls hold
+# at most _MAX_INFLIGHT threads: a call still queued when its caller gives
+# up is cancelled.
+_YF_HISTORY_TIMEOUT_SECONDS = 20.0
+_YF_HISTORY_EXECUTOR = ThreadPoolExecutor(
+    max_workers=_MAX_INFLIGHT, thread_name_prefix='dh-yf-history',
+)
 
 _PREFETCH_QUEUE_MAX = 5000
 _PREFETCH_WORKERS = 10
@@ -151,6 +163,7 @@ _stats = {
     'records_cache_misses': 0,     # flush had to build records
     'serializer': 'orjson' if _HAS_ORJSON else 'stdlib-json',
     'async_flushes': 0,            # backgrounded flushes
+    'yf_history_timeouts': 0,      # Phase 4: history() calls given up on
 }
 
 # Phase 26.33: per-symbol cache of the already-serialized records list.
@@ -925,14 +938,9 @@ def _fetch_daily_history(
     if provider_id in (None, 'yfinance'):
         try:
             import yfinance as yf
-            # yfinance's history method does not honor a timeout argument.
-            # Use the bounded shared executor so a stalled socket cannot pin
-            # a daily-history worker indefinitely.
-            from concurrent.futures import TimeoutError as _DhFTimeout
-            from app.services.scoring_service import _YF_BATCH_EXECUTOR, _YF_BATCH_EXECUTOR_LOCK
-            with _YF_BATCH_EXECUTOR_LOCK:
-                _executor = _YF_BATCH_EXECUTOR
-            _fut = _executor.submit(
+            # A wall-clock ceiling, so a stalled socket cannot pin a
+            # daily-history worker; see _YF_HISTORY_EXECUTOR.
+            _fut = _YF_HISTORY_EXECUTOR.submit(
                 lambda: yf.Ticker(sym).history(
                     period=period, interval=interval,
                     auto_adjust=adjustment_mode != _DEFAULT_ADJUSTMENT_MODE,
@@ -940,9 +948,15 @@ def _fetch_daily_history(
                 )
             )
             try:
-                df = _fut.result(timeout=20.0)
-            except _DhFTimeout:
-                log.debug('daily_history yfinance.history timed out for %s after 20s', sym)
+                df = _fut.result(timeout=_YF_HISTORY_TIMEOUT_SECONDS)
+            except _FutureTimeout:
+                _fut.cancel()
+                with _lock:
+                    _stats['yf_history_timeouts'] += 1
+                log.debug(
+                    'daily_history yfinance.history timed out for %s after %.0fs',
+                    sym, _YF_HISTORY_TIMEOUT_SECONDS,
+                )
                 df = None
             if df is None or getattr(df, 'empty', True):
                 df = None

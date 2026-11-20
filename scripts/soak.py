@@ -4,10 +4,11 @@
 Polls the server every --interval seconds for --minutes minutes and writes
 one CSV row per sample:
 
-* total threads and the 10 most common thread-name prefixes
-  (/system/threads/summary, mounted only when the server runs with
-  MRD_ENABLE_DEBUG_ROUTES=1; it is a sensitive route, so run the soak from
-  the same machine or pass --token);
+* total threads and the 10 most common thread-name prefixes, from
+  /system/threads/summary when the server runs with
+  MRD_ENABLE_DEBUG_ROUTES=1 (a sensitive route, so run the soak from the
+  same machine or pass --token), otherwise from the `threads` block of
+  /system/status;
 * per-provider calls, errors and rate-limit counts (/api/providers/status);
 * rows, universe size, sweeps completed, current batch and evaluations for
   stocks and crypto (/api/scan/snapshot/meta);
@@ -16,11 +17,12 @@ one CSV row per sample:
 
 A missing endpoint or field becomes a blank cell, never an error.  Rows are
 flushed as they are written, so an interrupted run keeps its data.  At the
-end (or on Ctrl+C) it prints max threads, thread growth per hour (least-
-squares slope), rate-limit deltas per provider and symbols scored per second.
+end (or on Ctrl+C) it prints max threads, thread and RSS growth per hour
+(least-squares slopes, over the whole run and after --warmup-minutes),
+rate-limit deltas per provider and symbols scored per second.
 
 Example:
-    python scripts/soak.py --minutes 15 --interval 30
+    python scripts/soak.py --minutes 30 --interval 30
 """
 from __future__ import annotations
 
@@ -103,6 +105,7 @@ def take_sample(args, started: float) -> dict:
     row['elapsed_s'] = round(now - started, 1)
     providers: dict[str, dict] = {}
 
+    system_status = fetch_json(args.base_url, '/system/status', args.token, args.timeout)
     threads = fetch_json(args.base_url, '/system/threads/summary', args.token, args.timeout)
     if isinstance(threads, dict):
         if isinstance(threads.get('thread_count'), int):
@@ -110,6 +113,14 @@ def take_sample(args, started: float) -> dict:
         names = [t.get('name', '') for t in threads.get('threads') or [] if isinstance(t, dict)]
         top = Counter(thread_prefix(n) for n in names).most_common(10)
         row['top_thread_prefixes'] = ';'.join(f'{p}:{c}' for p, c in top)
+    elif isinstance(system_status, dict) and isinstance(system_status.get('threads'), dict):
+        # Debug routes off: the server's own summary (same prefix rule).
+        block = system_status['threads']
+        if isinstance(block.get('total'), int):
+            row['threads'] = block['total']
+        top = block.get('top_prefixes')
+        if isinstance(top, dict):
+            row['top_thread_prefixes'] = ';'.join(f'{p}:{c}' for p, c in top.items())
 
     status = fetch_json(args.base_url, '/api/providers/status', args.token, args.timeout)
     if isinstance(status, dict):
@@ -138,7 +149,7 @@ def take_sample(args, started: float) -> dict:
 
     rss = proc_rss_mb(args.pid)
     if rss is None:
-        rss = find_rss_mb(fetch_json(args.base_url, '/system/status', args.token, args.timeout))
+        rss = find_rss_mb(system_status)
     if rss is not None:
         row['rss_mb'] = round(rss, 1)
 
@@ -151,20 +162,39 @@ def _numeric(samples, key):
     return [(s['_t'], float(s[key])) for s in samples if s.get(key) not in ('', None)]
 
 
-def summarize(samples: list[dict]) -> str:
+def _slope_per_hour(points) -> float | None:
+    """Least-squares slope of (unix time, value) points, per hour."""
+    if len(points) < 2 or points[-1][0] <= points[0][0]:
+        return None
+    xs = [(t - points[0][0]) / 3600.0 for t, _ in points]
+    ys = [v for _, v in points]
+    return statistics.linear_regression(xs, ys).slope
+
+
+def _after_warmup(points, started: float, warmup_seconds: float):
+    return [(t, v) for t, v in points if t - started >= warmup_seconds]
+
+
+def summarize(samples: list[dict], warmup_seconds: float = 0.0) -> str:
     if not samples:
         return 'No samples collected.'
     lines = [f'Samples: {len(samples)} over {samples[-1]["elapsed_s"]} s']
+    started = samples[0]['_t']
+    warmup_label = f'after {warmup_seconds / 60:g} min warm-up'
     threads = _numeric(samples, 'threads')
     if threads:
         lines.append(f'Max threads: {int(max(v for _, v in threads))}')
-        if len(threads) >= 2 and threads[-1][0] > threads[0][0]:
-            xs = [(t - threads[0][0]) / 3600.0 for t, _ in threads]
-            ys = [v for _, v in threads]
-            slope = statistics.linear_regression(xs, ys).slope
+        slope = _slope_per_hour(threads)
+        if slope is not None:
             lines.append(f'Thread growth: {slope:+.1f} threads/hour (least-squares slope)')
+        if warmup_seconds > 0:
+            later = _after_warmup(threads, started, warmup_seconds)
+            slope = _slope_per_hour(later)
+            if slope is not None:
+                lines.append(f'Thread growth {warmup_label}: {slope:+.1f} threads/hour '
+                             f'({len(later)} samples, {int(later[0][1])} -> {int(later[-1][1])})')
     else:
-        lines.append('Threads: no data (/system/threads/summary unavailable)')
+        lines.append('Threads: no data (/system/threads/summary and /system/status unavailable)')
 
     first = next((s['_providers'] for s in samples if s['_providers']), {})
     last = next((s['_providers'] for s in reversed(samples) if s['_providers']), {})
@@ -185,6 +215,11 @@ def summarize(samples: list[dict]) -> str:
     rss = _numeric(samples, 'rss_mb')
     if rss:
         lines.append(f'RSS: first {rss[0][1]:.1f} MB, last {rss[-1][1]:.1f} MB, max {max(v for _, v in rss):.1f} MB')
+        later = _after_warmup(rss, started, warmup_seconds) if warmup_seconds > 0 else []
+        slope = _slope_per_hour(later)
+        if slope is not None:
+            lines.append(f'RSS growth {warmup_label}: {slope:+.1f} MB/hour '
+                         f'({later[0][1]:.1f} -> {later[-1][1]:.1f} MB)')
     return '\n'.join(lines)
 
 
@@ -197,6 +232,8 @@ def main(argv=None) -> int:
     parser.add_argument('--token', default=None, help='admin token, sent as X-MRD-Admin-Token')
     parser.add_argument('--pid', type=int, default=None, help='server PID, to read RSS from /proc (Linux)')
     parser.add_argument('--timeout', type=float, default=10.0, help='per-request timeout in seconds')
+    parser.add_argument('--warmup-minutes', type=float, default=5.0,
+                        help='also report growth from this many minutes in (default 5; 0 turns it off)')
     args = parser.parse_args(argv)
 
     started = time.time()
@@ -222,7 +259,7 @@ def main(argv=None) -> int:
                 time.sleep(args.interval)
     except KeyboardInterrupt:
         print('Interrupted; summarizing what was collected.')
-    print(summarize(samples))
+    print(summarize(samples, warmup_seconds=max(0.0, args.warmup_minutes) * 60.0))
     return 0
 
 

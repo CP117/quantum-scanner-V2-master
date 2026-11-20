@@ -43,5 +43,6 @@ def system_status(batch: int = Query(0, ge=0)):
         gc_stats=payload.get('gc_stats') or {},
         yf_batch_executor=payload.get('yf_batch_executor') or {},
         mount_errors=mount_errors(),
+        threads=payload.get('threads') or {},
         state=payload['state'],
     )

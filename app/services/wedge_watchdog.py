@@ -13,6 +13,10 @@ when healthy, frozen at the moment of the wedge.  Includes:
     * Priority-lane state (`monitor_only`, `consecutive_slow`)
     * Full Python stack trace of every live thread
     * Approximate memory + open-file-descriptor count (process health)
+    * Phase 4: thread count by name prefix, RSS and the thread alarm level.
+      Each frame also checks the alarm: a WARNING over MRD_THREAD_ALARM
+      threads (default 400), an ERROR with the top prefixes over twice that
+      (see thread_monitor.check_thread_alarm).
 
 If the file's `timestamp_utc` is more than ~60 seconds old, you're
 looking at the state captured the moment the backend stopped
@@ -29,6 +33,8 @@ import time
 import traceback
 from datetime import datetime, timezone
 from pathlib import Path
+
+from app.services.thread_monitor import check_thread_alarm, thread_summary
 
 log = logging.getLogger('app.wedge_watchdog')
 
@@ -97,10 +103,18 @@ def _dump_once() -> None:
     except Exception as exc:  # noqa: BLE001
         t10 = {'error': f'priority_lane_status_failed: {type(exc).__name__}: {exc}'}
 
+    try:
+        threads_summary = thread_summary()
+        check_thread_alarm(threads_summary)
+    except Exception as exc:  # noqa: BLE001
+        log.warning('wedge_watchdog: thread alarm check failed: %s: %s', type(exc).__name__, exc)
+        threads_summary = {'error': f'thread_summary_failed: {type(exc).__name__}: {exc}'}
+
     payload = {
         'timestamp_utc': datetime.now(timezone.utc).isoformat(),
         'monotonic_seconds': time.monotonic(),
         'process_health': _snapshot_process_health(),
+        'thread_summary': threads_summary,
         'snapshot_meta_stocks': meta,
         'top10_priority_lane': t10,
         'threads': _snapshot_threads(),

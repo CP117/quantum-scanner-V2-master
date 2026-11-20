@@ -15,7 +15,10 @@ httpx==0.28.1
 requests==2.34.2
 
 # --- Market data + numerical ---
-yfinance==0.2.66
+# yfinance 1.8.0 runs each download() on its own pool of `threads` workers
+# and no longer uses the multitasking package; it needs curl_cffi>=0.17.
+yfinance==1.8.0
+curl_cffi==0.17.0
 pandas==2.3.3
 numpy==2.4.5
 
