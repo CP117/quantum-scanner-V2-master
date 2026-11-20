@@ -15,6 +15,7 @@ from app.services.provider_session import mark_provider_failure, clear_provider_
 from app.services.quote_cache import save_quote, get_cached_quote, cached_quote_is_usable, quote_age_seconds
 from app.services.universe_service import filter_supported_provider_rows
 from app.services.crypto_provider_service import fetch_coingecko_snapshot, fetch_coingecko_snapshots
+from app.services import quote_math
 from app.utils.time import utcnowiso, freshness_label_from_age
 
 # Module-level logger.  Used by failure-path code (the `except` branches in
@@ -2144,6 +2145,60 @@ def merge_market_shape(primary: dict | None = None, secondary: dict | None = Non
     return merged
 
 
+def _fast_previous_close(fast) -> float:
+    """fast_info's previous close, taken from regular-session daily bars.
+
+    Phase 2C: yfinance 0.2.66's `previous_close` is the last close of the
+    previous date in 1-hour bars *including* pre- and post-market, so it
+    carries after-hours prints, and reading it costs an extra 5d/1h
+    request. `regular_market_previous_close` is the prior daily bar's close
+    from the same 1y daily series `last_price`, `open` and `day_high` read.
+    """
+    if hasattr(fast, 'regular_market_previous_close'):
+        return safe_float(getattr(fast, 'regular_market_previous_close', None))
+    if isinstance(fast, dict):
+        return safe_float(fast.get('regularMarketPreviousClose') or fast.get('previousClose'))
+    return 0.0
+
+
+def _range_1d_previous_close(tkr) -> float:
+    """The previous session's close from a Ticker's last history() call.
+
+    Only a range=1d response's chartPreviousClose is the previous session's
+    close; for longer ranges it is the close before the window. yfinance
+    may fetch fresh 5d/1h metadata behind the scenes, so the range is
+    checked rather than assumed. Returns 0.0 when unknown.
+    """
+    try:
+        meta = tkr.history_metadata or {}
+    except Exception:  # noqa: BLE001
+        return 0.0
+    if str(meta.get('range') or '') != '1d':
+        return 0.0
+    return safe_float(meta.get('chartPreviousClose'))
+
+
+def _quote_from_intraday_bars(tkr, hist, *, source: str, captured_at: str) -> dict | None:
+    """A quote from one session of intraday bars plus the request's metadata."""
+    closes = hist['Close'].dropna() if 'Close' in hist else []
+    if not len(closes):
+        return None
+    opens = hist['Open'].dropna() if 'Open' in hist else []
+    vols = hist['Volume'].dropna() if 'Volume' in hist else []
+    return quote_math.build_quote(
+        last_price=closes.iloc[-1],
+        previous_close=_range_1d_previous_close(tkr),
+        open=opens.iloc[0] if len(opens) else None,
+        day_high=hist['High'].max() if 'High' in hist else None,
+        day_low=hist['Low'].min() if 'Low' in hist else None,
+        volume=float(vols.sum()) if len(vols) else None,
+        quote_time_utc=closes.index[-1],
+        captured_at_utc=captured_at,
+        source=source,
+        market_cap=0,
+    )
+
+
 def fetch_intraday_shape(symbol: str, market: str = 'stocks') -> dict:
     """Quick intraday snapshot used by the scoring batch.
 
@@ -2174,7 +2229,7 @@ def fetch_intraday_shape(symbol: str, market: str = 'stocks') -> dict:
             fast = getattr(ticker, 'fast_info', None) or {}
             shape.update({
                 'currentPrice': safe_float(getattr(fast, 'last_price', None) if hasattr(fast, 'last_price') else fast.get('lastPrice') if isinstance(fast, dict) else None),
-                'previousClose': safe_float(getattr(fast, 'previous_close', None) if hasattr(fast, 'previous_close') else fast.get('previousClose') if isinstance(fast, dict) else None),
+                'previousClose': _fast_previous_close(fast),
                 'open': safe_float(getattr(fast, 'open', None) if hasattr(fast, 'open') else fast.get('open') if isinstance(fast, dict) else None),
                 'dayLow': safe_float(getattr(fast, 'day_low', None) if hasattr(fast, 'day_low') else fast.get('dayLow') if isinstance(fast, dict) else None),
                 'dayHigh': safe_float(getattr(fast, 'day_high', None) if hasattr(fast, 'day_high') else fast.get('dayHigh') if isinstance(fast, dict) else None),
@@ -2192,7 +2247,8 @@ def fetch_intraday_shape(symbol: str, market: str = 'stocks') -> dict:
     if needs_hist:
         try:
             if provider_budget_allowance(1):
-                hist = yf.Ticker(symbol).history(period='1d', interval='5m', auto_adjust=False)
+                hist_tkr = yf.Ticker(symbol)
+                hist = hist_tkr.history(period='1d', interval='5m', auto_adjust=False)
                 if hist is not None and not getattr(hist, 'empty', True):
                     opens = hist['Open'].dropna() if 'Open' in hist else []
                     highs = hist['High'].dropna() if 'High' in hist else []
@@ -2204,8 +2260,12 @@ def fetch_intraday_shape(symbol: str, market: str = 'stocks') -> dict:
                         'dayHigh': safe_float(highs.max()) if len(highs) else 0,
                         'dayLow': safe_float(lows.min()) if len(lows) else 0,
                         'currentPrice': safe_float(closes.iloc[-1]) if len(closes) else 0,
-                        'previousClose': safe_float(closes.iloc[0]) if len(closes) else 0,
-                        'volume': safe_float(vols.iloc[-1]) if len(vols) else 0,
+                        # Phase 2C: the previous session's close. This used
+                        # to be the first 5-minute bar's close, i.e. this
+                        # session's opening print.
+                        'previousClose': _range_1d_previous_close(hist_tkr),
+                        # The session's volume, not the last 5 minutes'.
+                        'volume': safe_float(vols.sum()) if len(vols) else 0,
                     }
         except Exception as exc:
             mark_provider_failure(str(exc))
@@ -2213,7 +2273,16 @@ def fetch_intraday_shape(symbol: str, market: str = 'stocks') -> dict:
     # downstream merge contract intact.  Detail view re-runs the full
     # fetch_fundamentals call on-demand.
     merged = merge_market_shape(shape, crypto_info, {})
-    merged = merged | hist_shape if hist_shape else merged
+    if hist_shape:
+        # Phase 2C: the bars still fill open, high, low and price, but an
+        # empty bar value no longer wipes a fast_info value, and fast_info's
+        # previous close and volume (from daily bars) are kept when present.
+        for key, value in hist_shape.items():
+            if not value:
+                continue
+            if key in ('previousClose', 'volume') and safe_float(merged.get(key)) > 0:
+                continue
+            merged[key] = value
 
     # ---- Phase 11: crypto provider hardening ----------------------------
     # The merged shape above is built from yfinance fast_info + CoinGecko +
@@ -2261,15 +2330,20 @@ def fetch_intraday_shape(symbol: str, market: str = 'stocks') -> dict:
         try:
             from app.services.daily_history_service import get_daily_history
             dh = get_daily_history(symbol, allow_fetch=False)
-            if dh is not None and not getattr(dh, 'empty', True):
-                last = dh.iloc[-1]
-                prev = dh.iloc[-2] if len(dh) > 1 else last
+            # Phase 2C: the newest bar that has a close, the OHLCV of that
+            # same bar, and the close of the bar before it. The old
+            # iloc[-1] / iloc[-2] pair broke on an in-progress last bar.
+            picked = None
+            if dh is not None and not getattr(dh, 'empty', True) and 'Close' in dh:
+                picked = quote_math.last_complete_daily_bar(dh.dropna(subset=['Close']))
+            if picked is not None:
+                _label, last, prev_close = picked
                 vols = dh['Volume'].dropna().astype(float) if 'Volume' in dh else None
                 avg_vol = float(vols.tail(30).mean()) if vols is not None and len(vols) > 0 else 0.0
                 merged.update({
                     'currentPrice': safe_float(last.get('Close')),
                     'regularMarketPrice': safe_float(last.get('Close')),
-                    'previousClose': safe_float(prev.get('Close')),
+                    'previousClose': safe_float(prev_close),
                     'open': safe_float(last.get('Open')),
                     'dayLow': safe_float(last.get('Low')),
                     'dayHigh': safe_float(last.get('High')),
@@ -2330,7 +2404,7 @@ def fetch_live_snapshot(symbol: str, market: str = 'stocks') -> dict:
         ticker = yf.Ticker(symbol)
         fast = getattr(ticker, 'fast_info', None) or {}
         last_price = safe_float(getattr(fast, 'last_price', None) if hasattr(fast, 'last_price') else fast.get('lastPrice') if isinstance(fast, dict) else None)
-        prev_close = safe_float(getattr(fast, 'previous_close', None) if hasattr(fast, 'previous_close') else fast.get('previousClose') if isinstance(fast, dict) else None)
+        prev_close = _fast_previous_close(fast)
         open_price = safe_float(getattr(fast, 'open', None) if hasattr(fast, 'open') else fast.get('open') if isinstance(fast, dict) else None)
         day_low = safe_float(getattr(fast, 'day_low', None) if hasattr(fast, 'day_low') else fast.get('dayLow') if isinstance(fast, dict) else None)
         day_high = safe_float(getattr(fast, 'day_high', None) if hasattr(fast, 'day_high') else fast.get('dayHigh') if isinstance(fast, dict) else None)
@@ -2354,28 +2428,18 @@ def fetch_live_snapshot(symbol: str, market: str = 'stocks') -> dict:
         mark_provider_failure(str(exc))
 
     # Fallback B: yfinance 1m intraday history.
+    # Phase 2C: previous_close is the previous session's close from the
+    # request's own metadata. It used to be the first 1-minute bar's close
+    # (this session's opening print), so the reported "daily" change was
+    # the change since the open. Without that metadata there is no quote
+    # here rather than a made-up one.
     try:
-        hist = yf.Ticker(symbol).history(period='1d', interval='1m', auto_adjust=False)
+        tkr = yf.Ticker(symbol)
+        hist = tkr.history(period='1d', interval='1m', auto_adjust=False)
         if hist is not None and not getattr(hist, 'empty', True):
-            close_series = hist['Close'].dropna()
-            if len(close_series) >= 1:
-                last_price = safe_float(close_series.iloc[-1])
-                prev_close = safe_float(close_series.iloc[0])
-                inferred_prev = prev_close if prev_close > 0 else last_price
-                preview_only = market == 'crypto' and (prev_close <= 0 or inferred_prev == last_price)
-                return {
-                    'last_price': last_price,
-                    'previous_close': inferred_prev,
-                    'open': safe_float(hist['Open'].dropna().iloc[0]) if 'Open' in hist and len(hist['Open'].dropna()) else 0,
-                    'day_low': safe_float(hist['Low'].dropna().min()) if 'Low' in hist else 0,
-                    'day_high': safe_float(hist['High'].dropna().max()) if 'High' in hist else 0,
-                    'volume': safe_float(hist['Volume'].dropna().iloc[-1]) if 'Volume' in hist and len(hist['Volume'].dropna()) else 0,
-                    'market_cap': 0,
-                    'captured_at_utc': captured_at,
-                    'source': 'yfinance-1m',
-                    'provider_outcome': 'preview_fallback' if preview_only else 'live_success',
-                    'preview_only': preview_only,
-                }
+            quote = _quote_from_intraday_bars(tkr, hist, source='yfinance-1m', captured_at=captured_at)
+            if quote:
+                return quote
     except Exception as exc:
         mark_provider_failure(str(exc))
 
@@ -2459,56 +2523,46 @@ def download_quotes_yfinance_only(symbols: List[str], market: str = 'stocks') ->
     if data is None or getattr(data, 'empty', True):
         return result
     captured_at = utcnowiso()
-    if len(symbols) == 1:
-        sym = symbols[0]
-        try:
-            close_series = data['Close'].dropna()
-            open_series = data.get('Open', pd.Series(dtype=float)).dropna()
-            high_series = data.get('High', pd.Series(dtype=float)).dropna()
-            low_series = data.get('Low', pd.Series(dtype=float)).dropna()
-            vol_series = data.get('Volume', pd.Series(dtype=float)).dropna()
-            if len(close_series) >= 2:
-                last_price = safe_float(close_series.iloc[-1])
-                previous_close = safe_float(close_series.iloc[-2])
-                result[sym] = {
-                    'last_price': last_price,
-                    'previous_close': previous_close if previous_close > 0 else last_price,
-                    'open': safe_float(open_series.iloc[-1]) if len(open_series) else 0,
-                    'day_high': safe_float(high_series.iloc[-1]) if len(high_series) else 0,
-                    'day_low': safe_float(low_series.iloc[-1]) if len(low_series) else 0,
-                    'volume': safe_float(vol_series.iloc[-1]) if len(vol_series) else 0,
-                    'captured_at_utc': captured_at, 'source': 'yfinance',
-                    'provider_outcome': 'live_success', 'preview_only': False,
-                }
-        except Exception:
-            pass
-        return result
+    # Phase 2C: one rule for both the single- and multi-symbol layouts.
+    # Each symbol's frame is read row-wise: the last row is the quote only
+    # if it has a Close (a missing Close is a session still in progress, so
+    # the next cascade stage supplies that symbol), its OHLCV comes from
+    # the same row, and previous_close from the nearest earlier row with a
+    # Close. The old code took Close.dropna().iloc[-1], which after the
+    # close could be yesterday's close next to today's open/high/low.
+    # Crypto daily bars are UTC days; stock bars are New York sessions.
+    day_tz = quote_math.CRYPTO_TZ if market == 'crypto' else quote_math.DEFAULT_TZ
     for sym in symbols:
         try:
-            frame = data[sym]
-            close_series = frame['Close'].dropna()
-            if len(close_series) >= 2:
-                last_price = safe_float(close_series.iloc[-1])
-                previous_close = safe_float(close_series.iloc[-2])
-                # Pull OHLCV for today's bar straight from the batched download
-                # so we don't need a follow-up per-symbol fetch_intraday_shape call.
-                try:
-                    open_val = safe_float(frame['Open'].dropna().iloc[-1])
-                    high_val = safe_float(frame['High'].dropna().iloc[-1])
-                    low_val = safe_float(frame['Low'].dropna().iloc[-1])
-                    vol_val = safe_float(frame['Volume'].dropna().iloc[-1])
-                except Exception:
-                    open_val = high_val = low_val = vol_val = 0
-                result[sym] = {
-                    'last_price': last_price,
-                    'previous_close': previous_close if previous_close > 0 else last_price,
-                    'open': open_val, 'day_high': high_val, 'day_low': low_val, 'volume': vol_val,
-                    'captured_at_utc': captured_at, 'source': 'yfinance',
-                    'provider_outcome': 'live_success', 'preview_only': False,
-                }
+            frame = _yf_symbol_frame(data, sym, single=len(symbols) == 1)
+            quote = quote_math.quote_from_daily_frame(
+                frame, source='yfinance', captured_at_utc=captured_at, tz_name=day_tz,
+            )
         except Exception:
             continue
+        if quote:
+            result[sym] = quote
     return result
+
+
+def _yf_symbol_frame(data, sym: str, *, single: bool):
+    """One symbol's OHLCV columns from a `yf.download(group_by='ticker')` result.
+
+    yfinance 0.2.66 returns (ticker, field) MultiIndex columns even for a
+    single ticker, so the old `data['Close']` single-symbol branch raised
+    KeyError (and its `pd.Series` fallbacks a NameError: this module never
+    imported `pd`), which `except Exception: pass` hid. It never produced
+    a quote. Flat columns (older yfinance) are accepted for a
+    single-symbol download only.
+    """
+    columns = getattr(data, 'columns', None)
+    if _pd is not None and isinstance(columns, _pd.MultiIndex):
+        if sym in columns.get_level_values(0):
+            return data[sym]
+        if sym in columns.get_level_values(-1):
+            return data.xs(sym, axis=1, level=-1)
+        return None
+    return data if single else None
 
 
 def download_quotes(symbols: List[str], market: str = 'stocks') -> Dict[str, dict]:
