@@ -30,9 +30,6 @@ APP_DIR = REPO_ROOT / 'app'
 
 # (file relative to the repo root, dotted target that does not resolve)
 KNOWN_BROKEN: set[tuple[str, str]] = {
-    # detail_service imports modules that were never added to the repo.
-    ('app/services/detail_service.py', 'app.services.provider_service'),
-    ('app/services/detail_service.py', 'app.services.stateful_kit'),
     # future_mode's "scan now" path imports a function and a module that do not exist.
     ('app/routes/future_mode.py', 'app.services.active_scan_service.request_immediate_iteration'),
     ('app/routes/future_mode.py', 'app.services.scan_worker'),

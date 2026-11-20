@@ -202,10 +202,13 @@ class TestDetailFreshPath:
         assert r.status_code == 200
         d = r.json()
         ds = d.get("detail_source", "MISSING")
-        # Field must exist (may be None on fresh path)
-        assert ds in ("snapshot_mirror", None) or ds == "MISSING" and False, (
-            f"detail_source must be one of ['snapshot_mirror', None], got {ds!r}"
-        )
+        # Field must exist (None on the full re-fetch path). Phase 3: the
+        # require_fresh refresh reports snapshot_refreshed, or
+        # snapshot_fallback with a detail_fallback_reason when no quote came back.
+        allowed = ("snapshot_mirror", "snapshot_refreshed", "snapshot_fallback", None)
+        assert ds in allowed, f"detail_source must be one of {allowed}, got {ds!r}"
+        if ds == "snapshot_fallback":
+            assert d.get("detail_fallback_reason"), d
 
 
 # ---------------- BUG FIX 3: Frontend label + require_fresh wiring (via grep) ----
