@@ -113,6 +113,7 @@ def _refresh_snapshot_quote(snap_row: dict, base_symbol: str, market: str) -> di
             market_fb['source'] = quote.get('provider') or 'yfinance'
             snap_row['factor_breakdown']['market'] = market_fb
             snap_row['as_of_utc'] = quote.get('captured_at_utc') or utcnowiso()
+            snap_row['quote_as_of_utc'] = quote.get('quote_time_utc') or None
             snap_row['age_seconds'] = 0
             snap_row['freshness_label'] = 'fresh'
             snap_row['stale'] = False
@@ -304,6 +305,7 @@ def get_symbol_detail(symbol: str, force_live: bool = False,
         row['fresh_rescore'] = True
         row['provider_outcome'] = live_quote.get('provider_outcome', 'live_success')
         row['preview_only'] = bool(live_quote.get('preview_only', False))
+        row['quote_as_of_utc'] = live_quote.get('quote_time_utc') or None
     elif not force_live:
         cached = get_cached_quote(base_symbol)
         if cached and cached_quote_is_usable(cached):
@@ -312,6 +314,7 @@ def get_symbol_detail(symbol: str, force_live: bool = False,
             row['score_revision_utc'] = utcnow_iso()
             row['fresh_rescore'] = False
             row['provider_outcome'] = 'cache_fallback'
+            row['quote_as_of_utc'] = cached.get('quote_time_utc') or None
 
     if row is None:
         cached = get_cached_quote(base_symbol)
@@ -321,6 +324,7 @@ def get_symbol_detail(symbol: str, force_live: bool = False,
             row['score_revision_utc'] = utcnow_iso()
             row['fresh_rescore'] = False
             row['provider_outcome'] = 'cache_after_live_failed' if force_live else 'cache_fallback'
+            row['quote_as_of_utc'] = cached.get('quote_time_utc') or None
             row['preview_only'] = False
             row['state'] = 'degraded' if force_live else row.get('state', 'ready')
         else:

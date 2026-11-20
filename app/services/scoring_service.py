@@ -2725,6 +2725,9 @@ def score_symbol_rows(
     # `score_from_prices(score_depth='full', **kwargs)`.
     pass2_inputs: dict[str, dict] = {}
     pass2_indices: dict[str, int] = {}  # symbol -> index in `output`
+    # Phase 2C: exchange time of the quote each row is scored from; stamped
+    # onto the final rows as quote_as_of_utc (as_of_utc stays scoring time).
+    quote_times: dict[str, str] = {}
     provider_rows = filter_supported_provider_rows(rows)
     provider_symbols = {row.get('symbol', '') for row in provider_rows if row.get('symbol')}
     try:
@@ -2924,6 +2927,8 @@ def score_symbol_rows(
                 daily_hist = None
         if live:
             save_quote(symbol, live)
+            if live.get('quote_time_utc'):
+                quote_times[symbol] = live['quote_time_utc']
             live_source = live.get('source') or ('coingecko' if str(symbol).upper().endswith('-USD') else 'yfinance')
             _live_as_of = live.get('captured_at_utc') or utcnowiso()
             _depth = 'cheap' if _TWO_PASS_ACTIVE else 'full'
@@ -2956,6 +2961,8 @@ def score_symbol_rows(
         ):
             age = quote_age_seconds(cached)
             _cached_as_of = cached.get('captured_at_utc') or utcnowiso()
+            if cached.get('quote_time_utc'):
+                quote_times[symbol] = cached['quote_time_utc']
             _depth = 'cheap' if _TWO_PASS_ACTIVE else 'full'
             scored = score_from_prices(row, safe_float(cached.get('last_price')), safe_float(cached.get('previous_close')), 'cache', age, _cached_as_of, 'cached last-good quote', fundamentals_info=intraday, use_real_options=use_real_options, daily_hist=daily_hist, reg_index_snapshot=reg_index_snapshot, score_depth=_depth)
             if intraday.get('shortName'):
@@ -3163,5 +3170,11 @@ def score_symbol_rows(
                 r['forward_metrics'] = None
     except Exception as exc:  # noqa: BLE001
         log.warning('future_mode_service unavailable (non-fatal): %s', exc)
+
+    # Phase 2C: after Pass 2, which rebuilds the rows it promotes.
+    for r in output:
+        qt = quote_times.get(r.get('symbol') or '')
+        if qt:
+            r['quote_as_of_utc'] = qt
 
     return output

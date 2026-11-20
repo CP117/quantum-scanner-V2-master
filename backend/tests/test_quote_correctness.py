@@ -648,3 +648,96 @@ def test_coingecko_batch_values_unchanged_plus_quote_time(monkeypatch):
     assert (q['day_low'], q['day_high'], q['volume'], q['market_cap']) == (62382.484, 63210.613, 3.06e10, 1.24e12)
     assert q['quote_time_utc'] == '2026-11-19T02:17:24+00:00'
     assert q['source'] == 'coingecko'
+
+
+# ---------------------------------------------------------------------------
+# quote_time_utc travels: cache, scored rows, normalized rows
+# ---------------------------------------------------------------------------
+@pytest.fixture
+def quote_cache(monkeypatch, tmp_path):
+    from app.config import settings
+    from app.services import quote_cache as cache
+    from app.services.memory_store import memory_store
+
+    monkeypatch.setattr(settings, 'memory_cache_enabled', True)
+    monkeypatch.setattr(settings, 'memory_cache_mode', 'enabled')
+    monkeypatch.setattr(settings, 'cache_enable_quotes', True)
+    monkeypatch.setattr(settings, 'cache_mode_quotes', 'enabled')
+    monkeypatch.setattr(settings, 'cache_ttl_jitter_percent', 0.0)
+    monkeypatch.setattr(settings, 'quote_cache_ttl_seconds', 60)
+    monkeypatch.setattr(cache, '_SHARD_DIR', tmp_path / 'quote_cache')
+    monkeypatch.setattr(cache, '_LEGACY_FILE', tmp_path / 'quote_cache.json')
+    monkeypatch.setattr(cache, '_MIGRATION_DONE', True)
+    monkeypatch.setattr(cache, '_DEBOUNCE_S', 1.0)
+    memory_store.invalidate_domain('quotes')
+    for value in (cache._SHARD_MEM, cache._SHARD_LOADED, cache._SHARD_VERSION,
+                  cache._DIRTY_SINCE, cache._DIRTY_FAILURES, cache._DIRTY_RETRY_AT):
+        value.clear()
+    cache._DIRTY_SHARDS.clear()
+    cache._PERSISTING_SHARDS.clear()
+    yield cache
+    memory_store.invalidate_domain('quotes')
+
+
+def test_save_quote_keeps_quote_time(quote_cache):
+    quote_cache.save_quote('AAPL', {'last_price': 352.45, 'previous_close': 351.91,
+                                    'quote_time_utc': '2026-11-18T21:00:01+00:00'})
+    quote_cache.save_quote('MSFT', {'last_price': 508.29, 'previous_close': 506.24})
+    assert quote_cache.get_cached_quote('AAPL')['quote_time_utc'] == '2026-11-18T21:00:01+00:00'
+    assert 'quote_time_utc' not in quote_cache.get_cached_quote('MSFT')
+    assert quote_cache._SHARD_MEM['A']['AAPL']['quote_time_utc'] == '2026-11-18T21:00:01+00:00'
+
+
+@pytest.fixture
+def no_daily_history(monkeypatch, tmp_path):
+    """Keep score_symbol_rows away from the daily-history cache.
+
+    Its prefetch pool loops forever on non-daemon threads (the Phase 4
+    lifecycle work), which would keep pytest from exiting, and its flush
+    writes into data/daily_history_cache.
+    """
+    import threading
+    from app.services import daily_history_service as dh
+
+    monkeypatch.setattr(dh, '_SHARD_DIR', tmp_path / 'daily_history_cache')
+    monkeypatch.setattr(dh, '_prefetch_started', True)
+    monkeypatch.setattr(dh, 'prefetch_daily_history', lambda *a, **k: None)
+    monkeypatch.setattr(dh, 'await_prefetch_for_batch', lambda *a, **k: 0)
+    monkeypatch.setattr(dh, 'get_daily_history', lambda *a, **k: None)
+    yield
+    assert not [t.name for t in threading.enumerate() if t.name.startswith('dh-worker')]
+
+
+def test_scored_rows_carry_quote_as_of_utc(monkeypatch, no_daily_history):
+    live = quote_math.build_quote(last_price=352.45, previous_close=351.91, open=351.87, day_high=356.42,
+                                  day_low=351.471, volume=33_393_854, quote_time_utc=1795035601,
+                                  captured_at_utc='2026-11-18T21:05:00+00:00', source='yahoo-chart')
+    cached = {'last_price': 508.29, 'previous_close': 506.24, 'captured_at_utc': '2026-11-18T21:04:00+00:00',
+              'source': 'yahoo-chart', 'quote_time_utc': '2026-11-18T21:00:00+00:00'}
+    monkeypatch.setattr(scoring_service, 'download_quotes',
+                        lambda symbols, market='stocks': {s: dict(live) for s in symbols if s == 'AAPL'})
+    monkeypatch.setattr(scoring_service, 'save_quote', lambda *a, **k: None)
+    monkeypatch.setattr(scoring_service, 'get_cached_quote', lambda sym: dict(cached) if sym == 'MSFT' else None)
+    monkeypatch.setattr(scoring_service, 'cached_quote_is_usable', lambda q: True)
+    monkeypatch.setattr(scoring_service, 'quote_age_seconds', lambda q: 60)
+    monkeypatch.setattr(scoring_service, 'fetch_intraday_shape', lambda sym, market='stocks': {})
+    rows = scoring_service.score_symbol_rows([
+        {'symbol': 'AAPL', 'name': 'Apple Inc.', 'exchange': 'NMS', 'asset_class': 'stock', 'market': 'stocks'},
+        {'symbol': 'MSFT', 'name': 'Microsoft', 'exchange': 'NMS', 'asset_class': 'stock', 'market': 'stocks'},
+    ])
+    by_symbol = {r['symbol']: r for r in rows}
+    assert by_symbol['AAPL']['quote_as_of_utc'] == '2026-11-18T21:00:01+00:00'
+    assert by_symbol['AAPL']['as_of_utc'] == '2026-11-18T21:05:00+00:00'  # unchanged meaning
+    assert by_symbol['MSFT']['quote_as_of_utc'] == '2026-11-18T21:00:00+00:00'
+
+
+def test_normalize_carries_quote_as_of_utc():
+    from app.utils import normalize
+
+    out = normalize.normalize_result_row({'symbol': 'AAPL', 'as_of_utc': '2026-11-18T21:05:00+00:00',
+                                          'quote_time_utc': '2026-11-18T21:00:01+00:00'})
+    assert out['quote_as_of_utc'] == '2026-11-18T21:00:01+00:00'
+    assert out['as_of_utc'] == '2026-11-18T21:05:00+00:00'
+    assert normalize.normalize_result_row({'symbol': 'AAPL', 'quote_as_of_utc': 'A', 'quote_time_utc': 'B'})['quote_as_of_utc'] == 'A'
+    assert normalize.normalize_result_row({'symbol': 'AAPL'})['quote_as_of_utc'] is None
+    assert 'quote_as_of_utc' not in normalize.get_defaulted_fields_snapshot()['counts']
