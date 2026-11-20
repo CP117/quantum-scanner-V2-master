@@ -431,6 +431,16 @@ def test_a_zero_backoff_retries_on_the_next_pass(db):
     assert tracker.evaluate_expired_predictions(now=now, price_fn=lambda row: answers.pop(0))['evaluated'] == 1
 
 
+def test_reset_retry_backoff_forgets_every_deferral(db):
+    _save('SLOW')
+    now = T0 + timedelta(days=20)
+    tracker.evaluate_expired_predictions(now=now, price_fn=lambda row: CloseLookup(reason='timeout', retry=True))
+    assert tracker.evaluate_expired_predictions(now=now, price_fn=lambda row: 101.0)['checked'] == 0
+    assert tracker.reset_retry_backoff() == 1
+    assert tracker.reset_retry_backoff() == 0
+    assert tracker.evaluate_expired_predictions(now=now, price_fn=lambda row: 101.0)['evaluated'] == 1
+
+
 def test_batches_take_the_oldest_expiry_first_and_skip_deferred_rows(db):
     for days, symbol in ((14, 'E'), (10, 'A'), (12, 'C'), (11, 'B'), (13, 'D')):
         _save(symbol, forward_days=days)

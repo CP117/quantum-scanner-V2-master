@@ -886,6 +886,17 @@ _RETRY_AFTER: dict[str, float] = {}
 _EVAL_LOCK = Lock()
 
 
+def reset_retry_backoff() -> int:
+    """Forget every retry deferral, so the next pass can look at all expired open rows.
+
+    Returns how many deferrals were dropped. scripts/evaluate_predictions.py
+    calls it between retry rounds.
+    """
+    dropped = len(_RETRY_AFTER)
+    _RETRY_AFTER.clear()
+    return dropped
+
+
 def _as_lookup(found: Any) -> CloseLookup:
     if isinstance(found, CloseLookup):
         return found
