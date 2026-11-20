@@ -38,6 +38,9 @@ class WarmerStatus(BaseModel):
     last_cycle_utc: str | None = None
     warmed_symbols: int = 0
     last_batch: int = 0
+    market: str = 'stocks'
+    # Counts from the last auto_log_scan_predictions() call, or {'error': ...}.
+    last_auto_log: dict | None = None
 
 
 class DefaultedFieldsSnapshot(BaseModel):

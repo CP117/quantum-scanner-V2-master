@@ -1,8 +1,9 @@
 """
 Prediction tracker: save, list, evaluate and score forward price predictions.
 
-The warmer loop logs scanner predictions (source 'auto_scan') and the
-detail panel's Save button logs manual ones (source 'user'). Each row
+The warmer loop logs scanner predictions (source 'auto_scan', one open
+window per symbol; see auto_log_scan_predictions) and the detail panel's
+Save button logs manual ones (source 'user'). Each row
 keeps the anchor price, the target price, the direction and an expiry
 (created_at + forward_days calendar days). frontend/predictions.js reads
 this module through app/routes/prediction_tracker.py, and its fields are
@@ -65,7 +66,7 @@ from datetime import date, datetime, timedelta, timezone
 from datetime import time as clock_time
 from pathlib import Path
 from threading import Lock
-from typing import Any, Callable, Iterator
+from typing import Any, Callable, Iterable, Iterator
 from zoneinfo import ZoneInfo
 
 from app.services import quote_math
@@ -1087,115 +1088,121 @@ def stop_evaluator(timeout: float = 5.0) -> None:
 # Auto-logging
 # ---------------------------------------------------------------------------
 
+def _direction_from_prediction(pred: dict) -> str:
+    """bull, bear or neutral from predict_price's composite_direction (Bullish, Bearish, Neutral)."""
+    label = str(pred.get('composite_direction') or '').strip().lower()
+    if 'bull' in label:
+        return 'bull'
+    if 'bear' in label:
+        return 'bear'
+    return 'neutral'
+
+
 def auto_log_scan_predictions(
-    rows: list[dict],
-    max_new_per_cycle: int = 10,
-    forward_days: int = 10,
-) -> None:
-    """Auto-log top-N symbols from a completed scanner batch.
+    symbols: Iterable[Any],
+    market: str = 'stocks',
+    forward_days: int | None = None,
+    max_new: int | None = None,
+) -> dict[str, Any]:
+    """Log scanner predictions (source 'auto_scan') for fully scored symbols.
 
-    Called by the warmer loop on each cycle to log systematic predictions
-    from the background scan. These are tagged source='auto_scan' so the
-    UI can distinguish user-manual predictions from algorithmic ones.
+    The warmer loop calls this after each batch with the batch's symbols
+    (strings, or rows with a 'symbol' key). It walks the whole universe
+    with no human choice involved, so these rows are the unbiased sample
+    that accuracy_stats reports under by_source.auto_scan; manual saves
+    are selection-biased.
 
-    `rows` should be the top-scoring symbols from the batch (usually the
-    scan result envelope['results']). We pick the top N that haven't been
-    logged today and insert them.
+    A symbol is skipped while an auto_scan prediction for it in that market
+    is still running (open and not yet expired), so each symbol has one
+    forward window at a time and windows do not overlap. An expired row
+    waiting for evaluation does not hold up the next window. A symbol is
+    also skipped unless its snapshot row is complete
+    (detail_service._snapshot_is_incomplete): then predict_price reads the
+    snapshot mirror and adds no provider traffic. A row is complete once
+    the scanner has scored the symbol at full depth (the top
+    MRD_FULL_SCORE_TOP_PCT of a batch, Tier 1, the active pool), so the
+    sample leans toward symbols that have ranked well at least once. At
+    most `max_new` predictions are saved per call.
+
+    Each row stores predict_price's current_price as the anchor, its
+    target_price and confidence, and the composite direction (Bullish,
+    Bearish or Neutral become bull, bear or neutral), with the whole
+    prediction in full_payload. forward_days and max_new default to
+    settings.auto_log_predictions_forward_days and
+    settings.auto_log_predictions_max_new_per_cycle, and
+    settings.auto_log_predictions_enabled turns logging off.
+
+    Returns counts: logged, already_open, incomplete, unavailable and
+    failed, plus enabled.
     """
-    if not rows or max_new_per_cycle <= 0:
-        return
+    from app.config import settings
 
-    # Quick check: don't bother if the DB hasn't been initialized yet.
-    try:
-        if not db_path().exists():
-            return
-    except Exception:
-        return
+    counts: dict[str, Any] = {
+        'enabled': bool(settings.auto_log_predictions_enabled),
+        'logged': 0, 'already_open': 0, 'incomplete': 0, 'unavailable': 0, 'failed': 0,
+    }
+    if not counts['enabled']:
+        return counts
+    mkt = 'crypto' if str(market or '').strip().lower() == 'crypto' else 'stocks'
+    days = int(settings.auto_log_predictions_forward_days if forward_days is None else forward_days)
+    limit = int(settings.auto_log_predictions_max_new_per_cycle if max_new is None else max_new)
+    wanted: list[str] = []
+    for item in symbols or ():
+        raw = item.get('symbol') if isinstance(item, dict) else item
+        sym = str(raw or '').strip().upper()
+        if sym and sym not in wanted:
+            wanted.append(sym)
+    if limit <= 0 or days <= 0 or not wanted:
+        return counts
 
-    now = _utcnow()
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    with _db() as c:
+        running = {r[0] for r in c.execute(
+            "SELECT DISTINCT symbol FROM saved_predictions "
+            "WHERE source = 'auto_scan' AND market = ? AND status = 'open' AND expires_at > ?",
+            (mkt, _utcnow().isoformat()))}
 
-    # Collect symbols already logged today.
-    try:
-        with _db() as c:
-            logged_today = {
-                r[0] for r in c.execute('''
-                    SELECT DISTINCT symbol FROM saved_predictions
-                    WHERE source = 'auto_scan' AND created_at >= ?
-                ''', (today_start.isoformat(),)).fetchall()
-            }
-    except sqlite3.Error as exc:
-        log.warning('prediction_tracker: auto_log fetch failed: %s', exc)
-        return
+    from app.services.detail_service import _snapshot_is_incomplete
+    from app.services.price_prediction_service import predict_price
+    from app.services.snapshot_store import lookup_snapshot_row
 
-    logged_count = 0
-    for row in rows:
-        if logged_count >= max_new_per_cycle:
+    for sym in wanted:
+        if counts['logged'] >= limit:
             break
-        sym = (row.get('symbol') or '').upper()
-        if not sym or sym in logged_today:
+        if sym in running:
+            counts['already_open'] += 1
             continue
-
-        # Extract the data we need from the row.
-        score = float(row.get('final_score') or 0.0)
-        direction = (row.get('final_direction') or 'Neutral').lower()
-        if direction not in ('bull', 'bear', 'neutral'):
-            direction = 'neutral'
-
-        # Get the current/anchor price.  Try multiple sources.
-        anchor_price = None
-        market_fb = (row.get('factor_breakdown') or {}).get('market') or {}
-        if market_fb.get('last_price'):
-            anchor_price = float(market_fb['last_price'])
-        if not anchor_price or anchor_price <= 0:
-            # Try symbol identity lookup as fallback.
-            try:
-                from app.services.snapshot_store import lookup_snapshot_row
-                snap_row = lookup_snapshot_row(sym, 'stocks')
-                if snap_row:
-                    snap_fb = (snap_row.get('factor_breakdown') or {}).get('market') or {}
-                    anchor_price = float(snap_fb.get('last_price') or 0)
-            except Exception:
-                pass
-
-        if not anchor_price or anchor_price <= 0:
-            log.debug('prediction_tracker: auto_log skip %s (no price)', sym)
+        incomplete, _reason = _snapshot_is_incomplete(lookup_snapshot_row(sym, mkt))
+        if incomplete:
+            counts['incomplete'] += 1
             continue
-
-        # Derive target_price based on score and direction.
-        # Higher score → more aggressive target (farther from anchor).
-        # Bull: target = anchor * (1 + 0.05 * normalized_score)
-        # Bear: target = anchor * (1 - 0.05 * normalized_score)
-        normalized_score = max(0.0, min(1.0, score / 100.0))  # 0 to 1
-        if direction == 'bull':
-            # 5-15% upside range based on score
-            target_price = anchor_price * (1.0 + 0.05 + 0.1 * normalized_score)
-        elif direction == 'bear':
-            # 5-15% downside range based on score
-            target_price = anchor_price * (1.0 - 0.05 - 0.1 * normalized_score)
-        else:
-            # Neutral: tight range (2-3% move)
-            target_price = anchor_price * (1.0 + 0.01 * (0.5 - normalized_score))
-
+        try:
+            pred = predict_price(sym, forward_days=days, market=mkt)
+        except Exception as exc:  # noqa: BLE001 - predict_price should not raise; one symbol must not stop the batch
+            log.warning('prediction tracker: predict_price failed for %s: %s', sym, exc)
+            counts['failed'] += 1
+            continue
+        anchor = quote_math.price(pred.get('current_price')) if isinstance(pred, dict) else None
+        target = quote_math.price(pred.get('target_price')) if isinstance(pred, dict) else None
+        if not isinstance(pred, dict) or pred.get('status') != 'ok' or anchor is None or target is None:
+            counts['unavailable'] += 1
+            continue
         try:
             save_prediction({
                 'symbol': sym,
-                'market': 'stocks',
-                'anchor_price': anchor_price,
-                'target_price': target_price,
-                'direction': direction,
-                'forward_days': forward_days,
-                'confidence_pct': min(100.0, score),  # Use final_score as confidence
-                'notes': f'auto_scan: score={score:.1f}',
+                'market': mkt,
+                'anchor_price': anchor,
+                'target_price': target,
+                'direction': _direction_from_prediction(pred),
+                'confidence_pct': quote_math.amount(pred.get('confidence')),
+                'forward_days': days,
+                'full_payload': pred,
                 'source': 'auto_scan',
             })
-            logged_count += 1
-            logged_today.add(sym)
-        except ValueError as exc:
-            log.debug('prediction_tracker: auto_log skip %s: %s', sym, exc)
-        except RuntimeError as exc:
-            log.warning('prediction_tracker: auto_log failed for %s: %s', sym, exc)
-            # Continue on DB errors — don't let one failure block the whole batch.
-
-    if logged_count > 0:
-        log.info('prediction_tracker: auto_log added %d new predictions', logged_count)
+        except (ValueError, RuntimeError) as exc:
+            log.warning('prediction tracker: could not log %s: %s', sym, exc)
+            counts['failed'] += 1
+            continue
+        counts['logged'] += 1
+    if counts['logged']:
+        log.info('prediction tracker: logged %d scanner predictions (%s)', counts['logged'], mkt)
+    return counts

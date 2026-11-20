@@ -18,18 +18,39 @@ _status = {
     'warmed_symbols': 0,
     'last_batch': 0,
     'market': 'stocks',
-    # Phase: auto prediction logging.  Populated each cycle by
-    # auto_log_scan_predictions() -- see that function's docstring for
-    # why this exists: without it, `save_prediction` was reachable ONLY
-    # from the manual "Save prediction" button, so accuracy_stats()
-    # could only ever measure a human-curated, selection-biased sample.
-    # This loop already walks the FULL universe on a timer with no user
-    # involvement, which makes it the correct place to log a systematic,
-    # unbiased sample instead.
+    # The counts from the last auto_log_scan_predictions() call, or
+    # {'error': ...} when it raised. This loop walks the whole universe
+    # on a timer with no user involvement, so the 'auto_scan' rows it
+    # logs are the unbiased sample; manual saves are selection-biased.
     'last_auto_log': None,
 }
 _thread = None
 _stop = threading.Event()
+
+
+_last_auto_log_error: list[str | None] = [None]
+
+
+def _auto_log(rows, batch, market):
+    """Log scanner predictions for the batch; a failure is recorded, never raised.
+
+    auto_log_scan_predictions saves at most
+    settings.auto_log_predictions_max_new_per_cycle rows per tick, and only
+    for fully scored symbols, so predict_price reads the snapshot mirror.
+    A new error is logged as a warning, a repeat at debug level.
+    """
+    try:
+        from app.services.prediction_tracker_service import auto_log_scan_predictions
+        symbols = [r.get('symbol') for r in rows if r.get('symbol')]
+        _status['last_auto_log'] = auto_log_scan_predictions(symbols, market=market)
+        _last_auto_log_error[0] = None
+    except Exception as exc:  # noqa: BLE001 - the warmer must keep warming
+        text = f'{type(exc).__name__}: {exc}'
+        _status['last_auto_log'] = {'error': text, 'batch': batch, 'market': market}
+        level = logging.DEBUG if text == _last_auto_log_error[0] else logging.WARNING
+        log.log(level, 'auto_log_scan_predictions failed for batch %d (%s): %s', batch, market, text,
+                exc_info=level == logging.WARNING)
+        _last_auto_log_error[0] = text
 
 
 def _loop():
@@ -48,17 +69,7 @@ def _loop():
             _status['warmed_symbols'] += len(rows)
             _status['last_cycle_utc'] = utcnow_iso()
             _status['last_batch'] = batch
-            try:
-                symbols = [r.get('symbol') for r in rows if r.get('symbol')]
-                # max_new bounds the added cost per tick regardless of
-                # batch size -- predict_price recomputes a full factor
-                # blend, so this stays cheap even on large batches.
-                from app.services.prediction_tracker_service import auto_log_scan_predictions
-                _status['last_auto_log'] = auto_log_scan_predictions(
-                    symbols, market=market, forward_days=10, max_new=10,
-                )
-            except Exception:
-                log.debug('auto_log_scan_predictions failed for batch %d (%s)', batch, market, exc_info=True)
+            _auto_log(rows, batch, market)
         except Exception:
             _status['last_cycle_utc'] = utcnow_iso()
             _status['last_batch'] = batch

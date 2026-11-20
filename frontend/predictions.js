@@ -115,10 +115,12 @@
     const fmtPct = (v) => (v != null ? `${v}%` : '\u2014 (not enough evaluated yet)');
     el.innerHTML = `
       <div class="source-card unbiased" data-testid="source-card-auto">
-        <h4>\u2713 Scanner accuracy (auto-logged, unbiased)</h4>
+        <h4>\u2713 Scanner accuracy (auto-logged)</h4>
         <div class="big">${fmtPct(auto.directional_accuracy_pct)}</div>
         <div class="note">${auto.evaluated ?? 0} evaluated of ${auto.total_saved ?? 0} logged \u00b7
-          every symbol the scanner scores gets logged automatically -- no cherry-picking.</div>
+          the scanner logs each fully scored symbol automatically, one open window
+          at a time -- no hand-picking, though only symbols that ranked in the
+          top part of a scoring batch at least once get a full score.</div>
       </div>
       <div class="source-card biased" data-testid="source-card-user">
         <h4>My saved picks (manual, selection-biased)</h4>
@@ -204,7 +206,7 @@
         ? `<span class="${r.error_pct >= 0 ? 'dir-bull' : 'dir-bear'}">${r.error_pct >= 0 ? '+' : ''}${fmtNum(r.error_pct, 2)}%</span>`
         : '\u2014';
       const sourceCell = r.source === 'auto_scan'
-        ? '<span class="hit-yes" title="Logged automatically by the scanner for every symbol it scores -- no cherry-picking">auto</span>'
+        ? '<span class="hit-yes" title="Logged automatically by the scanner for a fully scored symbol -- no hand-picking">auto</span>'
         : '<span class="hit-na" title="Manually saved by a user -- selection-biased, not a fair accuracy read">manual</span>';
       return `<tr data-testid="row-${r.id}">
         <td class="sym" data-testid="row-symbol-${r.id}">${r.symbol}</td>
