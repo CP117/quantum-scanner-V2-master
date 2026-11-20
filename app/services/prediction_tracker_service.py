@@ -1,62 +1,99 @@
 """
-Prediction tracker: log, retrieve, evaluate future price predictions.
+Prediction tracker: save, list, evaluate and score forward price predictions.
 
-Phase 26.19: auto-logging. The warmer loop and manual detail-panel
-predictions both feed into this service. We track open predictions
-(anchor_price, target_price, forward_days, direction) and periodically
-evaluate them against live market data so the UI can render accuracy
-stats over time (precision, recall, directional bias, etc.).
+The warmer loop logs scanner predictions (source 'auto_scan') and the
+detail panel's Save button logs manual ones (source 'user'). Each row
+keeps the anchor price, the target price, the direction and an expiry
+(created_at + forward_days calendar days). frontend/predictions.js reads
+this module through app/routes/prediction_tracker.py, and its fields are
+the contract.
 
-Schema: saved_predictions table holds:
-  - id: uuid hex string (primary key)
-  - symbol, market (stocks/crypto)
-  - anchor_price, target_price (entry/exit prices)
-  - direction (bull/bear/neutral)
-  - confidence_pct (optional user estimate)
-  - forward_days (prediction horizon; normally 10)
-  - expires_at (anchor_at + forward_days)
-  - notes, full_payload (optional audit trail)
-  - created_at, evaluated_at (timestamps)
-  - status (open/expired/correct/incorrect)
-  - source (user / auto_scan)
+Statuses
+  open        saved and not evaluated yet.
+  evaluated   the official close was found. actual_close, actual_close_date,
+              actual_return_pct, error_pct, directional_hit and
+              magnitude_hit are set.
+  unresolved  no close can be found; unresolved_reason says why.
+
+Rows from older builds used open / expired / correct / incorrect. The
+schema check maps correct and incorrect to evaluated with
+directional_hit 1 or 0, and expired back to open so it gets evaluated.
+
+Hit rules (the pure functions below)
+  actual_close       the official close of the first trading session dated
+                     on or after the expiry date. The expiry date is taken
+                     in America/New_York for stocks and in UTC for crypto.
+  actual_return_pct  (actual_close / anchor_price - 1) * 100
+  error_pct          (actual_close - target_price) / target_price * 100
+  directional_hit    bull: actual_close > anchor_price.
+                     bear: actual_close < anchor_price.
+                     neutral: None, so neutral rows are left out of
+                     directional accuracy.
+  magnitude_hit      abs(error_pct) <= MRD_PREDICTION_MAGNITUDE_TOLERANCE_PCT
+                     (default 2.0)
+
+The database is data/saved_predictions.db, or the path in
+MRD_PREDICTIONS_DB. The variable is read on every call, so tests and the
+evaluation script can point the module at a copy.
 """
 from __future__ import annotations
 
 import json
 import logging
+import math
+import os
 import sqlite3
+import statistics
 import uuid
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta, timezone
+from contextlib import contextmanager
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from threading import Lock
-from typing import Any
+from typing import Any, Iterator
+from zoneinfo import ZoneInfo
+
+from app.services import quote_math
 
 log = logging.getLogger('app.prediction_tracker')
 
 _HERE = Path(__file__).resolve()
 _REPO_ROOT = _HERE.parent.parent.parent
-_DB_CANDIDATES = [
-    Path('data/saved_predictions.db'),
-    _REPO_ROOT / 'data' / 'saved_predictions.db',
-    _REPO_ROOT / 'app' / 'data' / 'saved_predictions.db',
-]
+_DEFAULT_DB = _REPO_ROOT / 'data' / 'saved_predictions.db'
+
+DB_ENV = 'MRD_PREDICTIONS_DB'
+TOLERANCE_ENV = 'MRD_PREDICTION_MAGNITUDE_TOLERANCE_PCT'
+DEFAULT_MAGNITUDE_TOLERANCE_PCT = 2.0
+
+STATUSES = ('open', 'evaluated', 'unresolved')
+DIRECTIONS = ('bull', 'bear', 'neutral')
+SOURCES = ('auto_scan', 'user')
 
 _DB_LOCK = Lock()
-_EVAL_POOL = ThreadPoolExecutor(max_workers=2, thread_name_prefix='pred-eval')
 
 
-def _pick_db() -> Path:
-    for p in _DB_CANDIDATES:
-        try:
-            if p.exists() or p.parent.exists():
-                return p
-        except OSError:
-            continue
-    return _DB_CANDIDATES[0]
+def db_path() -> Path:
+    """The tracker database: ``MRD_PREDICTIONS_DB`` when set, else data/saved_predictions.db."""
+    override = os.environ.get(DB_ENV, '').strip()
+    return Path(override).expanduser() if override else _DEFAULT_DB
 
 
-_DB_PATH = _pick_db()
+def magnitude_tolerance_pct() -> float:
+    """The magnitude-hit tolerance in percent of the target price.
+
+    ``MRD_PREDICTION_MAGNITUDE_TOLERANCE_PCT`` overrides the default of
+    2.0. A value that is not a finite number of zero or more falls back
+    to the default.
+    """
+    raw = os.environ.get(TOLERANCE_ENV, '').strip()
+    if not raw:
+        return DEFAULT_MAGNITUDE_TOLERANCE_PCT
+    try:
+        value = float(raw)
+    except ValueError:
+        return DEFAULT_MAGNITUDE_TOLERANCE_PCT
+    if not math.isfinite(value) or value < 0:
+        return DEFAULT_MAGNITUDE_TOLERANCE_PCT
+    return value
 
 
 def _utcnow() -> datetime:
@@ -69,42 +106,224 @@ def _utcnow_iso() -> str:
     return _utcnow().isoformat()
 
 
-def _conn() -> sqlite3.Connection:
-    """Get a DB connection. Auto-creates the DB file + schema if needed."""
-    _DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(_DB_PATH))
-    conn.row_factory = sqlite3.Row
-    return conn
+# ---------------------------------------------------------------------------
+# Schema
+# ---------------------------------------------------------------------------
+
+_CREATE_TABLE = '''
+    CREATE TABLE IF NOT EXISTS saved_predictions (
+      id TEXT PRIMARY KEY,
+      symbol TEXT NOT NULL,
+      market TEXT NOT NULL DEFAULT 'stocks',
+      anchor_price REAL NOT NULL,
+      target_price REAL NOT NULL,
+      direction TEXT NOT NULL,
+      confidence_pct REAL,
+      forward_days INTEGER NOT NULL DEFAULT 10,
+      expires_at TEXT NOT NULL,
+      notes TEXT,
+      full_payload TEXT,
+      created_at TEXT NOT NULL,
+      evaluated_at TEXT,
+      status TEXT NOT NULL DEFAULT 'open',
+      source TEXT NOT NULL DEFAULT 'user',
+      actual_close REAL,
+      actual_close_date TEXT,
+      actual_return_pct REAL,
+      error_pct REAL,
+      directional_hit INTEGER,
+      magnitude_hit INTEGER,
+      unresolved_reason TEXT,
+      resolved_at TEXT,
+      UNIQUE(symbol, anchor_price, created_at)
+    )
+'''
+
+# Columns added after the first release. Older databases get them through
+# ALTER TABLE; resolved_at is also added by maintenance_service.
+_ADDED_COLUMNS: tuple[tuple[str, str], ...] = (
+    ('evaluated_at', 'TEXT'),
+    ('actual_close', 'REAL'),
+    ('actual_close_date', 'TEXT'),
+    ('actual_return_pct', 'REAL'),
+    ('error_pct', 'REAL'),
+    ('directional_hit', 'INTEGER'),
+    ('magnitude_hit', 'INTEGER'),
+    ('unresolved_reason', 'TEXT'),
+    ('resolved_at', 'TEXT'),
+)
+
+_INDEXES = (
+    'CREATE INDEX IF NOT EXISTS idx_symbol ON saved_predictions(symbol)',
+    'CREATE INDEX IF NOT EXISTS idx_status ON saved_predictions(status)',
+    'CREATE INDEX IF NOT EXISTS idx_created ON saved_predictions(created_at DESC)',
+    'CREATE INDEX IF NOT EXISTS idx_status_expires ON saved_predictions(status, expires_at)',
+)
+
+# Legacy statuses. A bull or bear row keeps a hit the old code stored;
+# a neutral row gets none, whatever the old code recorded.
+_LEGACY_STATUS_UPDATES = (
+    "UPDATE saved_predictions SET status = 'evaluated', directional_hit = CASE WHEN "
+    "direction IN ('bull', 'bear') THEN COALESCE(directional_hit, 1) END WHERE status = 'correct'",
+    "UPDATE saved_predictions SET status = 'evaluated', directional_hit = CASE WHEN "
+    "direction IN ('bull', 'bear') THEN COALESCE(directional_hit, 0) END WHERE status = 'incorrect'",
+    "UPDATE saved_predictions SET status = 'open' WHERE status = 'expired'",
+)
+
+
+def _ensure_schema(conn: sqlite3.Connection) -> None:
+    """Create or upgrade the table. Idempotent, and cheap enough to run on every connection.
+
+    Running it every time (instead of once per process) keeps a database
+    that was deleted or swapped while the server runs usable.
+    """
+    conn.execute(_CREATE_TABLE)
+    present = {row[1] for row in conn.execute('PRAGMA table_info(saved_predictions)')}
+    for name, kind in _ADDED_COLUMNS:
+        if name not in present:
+            conn.execute(f'ALTER TABLE saved_predictions ADD COLUMN {name} {kind}')
+    for statement in _INDEXES:
+        conn.execute(statement)
+    legacy = conn.execute(
+        "SELECT 1 FROM saved_predictions WHERE status IN ('correct', 'incorrect', 'expired') LIMIT 1"
+    ).fetchone()
+    if legacy:
+        for statement in _LEGACY_STATUS_UPDATES:
+            conn.execute(statement)
+
+
+@contextmanager
+def _db() -> Iterator[sqlite3.Connection]:
+    """A locked connection with the schema in place; commits on success and always closes."""
+    path = db_path()
+    with _DB_LOCK:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        conn = sqlite3.connect(str(path), timeout=10)
+        conn.row_factory = sqlite3.Row
+        try:
+            _ensure_schema(conn)
+            yield conn
+            conn.commit()
+        except BaseException:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
 
 
 def init_db() -> None:
-    """Idempotent schema init.  Safe to call repeatedly."""
-    with _DB_LOCK, _conn() as c:
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS saved_predictions (
-              id TEXT PRIMARY KEY,
-              symbol TEXT NOT NULL,
-              market TEXT NOT NULL DEFAULT 'stocks',
-              anchor_price REAL NOT NULL,
-              target_price REAL NOT NULL,
-              direction TEXT NOT NULL,
-              confidence_pct REAL,
-              forward_days INTEGER NOT NULL DEFAULT 10,
-              expires_at TEXT NOT NULL,
-              notes TEXT,
-              full_payload TEXT,
-              created_at TEXT NOT NULL,
-              evaluated_at TEXT,
-              status TEXT NOT NULL DEFAULT 'open',
-              source TEXT NOT NULL DEFAULT 'user',
-              UNIQUE(symbol, anchor_price, created_at)
-            )
-        ''')
-        c.execute('CREATE INDEX IF NOT EXISTS idx_symbol ON saved_predictions(symbol)')
-        c.execute('CREATE INDEX IF NOT EXISTS idx_status ON saved_predictions(status)')
-        c.execute('CREATE INDEX IF NOT EXISTS idx_created ON saved_predictions(created_at DESC)')
-        c.commit()
+    """Create or upgrade the schema. Safe to call repeatedly."""
+    with _db():
+        pass
 
+
+# ---------------------------------------------------------------------------
+# Hit rules (pure)
+# ---------------------------------------------------------------------------
+
+def _parse_utc(value: Any) -> datetime | None:
+    """An ISO-8601 string or datetime as an aware UTC datetime (naive means UTC)."""
+    if isinstance(value, datetime):
+        parsed = value
+    elif isinstance(value, str) and value.strip():
+        try:
+            parsed = datetime.fromisoformat(value.strip().replace('Z', '+00:00'))
+        except ValueError:
+            return None
+    else:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def market_timezone(market: str | None) -> str:
+    """The timezone that dates a market's sessions: UTC for crypto, New York otherwise."""
+    return quote_math.CRYPTO_TZ if (market or '').lower() == 'crypto' else quote_math.DEFAULT_TZ
+
+
+def expiry_session_date(expires_at: Any, market: str | None = 'stocks') -> date | None:
+    """The calendar date of the expiry in the market's timezone.
+
+    The evaluator takes the close of the first trading session dated on
+    or after this date. An expiry of 2026-07-20 02:00 UTC is July 19 for
+    a stock (22:00 in New York) and July 20 for a coin.
+    """
+    moment = _parse_utc(expires_at)
+    if moment is None:
+        return None
+    return moment.astimezone(ZoneInfo(market_timezone(market))).date()
+
+
+def actual_return_pct(anchor_price: Any, actual_close: Any) -> float | None:
+    """Percent move from the anchor to the close: (close / anchor - 1) * 100."""
+    anchor, close = quote_math.price(anchor_price), quote_math.price(actual_close)
+    if anchor is None or close is None:
+        return None
+    return (close / anchor - 1.0) * 100.0
+
+
+def error_pct(target_price: Any, actual_close: Any) -> float | None:
+    """Signed miss against the target in percent of the target: (close - target) / target * 100."""
+    target, close = quote_math.price(target_price), quote_math.price(actual_close)
+    if target is None or close is None:
+        return None
+    return (close - target) / target * 100.0
+
+
+def directional_hit(direction: Any, anchor_price: Any, actual_close: Any) -> bool | None:
+    """Whether the close moved the predicted way from the anchor.
+
+    bull hits when the close is above the anchor and bear when it is
+    below; an unchanged close misses both. neutral, an unknown direction
+    or a missing price gives None, which leaves the row out of
+    directional accuracy.
+    """
+    anchor, close = quote_math.price(anchor_price), quote_math.price(actual_close)
+    if anchor is None or close is None:
+        return None
+    kind = str(direction or '').strip().lower()
+    if kind == 'bull':
+        return close > anchor
+    if kind == 'bear':
+        return close < anchor
+    return None
+
+
+def magnitude_hit(error: Any, tolerance_pct: float | None = None) -> bool | None:
+    """Whether abs(error_pct) is within the tolerance (default from magnitude_tolerance_pct()).
+
+    None when the error is missing or not a finite number.
+    """
+    try:
+        value = float(error)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(value):
+        return None
+    tol = magnitude_tolerance_pct() if tolerance_pct is None else float(tolerance_pct)
+    return abs(value) <= tol
+
+
+def score_prediction(
+    row: dict[str, Any],
+    actual_close: Any,
+    tolerance_pct: float | None = None,
+) -> dict[str, Any]:
+    """The evaluated fields for one row and its close: return, error and both hits."""
+    err = error_pct(row.get('target_price'), actual_close)
+    return {
+        'actual_close': quote_math.price(actual_close),
+        'actual_return_pct': actual_return_pct(row.get('anchor_price'), actual_close),
+        'error_pct': err,
+        'directional_hit': directional_hit(row.get('direction'), row.get('anchor_price'), actual_close),
+        'magnitude_hit': magnitude_hit(err, tolerance_pct),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Saving
+# ---------------------------------------------------------------------------
 
 def save_prediction(payload: dict[str, Any]) -> dict[str, Any]:
     """Insert a new saved prediction.
@@ -113,9 +332,9 @@ def save_prediction(payload: dict[str, Any]) -> dict[str, Any]:
     `direction`, `forward_days`.  Other fields are optional; we fill
     sensible defaults.  Returns the inserted row as a dict.
 
-    Raises ValueError on malformed input so the route handler can return
-    400.  Never raises sqlite3 errors — those are caught + logged and
-    re-raised as RuntimeError for consistent client handling.
+    Raises ValueError on malformed input, and on a duplicate (same
+    symbol, anchor price and created_at), so the route handler can
+    return 400. sqlite3 errors are logged and re-raised as RuntimeError.
     """
     if not payload:
         raise ValueError('empty payload')
@@ -150,7 +369,7 @@ def save_prediction(payload: dict[str, Any]) -> dict[str, Any]:
                   target, anchor, direction)
 
     direction = (payload.get('direction') or '').lower()
-    if direction not in ('bull', 'bear', 'neutral'):
+    if direction not in DIRECTIONS:
         # Derive from sign of (target - anchor) if not explicit.
         delta = target - anchor
         direction = 'bull' if delta > 0 else ('bear' if delta < 0 else 'neutral')
@@ -178,11 +397,11 @@ def save_prediction(payload: dict[str, Any]) -> dict[str, Any]:
 
     notes = (payload.get('notes') or '').strip()[:1000]  # cap to 1k chars
     source = (payload.get('source') or 'user').strip().lower()
-    if source not in ('user', 'auto_scan'):
+    if source not in SOURCES:
         source = 'user'
 
-    with _DB_LOCK, _conn() as c:
-        try:
+    try:
+        with _db() as c:
             c.execute('''
                 INSERT INTO saved_predictions
                   (id, symbol, market, anchor_price, target_price, direction,
@@ -194,15 +413,14 @@ def save_prediction(payload: dict[str, Any]) -> dict[str, Any]:
                 confidence_pct, forward_days, expires_dt.isoformat(), notes,
                 created_at.isoformat(), full_payload_json, source,
             ))
-            c.commit()
-            log.debug('prediction_tracker: saved %s %s @ %.2f -> %.2f (%s, %dd)',
-                      sym, market, anchor, target, direction, forward_days)
-        except sqlite3.IntegrityError as exc:
-            # Duplicate UNIQUE(symbol, anchor_price, created_at) — ignore
-            log.debug('prediction_tracker: duplicate prediction ignored: %s', exc)
-        except sqlite3.Error as exc:
-            log.exception('prediction_tracker: insert failed: %s', exc)
-            raise RuntimeError(f'db insert failed: {exc}') from exc
+    except sqlite3.IntegrityError as exc:
+        # Nothing was stored, so do not hand back a row that looks saved.
+        raise ValueError(f'duplicate prediction for {sym}: {exc}') from exc
+    except sqlite3.Error as exc:
+        log.exception('prediction_tracker: insert failed: %s', exc)
+        raise RuntimeError(f'db insert failed: {exc}') from exc
+    log.debug('prediction_tracker: saved %s %s @ %.2f -> %.2f (%s, %dd)',
+              sym, market, anchor, target, direction, forward_days)
 
     return {
         'id': pred_id,
@@ -220,6 +438,68 @@ def save_prediction(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+# ---------------------------------------------------------------------------
+# Reading and deleting
+# ---------------------------------------------------------------------------
+
+# What /api/predictions/list returns per row: everything predictions.js
+# reads, without full_payload (several kB per row).
+LIST_COLUMNS = (
+    'id', 'symbol', 'market', 'direction', 'anchor_price', 'target_price',
+    'confidence_pct', 'forward_days', 'notes', 'source', 'status',
+    'created_at', 'expires_at', 'evaluated_at', 'actual_close',
+    'actual_close_date', 'actual_return_pct', 'error_pct',
+    'directional_hit', 'magnitude_hit', 'unresolved_reason',
+)
+
+
+def _as_bool(value: Any) -> bool | None:
+    return None if value is None else bool(value)
+
+
+def _public_row(row: sqlite3.Row) -> dict[str, Any]:
+    out = {name: row[name] for name in LIST_COLUMNS}
+    out['directional_hit'] = _as_bool(out['directional_hit'])
+    out['magnitude_hit'] = _as_bool(out['magnitude_hit'])
+    return out
+
+
+def list_predictions(
+    market: str | None = None,
+    status: str | None = None,
+    source: str | None = None,
+    limit: int = 500,
+) -> list[dict[str, Any]]:
+    """Saved predictions, newest first, optionally filtered by market, status and source.
+
+    Hits come back as True, False or None (predictions.js compares with
+    ===). full_payload is left out. sqlite errors propagate so the route
+    answers 500 instead of an empty list.
+    """
+    clauses: list[str] = []
+    params: list[Any] = []
+    for column, value in (('market', market), ('status', status), ('source', source)):
+        if value:
+            clauses.append(f'{column} = ?')
+            params.append(str(value).lower())
+    query = f"SELECT {', '.join(LIST_COLUMNS)} FROM saved_predictions"
+    if clauses:
+        query += ' WHERE ' + ' AND '.join(clauses)
+    query += ' ORDER BY created_at DESC, id LIMIT ?'
+    params.append(max(1, min(int(limit), 5000)))
+    with _db() as c:
+        return [_public_row(r) for r in c.execute(query, params).fetchall()]
+
+
+def delete_prediction(prediction_id: str) -> bool:
+    """Delete one prediction by id. True when a row was removed."""
+    pid = str(prediction_id or '').strip()
+    if not pid:
+        return False
+    with _db() as c:
+        return c.execute('DELETE FROM saved_predictions WHERE id = ?', (pid,)).rowcount > 0
+
+
 def get_open_predictions(symbol: str | None = None, market: str | None = None) -> list[dict]:
     """Retrieve all open predictions, optionally filtered by symbol + market."""
     query = 'SELECT * FROM saved_predictions WHERE status = ?'
@@ -232,7 +512,7 @@ def get_open_predictions(symbol: str | None = None, market: str | None = None) -
         params.append(market.lower())
     query += ' ORDER BY created_at DESC'
     try:
-        with _DB_LOCK, _conn() as c:
+        with _db() as c:
             rows = c.execute(query, params).fetchall()
             return [dict(r) for r in rows]
     except sqlite3.Error as exc:
@@ -250,13 +530,119 @@ def get_all_predictions(symbol: str | None = None, limit: int = 1000) -> list[di
     query += ' ORDER BY created_at DESC LIMIT ?'
     params.append(limit)
     try:
-        with _DB_LOCK, _conn() as c:
+        with _db() as c:
             rows = c.execute(query, params).fetchall()
             return [dict(r) for r in rows]
     except sqlite3.Error as exc:
         log.warning('prediction_tracker: fetch all failed: %s', exc)
         return []
 
+
+# ---------------------------------------------------------------------------
+# Accuracy
+# ---------------------------------------------------------------------------
+
+def _pct(hits: int, total: int) -> float | None:
+    return round(100.0 * hits / total, 1) if total else None
+
+
+def _rates(rows: list[sqlite3.Row]) -> dict[str, Any]:
+    """Counts and hit rates over a set of rows; percentages are None without a sample."""
+    evaluated = [r for r in rows if r['status'] == 'evaluated']
+    directional = [r['directional_hit'] for r in evaluated if r['directional_hit'] is not None]
+    magnitude = [r['magnitude_hit'] for r in evaluated if r['magnitude_hit'] is not None]
+    return {
+        'total_saved': len(rows),
+        'open': sum(1 for r in rows if r['status'] == 'open'),
+        'evaluated': len(evaluated),
+        'unresolved': sum(1 for r in rows if r['status'] == 'unresolved'),
+        'directional_total': len(directional),
+        'directional_hits': sum(1 for h in directional if h),
+        'directional_accuracy_pct': _pct(sum(1 for h in directional if h), len(directional)),
+        'magnitude_accuracy_pct': _pct(sum(1 for h in magnitude if h), len(magnitude)),
+    }
+
+
+def accuracy_stats(market: str | None = None, source: str | None = None) -> dict[str, Any]:
+    """Accuracy over the saved predictions, in the shape predictions.js reads.
+
+    Top-level counts and rates, and by_direction, use the market and
+    source filters. by_source uses only the market filter, so the page
+    can always show auto_scan (every scored symbol, no curation) next to
+    user (manual picks, selection-biased).
+
+    Directional accuracy covers evaluated bull and bear rows; magnitude
+    accuracy and the error averages cover every evaluated row with a
+    close. Percentages are None until there is a sample.
+
+    The legacy keys (total_predictions, correct, incorrect, accuracy_pct,
+    bull_accuracy_pct, bear_accuracy_pct, expired_only) describe the
+    directional sample and use 0.0 for an empty one, as before.
+    """
+    query = ('SELECT status, direction, source, directional_hit, magnitude_hit, error_pct '
+             'FROM saved_predictions')
+    params: list[Any] = []
+    if market:
+        query += ' WHERE market = ?'
+        params.append(market.lower())
+    with _db() as c:
+        market_rows = c.execute(query, params).fetchall()
+    rows = [r for r in market_rows if not source or r['source'] == source]
+
+    overall = _rates(rows)
+    errors = [abs(r['error_pct']) for r in rows
+              if r['status'] == 'evaluated' and r['error_pct'] is not None]
+
+    by_direction: dict[str, dict[str, Any]] = {}
+    for kind in DIRECTIONS:
+        rates = _rates([r for r in rows if r['direction'] == kind])
+        by_direction[kind] = {
+            # predictions.js sums `total` to decide whether to draw the
+            # chart, so it counts the evaluated rows the rates cover.
+            'total': rates['evaluated'],
+            'evaluated': rates['evaluated'],
+            'total_saved': rates['total_saved'],
+            'directional_accuracy_pct': rates['directional_accuracy_pct'],
+            'magnitude_accuracy_pct': rates['magnitude_accuracy_pct'],
+        }
+
+    by_source: dict[str, dict[str, Any]] = {}
+    for kind in SOURCES:
+        rates = _rates([r for r in market_rows if r['source'] == kind])
+        by_source[kind] = {
+            key: rates[key] for key in (
+                'total_saved', 'open', 'evaluated', 'unresolved',
+                'directional_accuracy_pct', 'magnitude_accuracy_pct',
+            )
+        }
+
+    return {
+        'total_saved': overall['total_saved'],
+        'open': overall['open'],
+        'evaluated': overall['evaluated'],
+        'unresolved': overall['unresolved'],
+        'directional_accuracy_pct': overall['directional_accuracy_pct'],
+        'magnitude_accuracy_pct': overall['magnitude_accuracy_pct'],
+        'mean_abs_error_pct': round(statistics.fmean(errors), 2) if errors else None,
+        'median_abs_error_pct': round(statistics.median(errors), 2) if errors else None,
+        'magnitude_tolerance_pct': magnitude_tolerance_pct(),
+        'by_direction': by_direction,
+        'by_source': by_source,
+        'filters': {'market': market, 'source': source},
+        # Legacy keys.
+        'total_predictions': overall['directional_total'],
+        'correct': overall['directional_hits'],
+        'incorrect': overall['directional_total'] - overall['directional_hits'],
+        'accuracy_pct': overall['directional_accuracy_pct'] or 0.0,
+        'bull_accuracy_pct': by_direction['bull']['directional_accuracy_pct'] or 0.0,
+        'bear_accuracy_pct': by_direction['bear']['directional_accuracy_pct'] or 0.0,
+        'expired_only': True,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Auto-logging
+# ---------------------------------------------------------------------------
 
 def auto_log_scan_predictions(
     rows: list[dict],
@@ -278,9 +664,8 @@ def auto_log_scan_predictions(
 
     # Quick check: don't bother if the DB hasn't been initialized yet.
     try:
-        with _DB_LOCK:
-            if not _DB_PATH.exists():
-                return
+        if not db_path().exists():
+            return
     except Exception:
         return
 
@@ -289,7 +674,7 @@ def auto_log_scan_predictions(
 
     # Collect symbols already logged today.
     try:
-        with _DB_LOCK, _conn() as c:
+        with _db() as c:
             logged_today = {
                 r[0] for r in c.execute('''
                     SELECT DISTINCT symbol FROM saved_predictions
@@ -371,74 +756,3 @@ def auto_log_scan_predictions(
 
     if logged_count > 0:
         log.info('prediction_tracker: auto_log added %d new predictions', logged_count)
-
-
-def accuracy_stats(source: str | None = None) -> dict:
-    """Compute aggregate accuracy stats over closed predictions.
-
-    Returns:
-      {
-        'total_predictions': N,
-        'correct': C,
-        'incorrect': I,
-        'accuracy_pct': 100*C/N,
-        'bull_accuracy_pct': ...,
-        'bear_accuracy_pct': ...,
-        'expired_only': bool (True = only expired preds included),
-      }
-    """
-    query = '''
-        SELECT COUNT(*) as total,
-               SUM(CASE WHEN status = 'correct' THEN 1 ELSE 0 END) as correct,
-               SUM(CASE WHEN status = 'incorrect' THEN 1 ELSE 0 END) as incorrect,
-               SUM(CASE WHEN status = 'correct' AND direction = 'bull' THEN 1 ELSE 0 END) as bull_correct,
-               SUM(CASE WHEN direction = 'bull' THEN 1 ELSE 0 END) as bull_total,
-               SUM(CASE WHEN status = 'correct' AND direction = 'bear' THEN 1 ELSE 0 END) as bear_correct,
-               SUM(CASE WHEN direction = 'bear' THEN 1 ELSE 0 END) as bear_total
-        FROM saved_predictions
-        WHERE status IN ('correct', 'incorrect')
-    '''
-    params: list[Any] = []
-    if source:
-        query += ' AND source = ?'
-        params.append(source)
-
-    try:
-        with _DB_LOCK, _conn() as c:
-            row = c.execute(query, params).fetchone()
-        if not row:
-            return {
-                'total_predictions': 0,
-                'correct': 0,
-                'incorrect': 0,
-                'accuracy_pct': 0.0,
-                'bull_accuracy_pct': 0.0,
-                'bear_accuracy_pct': 0.0,
-                'expired_only': True,
-            }
-        total = row['total'] or 0
-        correct = row['correct'] or 0
-        bull_correct = row['bull_correct'] or 0
-        bull_total = row['bull_total'] or 0
-        bear_correct = row['bear_correct'] or 0
-        bear_total = row['bear_total'] or 0
-        return {
-            'total_predictions': total,
-            'correct': correct,
-            'incorrect': (row['incorrect'] or 0),
-            'accuracy_pct': 100.0 * correct / total if total > 0 else 0.0,
-            'bull_accuracy_pct': 100.0 * bull_correct / bull_total if bull_total > 0 else 0.0,
-            'bear_accuracy_pct': 100.0 * bear_correct / bear_total if bear_total > 0 else 0.0,
-            'expired_only': True,
-        }
-    except sqlite3.Error as exc:
-        log.warning('prediction_tracker: accuracy_stats failed: %s', exc)
-        return {
-            'total_predictions': 0,
-            'correct': 0,
-            'incorrect': 0,
-            'accuracy_pct': 0.0,
-            'bull_accuracy_pct': 0.0,
-            'bear_accuracy_pct': 0.0,
-            'expired_only': True,
-        }

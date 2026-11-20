@@ -4,8 +4,9 @@
   ``import app...`` no matter where pytest is started from.  Existing
   per-file ``sys.path`` inserts are left alone.
 * Sets safe environment defaults before any ``app`` module is imported:
-  no automatic Cloudflare tunnel, and no background threads (the second
-  flag is honored once the lifespan/registry work lands).
+  no automatic Cloudflare tunnel, no background threads (the second
+  flag is honored once the lifespan/registry work lands), and a
+  throwaway prediction-tracker database instead of data/.
 * Blocks outbound network access for unit tests.  Tests that need a
   running server are marked ``integration``; tests that need the real
   internet are marked ``network``.  Both are deselected by default
@@ -14,10 +15,13 @@
 """
 from __future__ import annotations
 
+import atexit
 import ipaddress
 import os
+import shutil
 import socket
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -28,6 +32,11 @@ if str(REPO_ROOT) not in sys.path:
 
 os.environ.setdefault('MRD_AUTO_TUNNEL_ON_STARTUP', '0')
 os.environ.setdefault('MRD_START_BACKGROUND', '0')
+# The prediction tracker writes to a throwaway database, never data/.
+if 'MRD_PREDICTIONS_DB' not in os.environ:
+    _predictions_dir = tempfile.mkdtemp(prefix='qs-predictions-')
+    atexit.register(shutil.rmtree, _predictions_dir, ignore_errors=True)
+    os.environ['MRD_PREDICTIONS_DB'] = str(Path(_predictions_dir) / 'saved_predictions.db')
 
 _LEGACY_URL_VARS = ('REACT_APP_BACKEND_URL', 'BACKEND_TEST_BASE_URL', 'BACKEND_URL_OVERRIDE')
 _DEFAULT_BACKEND_URL = 'http://127.0.0.1:8001'

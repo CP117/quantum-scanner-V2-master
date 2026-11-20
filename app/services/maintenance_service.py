@@ -81,11 +81,6 @@ _REG_DB_CANDIDATES = [
     _REPO_ROOT / 'data' / 'regulatory.db',
     _REPO_ROOT / 'app' / 'data' / 'regulatory.db',
 ]
-_PRED_DB_CANDIDATES = [
-    Path('data/saved_predictions.db'),
-    _REPO_ROOT / 'data' / 'saved_predictions.db',
-    _REPO_ROOT / 'app' / 'data' / 'saved_predictions.db',
-]
 
 
 def _pick(paths: list[Path]) -> Path | None:
@@ -96,6 +91,17 @@ def _pick(paths: list[Path]) -> Path | None:
         except OSError:
             continue
     return None
+
+
+def _prediction_db_path() -> Path:
+    """The prediction tracker's database path (honors MRD_PREDICTIONS_DB)."""
+    from app.services.prediction_tracker_service import db_path
+    return db_path()
+
+
+def _prediction_db() -> Path | None:
+    """The prediction tracker's database when the file exists."""
+    return _pick([_prediction_db_path()])
 
 
 # ---------------------------------------------------------------------------
@@ -147,7 +153,7 @@ def maintenance_status() -> dict:
             'regulatory_retention_days': REGULATORY_RETENTION_DAYS,
             'prediction_retention_days': PREDICTION_RETENTION_DAYS,
             'regulatory_db_path': str(_pick(_REG_DB_CANDIDATES) or _REG_DB_CANDIDATES[0]),
-            'prediction_db_path': str(_pick(_PRED_DB_CANDIDATES) or _PRED_DB_CANDIDATES[0]),
+            'prediction_db_path': str(_prediction_db_path()),
             'memory_cache_prune_interval_seconds': MEMORY_CACHE_PRUNE_INTERVAL_SECONDS,
             'quote_cache_flush_tick_seconds': QUOTE_CACHE_FLUSH_TICK_SECONDS,
         }
@@ -276,7 +282,7 @@ def _ensure_prediction_db_schema() -> None:
     Migration for DBs created before the `resolved_at` column existed.
     This prevents the "no such column: resolved_at" error during pruning.
     """
-    pred_db = _pick(_PRED_DB_CANDIDATES)
+    pred_db = _prediction_db()
     if not pred_db or not pred_db.exists():
         return
     try:
@@ -375,7 +381,7 @@ def prune_databases() -> dict:
     _ensure_prediction_db_schema()
     
     pred_cutoff = (now - timedelta(days=PREDICTION_RETENTION_DAYS)).isoformat()
-    pred_db = _pick(_PRED_DB_CANDIDATES)
+    pred_db = _prediction_db()
     if pred_db:
         # Only prune evaluated predictions (evaluated_at IS NOT NULL).
         # Use evaluated_at instead of resolved_at for consistency with the schema.

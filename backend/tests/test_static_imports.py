@@ -32,9 +32,7 @@ APP_DIR = REPO_ROOT / 'app'
 KNOWN_BROKEN: set[tuple[str, str]] = {
     # main.py tries to start a prediction evaluator that the service never defined.
     ('app/main.py', 'app.services.prediction_tracker_service.start_evaluator'),
-    # The prediction tracker routes call service functions that do not exist.
-    ('app/routes/prediction_tracker.py', 'app.services.prediction_tracker_service.list_predictions'),
-    ('app/routes/prediction_tracker.py', 'app.services.prediction_tracker_service.delete_prediction'),
+    # The prediction tracker route calls a service function that does not exist.
     ('app/routes/prediction_tracker.py', 'app.services.prediction_tracker_service.evaluate_expired_predictions'),
 }
 

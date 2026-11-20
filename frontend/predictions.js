@@ -144,10 +144,10 @@
         sub: 'sign matched',          cls: 'green' },
       { label: 'Magnitude accuracy',
         value: a.magnitude_accuracy_pct != null ? `${a.magnitude_accuracy_pct}%` : '\u2014',
-        sub: 'inside 95% band',       cls: 'blue'  },
+        sub: `within \u00b1${a.magnitude_tolerance_pct ?? 2}% of target`, cls: 'blue'  },
       { label: 'Mean abs error',
         value: a.mean_abs_error_pct != null ? `${a.mean_abs_error_pct}%` : '\u2014',
-        sub: '|actual - target| / anchor', cls: 'amber' },
+        sub: '|actual - target| / target', cls: 'amber' },
       { label: 'Median abs error',
         value: a.median_abs_error_pct != null ? `${a.median_abs_error_pct}%` : '\u2014',
         sub: 'robust to outliers',    cls: 'amber' },
@@ -197,8 +197,8 @@
       const dhCell = dh === true ? '<span class="hit-yes" data-testid="dir-hit-yes">\u2713 hit</span>'
                   : dh === false ? '<span class="hit-no" data-testid="dir-hit-no">\u2717 miss</span>'
                   : '<span class="hit-na">\u2014</span>';
-      const mhCell = mh === true ? '<span class="hit-yes">\u2713 in-band</span>'
-                  : mh === false ? '<span class="hit-no">\u2717 out</span>'
+      const mhCell = mh === true ? '<span class="hit-yes">\u2713 within</span>'
+                  : mh === false ? '<span class="hit-no">\u2717 outside</span>'
                   : '<span class="hit-na">\u2014</span>';
       const errCell = r.error_pct != null
         ? `<span class="${r.error_pct >= 0 ? 'dir-bull' : 'dir-bear'}">${r.error_pct >= 0 ? '+' : ''}${fmtNum(r.error_pct, 2)}%</span>`
@@ -423,7 +423,7 @@
     ctx.fillStyle = '#9ca3af';
     ctx.textAlign = 'left';
     ctx.font = '11px Arial';
-    ctx.fillText('\u25A0 directional   \u25A0 magnitude (in-band)', padding.left, padding.top - 6);
+    ctx.fillText('\u25A0 directional   \u25A0 magnitude (within tolerance)', padding.left, padding.top - 6);
   }
 
   // ---- Public handlers used by inline onclick --------------------------
