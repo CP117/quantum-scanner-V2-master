@@ -32,6 +32,17 @@ Hit rules (the pure functions below)
   magnitude_hit      abs(error_pct) <= MRD_PREDICTION_MAGNITUDE_TOLERANCE_PCT
                      (default 2.0)
 
+Evaluation (evaluate_expired_predictions) reads Yahoo's daily chart
+through the shared provider budget: one request per symbol per pass,
+period1 two days before created_at, splits included. A session counts
+once it is final (17:00 New York for stocks, 01:00 UTC the next day for
+crypto). Rate limits, network errors, a denied budget and sessions
+still in progress leave the row open and skip it for
+retry_backoff_seconds. A missing symbol, or no close within seven days
+of the expiry, marks it unresolved. start_evaluator runs one batch
+every 15 minutes in a daemon thread, and scripts/evaluate_predictions.py
+runs the same passes from the command line.
+
 The database is data/saved_predictions.db, or the path in
 MRD_PREDICTIONS_DB. The variable is read on every call, so tests and the
 evaluation script can point the module at a copy.
@@ -44,12 +55,17 @@ import math
 import os
 import sqlite3
 import statistics
+import threading
+import time
 import uuid
+from collections import Counter
 from contextlib import contextmanager
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
+from datetime import time as clock_time
 from pathlib import Path
 from threading import Lock
-from typing import Any, Iterator
+from typing import Any, Callable, Iterator
 from zoneinfo import ZoneInfo
 
 from app.services import quote_math
@@ -638,6 +654,422 @@ def accuracy_stats(market: str | None = None, source: str | None = None) -> dict
         'bear_accuracy_pct': by_direction['bear']['directional_accuracy_pct'] or 0.0,
         'expired_only': True,
     }
+
+
+# ---------------------------------------------------------------------------
+# Evaluation
+# ---------------------------------------------------------------------------
+
+# A stock session's close is final an hour after the 16:00 New York close;
+# a crypto day (UTC) an hour after midnight.
+STOCK_CLOSE_FINAL_LOCAL = clock_time(17, 0)
+CRYPTO_CLOSE_GRACE = timedelta(hours=1)
+# How long after expiry a missing close is still worth waiting for, and
+# how far after the expiry date a close may fall and still count.
+NO_CLOSE_GIVE_UP = timedelta(days=7)
+MAX_CLOSE_GAP_DAYS = 7
+
+HISTORY_URL = 'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}'
+
+
+@dataclass(frozen=True)
+class CloseLookup:
+    """What a price function found for one prediction.
+
+    close         the official close on the anchor's price basis, or None.
+    session_date  the session that close belongs to.
+    reason        why there is no close.
+    retry         True when the cause is temporary (rate limit, network,
+                  session still open). The row stays open and is skipped
+                  for retry_backoff_seconds. False without a close marks
+                  the row unresolved with `reason`.
+    """
+    close: float | None = None
+    session_date: date | None = None
+    reason: str | None = None
+    retry: bool = False
+
+
+PriceFn = Callable[[dict], 'float | CloseLookup | None']
+
+
+def session_is_final(session: date, market: str | None, now: datetime) -> bool:
+    """Whether a daily bar's close can still change at `now`.
+
+    Stocks: final from 17:00 New York time on the session date. Crypto:
+    final from 01:00 UTC on the next day.
+    """
+    if (market or '').lower() == 'crypto':
+        final_at = datetime.combine(session + timedelta(days=1), clock_time(0), tzinfo=timezone.utc)
+        final_at += CRYPTO_CLOSE_GRACE
+    else:
+        final_at = datetime.combine(session, STOCK_CLOSE_FINAL_LOCAL, tzinfo=ZoneInfo(quote_math.DEFAULT_TZ))
+    return now >= final_at
+
+
+def close_from_history(history: dict, row: dict, now: datetime) -> CloseLookup:
+    """The official close for one prediction, picked from a daily history.
+
+    `history` holds ``bars``, a list of (session_date, close), and
+    ``splits``, a list of (epoch_seconds, numerator / denominator).
+    Yahoo's closes are adjusted for every split up to today, so the
+    close is multiplied by each split ratio dated after created_at to put
+    it back on the anchor's basis.
+
+    The first bar dated on or after the expiry date is used. A bar from
+    a session that is not final yet means retry. No bar at all means
+    retry for NO_CLOSE_GIVE_UP after the expiry, then unresolved. A
+    first bar more than MAX_CLOSE_GAP_DAYS after the expiry date
+    (a halt or delisting) is unresolved.
+    """
+    market = row.get('market')
+    target = expiry_session_date(row.get('expires_at'), market)
+    expires = _parse_utc(row.get('expires_at'))
+    if target is None or expires is None:
+        return CloseLookup(reason='bad_expiry')
+    bars = sorted(
+        (day, float(close)) for day, close in (history.get('bars') or [])
+        if day is not None and day >= target and quote_math.price(close) is not None
+    )
+    if not bars:
+        if now - expires < NO_CLOSE_GIVE_UP:
+            return CloseLookup(reason='no_close_yet', retry=True)
+        return CloseLookup(reason='no_close_after_expiry')
+    session, close = bars[0]
+    if (session - target).days > MAX_CLOSE_GAP_DAYS:
+        return CloseLookup(reason='no_close_near_expiry')
+    if not session_is_final(session, market, now):
+        return CloseLookup(reason='session_not_closed', retry=True)
+    created = _parse_utc(row.get('created_at'))
+    factor = 1.0
+    if created is not None:
+        for epoch, ratio in history.get('splits') or []:
+            if epoch > created.timestamp():
+                factor *= ratio
+    return CloseLookup(close=close * factor, session_date=session)
+
+
+def yahoo_history_symbol(symbol: str, market: str | None) -> str:
+    """Yahoo's spelling of a symbol: BRK.B is BRK-B, and a bare coin gets -USD."""
+    sym = (symbol or '').strip().upper()
+    if (market or '').lower() == 'crypto':
+        return sym if '-' in sym else f'{sym}-USD'
+    return sym.replace('.', '-').replace('/', '-')
+
+
+def parse_chart_history(result: dict, market: str | None) -> dict:
+    """Daily bars and splits from one Yahoo ``chart.result`` entry.
+
+    Bars are dated in the exchange's timezone (UTC for crypto).
+    """
+    meta = result.get('meta') or {}
+    if (market or '').lower() == 'crypto':
+        tz = quote_math.CRYPTO_TZ
+    else:
+        tz = meta.get('exchangeTimezoneName') or quote_math.DEFAULT_TZ
+    stamps = list(result.get('timestamp') or [])
+    quote = ((result.get('indicators') or {}).get('quote') or [{}])[0] or {}
+    closes = list(quote.get('close') or [])
+    bars = [(quote_math.session_date(t, tz), c) for t, c in zip(stamps, closes)]
+    splits: list[tuple[float, float]] = []
+    for event in ((result.get('events') or {}).get('splits') or {}).values():
+        try:
+            epoch = float(event['date'])
+            numerator, denominator = float(event['numerator']), float(event['denominator'])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if numerator > 0 and denominator > 0:
+            splits.append((epoch, numerator / denominator))
+    return {'bars': bars, 'splits': sorted(splits)}
+
+
+def _history_failure(res: Any) -> CloseLookup | None:
+    """The CloseLookup for a failed chart response, or None when it is a 200."""
+    status = int(getattr(res, 'status_code', 0) or 0)
+    if status == 0:
+        error = str(getattr(res, 'error', '') or '').lower()
+        return CloseLookup(reason='timeout' if 'timeout' in error else 'network_error', retry=True)
+    if status == 429:
+        return CloseLookup(reason='rate_limited', retry=True)
+    if status in (400, 404, 410, 422):
+        return CloseLookup(reason='no_history')
+    if status != 200:
+        return CloseLookup(reason=f'http_{status}', retry=True)
+    return None
+
+
+def make_history_price_fn(
+    min_gap_seconds: float = 1.0,
+    *,
+    budget_wait_seconds: float = 5.0,
+    http_get: Callable[..., Any] | None = None,
+    budget_fn: Callable[..., bool] | None = None,
+    now_fn: Callable[[], datetime] | None = None,
+) -> Callable[[dict], CloseLookup]:
+    """A price function that reads closes from Yahoo's daily chart.
+
+    One request per symbol, cached for the life of the function (a
+    failure that is not temporary is cached too). Requests are at least
+    `min_gap_seconds` apart and each needs a slot from the shared
+    provider budget at background priority; a denied slot means retry.
+    `http_get`, `budget_fn` and `now_fn` are for tests.
+    """
+    cache: dict[tuple[str, str], tuple[int, dict | CloseLookup]] = {}
+    gate = Lock()
+    last_request = [float('-inf')]
+
+    def fetch(sym: str, market: str, period1: int, period2: int) -> dict | CloseLookup:
+        get = http_get
+        if get is None:
+            from app.services.http_client import ResilientGetConfig, resilient_get
+
+            cfg = ResilientGetConfig(max_attempts=3, connect_timeout=4.0, read_timeout=10.0,
+                                     retry_after_cap_seconds=5.0)
+
+            def get(url, params):
+                return resilient_get(url, params=params, headers={'Accept': 'application/json'}, cfg=cfg)
+        allow = budget_fn
+        if allow is None:
+            from app.services.provider_session import provider_budget_allowance as allow
+        with gate:
+            wait = last_request[0] + min_gap_seconds - time.monotonic()
+            if wait > 0:
+                time.sleep(wait)
+            if not allow(1, priority=3, wait_timeout_seconds=budget_wait_seconds):
+                return CloseLookup(reason='budget_denied', retry=True)
+            last_request[0] = time.monotonic()
+        params = {'period1': period1, 'period2': period2, 'interval': '1d', 'events': 'split'}
+        try:
+            res = get(HISTORY_URL.format(symbol=sym), params)
+        except Exception as exc:  # noqa: BLE001 - resilient_get should not raise; a test double might
+            return CloseLookup(reason=f'network_error:{type(exc).__name__}', retry=True)
+        failure = _history_failure(res)
+        if failure is not None:
+            return failure
+        try:
+            chart = (res.json() or {}).get('chart') or {}
+        except Exception:  # noqa: BLE001 - not JSON
+            return CloseLookup(reason='bad_response', retry=True)
+        results = chart.get('result') or []
+        if chart.get('error') or not results:
+            return CloseLookup(reason='no_history')
+        history = parse_chart_history(results[0], market)
+        if not any(quote_math.price(close) is not None for _, close in history['bars']):
+            return CloseLookup(reason='no_history')
+        return history
+
+    def price_fn(row: dict) -> CloseLookup:
+        now = now_fn() if now_fn else _utcnow()
+        market = str(row.get('market') or 'stocks').lower()
+        sym = yahoo_history_symbol(str(row.get('symbol') or ''), market)
+        created = _parse_utc(row.get('created_at')) or _parse_utc(row.get('expires_at'))
+        if not sym or created is None:
+            return CloseLookup(reason='bad_row')
+        period1 = int((created - timedelta(days=2)).timestamp())
+        cached = cache.get((sym, market))
+        if cached is None or cached[0] > period1:
+            found = fetch(sym, market, period1, int(now.timestamp()))
+            if isinstance(found, CloseLookup) and found.retry:
+                return found
+            cached = (period1, found)
+            cache[(sym, market)] = cached
+        history = cached[1]
+        if isinstance(history, CloseLookup):
+            return history
+        return close_from_history(history, row, now)
+
+    return price_fn
+
+
+# Prediction id -> time.monotonic() before which it is not retried.
+_RETRY_AFTER: dict[str, float] = {}
+_EVAL_LOCK = Lock()
+
+
+def _as_lookup(found: Any) -> CloseLookup:
+    if isinstance(found, CloseLookup):
+        return found
+    if found is None:
+        return CloseLookup(reason='price_unavailable')
+    close = quote_math.price(found)
+    return CloseLookup(close=close) if close is not None else CloseLookup(reason='bad_price')
+
+
+def _open_counts(conn: sqlite3.Connection, moment: datetime) -> dict[str, int]:
+    stamp = moment.isoformat()
+    row = conn.execute(
+        "SELECT COALESCE(SUM(CASE WHEN expires_at <= ? THEN 1 ELSE 0 END), 0), "
+        "COALESCE(SUM(CASE WHEN expires_at > ? THEN 1 ELSE 0 END), 0) "
+        "FROM saved_predictions WHERE status = 'open'", (stamp, stamp),
+    ).fetchone()
+    return {'still_open': int(row[0]), 'not_yet_expired': int(row[1])}
+
+
+def evaluate_expired_predictions(
+    now: datetime | None = None,
+    batch_size: int = 200,
+    price_fn: PriceFn | None = None,
+    *,
+    retry_backoff_seconds: float = 600.0,
+) -> dict[str, Any]:
+    """Evaluate up to `batch_size` expired open predictions, oldest expiry first.
+
+    `price_fn(row)` returns the close as a float, None (no price: the row
+    becomes unresolved with 'price_unavailable') or a CloseLookup. It
+    defaults to make_history_price_fn(). A row whose lookup says retry
+    stays open and is skipped for `retry_backoff_seconds` in this
+    process, so repeated passes move on to other rows.
+
+    Returns evaluated, unresolved, retry_later, retry_reasons, checked
+    (rows looked at), still_open (expired rows still open afterwards),
+    not_yet_expired and busy (True when another pass was running, and
+    this one did nothing).
+    """
+    moment = _parse_utc(now) if now is not None else _utcnow()
+    if moment is None:
+        raise ValueError(f'bad now: {now!r}')
+    result: dict[str, Any] = {
+        'evaluated': 0, 'unresolved': 0, 'retry_later': 0, 'retry_reasons': {},
+        'checked': 0, 'busy': False,
+    }
+    if not _EVAL_LOCK.acquire(blocking=False):
+        with _db() as c:
+            result.update(_open_counts(c, moment))
+        result['busy'] = True
+        return result
+    try:
+        fn = price_fn or make_history_price_fn(now_fn=lambda: moment)
+        clock = time.monotonic()
+        for pid, until in list(_RETRY_AFTER.items()):
+            if until <= clock:
+                del _RETRY_AFTER[pid]
+        deferred = set(_RETRY_AFTER)
+        size = max(1, int(batch_size))
+        with _db() as c:
+            rows = c.execute(
+                "SELECT * FROM saved_predictions WHERE status = 'open' AND expires_at <= ? "
+                'ORDER BY expires_at, id LIMIT ?', (moment.isoformat(), size + len(deferred)),
+            ).fetchall()
+        batch = [dict(r) for r in rows if r['id'] not in deferred][:size]
+        reasons: Counter[str] = Counter()
+        stamp = moment.isoformat()
+        for row in batch:
+            result['checked'] += 1
+            try:
+                lookup = _as_lookup(fn(row))
+            except Exception as exc:  # noqa: BLE001 - one bad lookup must not stop the pass
+                log.warning('prediction evaluator: lookup failed for %s: %s', row.get('symbol'), exc)
+                lookup = CloseLookup(reason=f'lookup_error:{type(exc).__name__}', retry=True)
+            close = quote_math.price(lookup.close)
+            if close is not None:
+                scored = score_prediction(row, close)
+                with _db() as c:
+                    changed = c.execute(
+                        "UPDATE saved_predictions SET status = 'evaluated', actual_close = ?, "
+                        'actual_close_date = ?, actual_return_pct = ?, error_pct = ?, '
+                        'directional_hit = ?, magnitude_hit = ?, unresolved_reason = NULL, '
+                        "evaluated_at = ?, resolved_at = ? WHERE id = ? AND status = 'open'",
+                        (
+                            round(close, 6),
+                            lookup.session_date.isoformat() if lookup.session_date else None,
+                            _round(scored['actual_return_pct']), _round(scored['error_pct']),
+                            _as_int(scored['directional_hit']), _as_int(scored['magnitude_hit']),
+                            stamp, stamp, row['id'],
+                        ),
+                    ).rowcount
+                result['evaluated'] += changed
+            elif lookup.retry:
+                _RETRY_AFTER[row['id']] = time.monotonic() + max(0.0, float(retry_backoff_seconds))
+                result['retry_later'] += 1
+                reasons[lookup.reason or 'unknown'] += 1
+            else:
+                # evaluated_at stays empty: maintenance pruning keys on it,
+                # and unresolved rows are kept.
+                with _db() as c:
+                    changed = c.execute(
+                        "UPDATE saved_predictions SET status = 'unresolved', unresolved_reason = ?, "
+                        "resolved_at = ? WHERE id = ? AND status = 'open'",
+                        ((lookup.reason or 'price_unavailable')[:200], stamp, row['id']),
+                    ).rowcount
+                result['unresolved'] += changed
+        result['retry_reasons'] = dict(reasons)
+        with _db() as c:
+            result.update(_open_counts(c, moment))
+    finally:
+        _EVAL_LOCK.release()
+    if result['checked']:
+        log.info(
+            'prediction evaluator: checked %d, evaluated %d, unresolved %d, retry later %d %s, still open %d',
+            result['checked'], result['evaluated'], result['unresolved'], result['retry_later'],
+            result['retry_reasons'] or '', result['still_open'],
+        )
+    return result
+
+
+def _round(value: float | None) -> float | None:
+    return None if value is None else round(value, 4)
+
+
+def _as_int(value: bool | None) -> int | None:
+    return None if value is None else int(value)
+
+
+# ---------------------------------------------------------------------------
+# Background evaluator
+# ---------------------------------------------------------------------------
+
+_EVALUATOR: dict[str, threading.Thread | None] = {'thread': None}
+_EVALUATOR_STOP = threading.Event()
+_EVALUATOR_START = Lock()
+EVALUATOR_THREAD_NAME = 'prediction-evaluator'
+
+
+def _evaluator_loop(interval_seconds: float, initial_delay_seconds: float) -> None:
+    if _EVALUATOR_STOP.wait(max(0.0, initial_delay_seconds)):
+        return
+    while True:
+        try:
+            evaluate_expired_predictions()
+        except Exception:  # noqa: BLE001 - keep the thread alive; the next tick retries
+            log.exception('prediction evaluator pass failed')
+        if _EVALUATOR_STOP.wait(max(1.0, interval_seconds)):
+            return
+
+
+def start_evaluator(interval_seconds: float = 900, *, initial_delay_seconds: float = 120) -> bool:
+    """Start the background evaluator unless it is already running. Returns whether it runs.
+
+    One daemon thread named 'prediction-evaluator' waits
+    `initial_delay_seconds` so startup traffic settles, then evaluates
+    one batch every `interval_seconds`. MRD_START_BACKGROUND=0 (the test
+    suite sets it) leaves it stopped. Phase 5 moves it into the
+    background-task registry.
+    """
+    if os.environ.get('MRD_START_BACKGROUND', '1').strip() == '0':
+        log.info('prediction evaluator not started: MRD_START_BACKGROUND=0')
+        return False
+    with _EVALUATOR_START:
+        thread = _EVALUATOR['thread']
+        if thread is not None and thread.is_alive():
+            return True
+        _EVALUATOR_STOP.clear()
+        thread = threading.Thread(
+            target=_evaluator_loop,
+            args=(float(interval_seconds), float(initial_delay_seconds)),
+            name=EVALUATOR_THREAD_NAME,
+            daemon=True,
+        )
+        _EVALUATOR['thread'] = thread
+        thread.start()
+    return True
+
+
+def stop_evaluator(timeout: float = 5.0) -> None:
+    """Ask the background evaluator to stop and wait up to `timeout` seconds for it."""
+    _EVALUATOR_STOP.set()
+    thread = _EVALUATOR['thread']
+    if thread is not None:
+        thread.join(timeout)
 
 
 # ---------------------------------------------------------------------------
