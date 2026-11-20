@@ -411,6 +411,42 @@ def provider_stats_snapshot() -> dict[str, dict]:
     return out
 
 
+def reset_circuits() -> list[str]:
+    """Close every open or half-open circuit and restart each breaker.
+
+    Used by the operator reset (POST /api/system/reset).  For every
+    provider that has a stats row, the consecutive-failure counter and the
+    trip count go back to zero and the cooldown returns to the provider's
+    configured base, so the next failure cluster starts at the bottom of
+    the backoff ladder.  The tunables (cb_threshold, cb_cooldown_seconds)
+    and the call / hit / error counters are left alone, and no rows are
+    created for providers that have not run yet.  Stooq's dedicated
+    breaker in stooq_provider is separate and is not touched.
+
+    Returns the names of the providers whose circuit was open or
+    half-open, sorted.
+    """
+    with _locks_table_lock:
+        names = list(_stats.keys())
+    closed: list[str] = []
+    for name in names:
+        with _lock_for(name):
+            row = _stats.get(name)
+            if row is None:
+                continue
+            if row.get('circuit_state') in ('open', 'half_open'):
+                closed.append(name)
+            row['circuit_state'] = 'closed'
+            row['circuit_open_until_mono'] = 0.0
+            row['circuit_open_until_utc'] = None
+            row['consecutive_failures'] = 0
+            row['circuit_trip_count'] = 0
+            row['cb_current_cooldown_seconds'] = float(
+                row.get('cb_cooldown_seconds') or _CB_DEFAULT_COOLDOWN
+            )
+    return sorted(closed)
+
+
 def reset_provider_stats() -> None:
     """Wipe every provider's stats row.
 

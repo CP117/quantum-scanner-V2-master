@@ -30,13 +30,6 @@ APP_DIR = REPO_ROOT / 'app'
 
 # (file relative to the repo root, dotted target that does not resolve)
 KNOWN_BROKEN: set[tuple[str, str]] = {
-    # future_mode's "scan now" path imports a function and a module that do not exist.
-    ('app/routes/future_mode.py', 'app.services.active_scan_service.request_immediate_iteration'),
-    ('app/routes/future_mode.py', 'app.services.scan_worker'),
-    # future_mode's reset is hasattr-guarded, but neither helper exists: the lane's
-    # monitor-only flag is a loop-local variable, so the reset reports success and clears nothing.
-    ('app/routes/future_mode.py', 'app.services.top10_priority_service.reset_monitor_state'),
-    ('app/routes/future_mode.py', 'app.services.wedge_watchdog.reset_state'),
     # main.py tries to start a prediction evaluator that the service never defined.
     ('app/main.py', 'app.services.prediction_tracker_service.start_evaluator'),
     # The prediction tracker routes call service functions that do not exist.
