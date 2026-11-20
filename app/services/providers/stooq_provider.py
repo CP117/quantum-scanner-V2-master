@@ -47,6 +47,7 @@ from threading import Lock
 
 import requests
 
+from app.services import quote_math
 from app.services.providers.base import count_error, count_rate_limit, count_timeout
 from app.utils.time import utcnowiso
 
@@ -442,11 +443,25 @@ def _fetch_one(sym: str, market: str, captured_at: str, key: str) -> tuple[str, 
                 _diag['parse_errors'] += 1
                 _diag['consecutive_failures'] += 1
             return sym, None
+        # Phase 2C: the newest row is the quote, its OHLCV is that row's,
+        # and previous_close is the nearest earlier row's close. A single
+        # row used to pair with itself (a made-up 0% change); now it is no
+        # quote. quote_time_utc marks the session date (CSV has no time).
         last_row = rows[-1]
-        prev_row = rows[-2] if len(rows) >= 2 else last_row
-        last_price = last_row['close']
-        prev_close = prev_row['close'] if prev_row['close'] > 0 else last_price
-        if last_price <= 0:
+        prev_close = next((r['close'] for r in reversed(rows[:-1]) if r['close'] > 0), None)
+        quote = quote_math.build_quote(
+            last_price=last_row['close'],
+            previous_close=prev_close,
+            open=last_row['open'],
+            day_high=last_row['high'],
+            day_low=last_row['low'],
+            volume=last_row['volume'],
+            quote_time_utc=last_row.get('date'),
+            captured_at_utc=captured_at,
+            source='stooq',
+            market_cap=0.0,
+        )
+        if quote is None:
             with _lock:
                 _diag['parse_errors'] += 1
                 _diag['consecutive_failures'] += 1
@@ -456,19 +471,7 @@ def _fetch_one(sym: str, market: str, captured_at: str, key: str) -> tuple[str, 
             _diag['consecutive_failures'] = 0
             # A successful probe ends half-open mode -> circuit is healthy.
             _diag['half_open'] = False
-        return sym, {
-            'last_price': last_price,
-            'previous_close': prev_close,
-            'open': last_row['open'] or last_price,
-            'day_low': last_row['low'] or last_price,
-            'day_high': last_row['high'] or last_price,
-            'volume': last_row['volume'],
-            'market_cap': 0.0,
-            'captured_at_utc': captured_at,
-            'source': 'stooq',
-            'provider_outcome': 'live_success',
-            'preview_only': False,
-        }
+        return sym, quote
     except Exception as exc:  # noqa: BLE001
         err = redact(exc, key)
         log.debug('stooq fetch failed for %s: %s', sym, err)

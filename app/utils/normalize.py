@@ -365,6 +365,12 @@ def normalize_result_row(row: dict | None) -> dict:
         _coalesce(cooked, 'as_of_utc', 'asofutc', default='') or utcnowiso()
     )
 
+    # Phase 2C: the exchange timestamp of the quote behind the row, when
+    # the provider gave one. Additive, so it is not counted as defaulted.
+    cooked['quote_as_of_utc'] = (
+        _coalesce(cooked, 'quote_as_of_utc', 'quote_time_utc', default=None) or None
+    )
+
     if 'age_seconds' not in (row or {}) and 'ageseconds' not in (row or {}):
         injected.append('age_seconds')
     cooked['age_seconds'] = int(

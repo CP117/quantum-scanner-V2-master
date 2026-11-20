@@ -552,6 +552,10 @@ def save_quote(symbol: str, payload: dict) -> None:
             "captured_at_utc": payload.get("captured_at_utc") or utcnow_iso(),
             "source": payload.get("source", "yfinance"),
         }
+        # Phase 2C: keep the exchange time so cache-scored rows can still
+        # report quote_as_of_utc.
+        if payload.get("quote_time_utc"):
+            entry["quote_time_utc"] = payload["quote_time_utc"]
         _SHARD_MEM.setdefault(shard, {})[sym] = entry
         _SHARD_VERSION[shard] = _SHARD_VERSION.get(shard, 0) + 1
     _put_memory_quote(sym, entry)

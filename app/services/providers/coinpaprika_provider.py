@@ -26,6 +26,7 @@ from typing import Iterable
 
 import httpx
 
+from app.services import quote_math
 from app.services.providers.base import count_error, count_rate_limit, count_timeout
 
 log = logging.getLogger("app.providers.coinpaprika")
@@ -176,6 +177,7 @@ def _fetch_one(ticker: str, coin_id: str) -> dict | None:
         "dayHigh": float(usd.get("price") or 0) * (1.0 + max(0.0, abs(pct)) / 200.0),
         "volume": float(usd.get("volume_24h") or 0),
         "marketCap": float(usd.get("market_cap") or 0),
+        "lastUpdated": data.get("last_updated"),
         "source": "coinpaprika",
     }
 
@@ -201,19 +203,23 @@ def fetch(symbols: Iterable[str], market: str) -> dict[str, dict]:
         with _lock:
             _stats["requests"] += 1
         snap = _fetch_one(norm, coin_id)
-        if snap:
-            out[original] = {
-                "last_price": snap["currentPrice"],
-                "previous_close": snap["previousClose"],
-                "open": snap["open"],
-                "day_low": snap["dayLow"],
-                "day_high": snap["dayHigh"],
-                "volume": snap["volume"],
-                "market_cap": snap["marketCap"],
-                "source": "coinpaprika",
-                "provider_outcome": "live_success",
-                "preview_only": False,
-            }
+        # Phase 2C: values unchanged. CoinPaprika only exposes a rolling
+        # 24-hour change, so previous_close is derived from it and open,
+        # high and low are estimates; last_updated becomes quote_time_utc.
+        quote = quote_math.build_quote(
+            last_price=snap["currentPrice"],
+            previous_close=snap["previousClose"],
+            open=snap["open"],
+            day_low=snap["dayLow"],
+            day_high=snap["dayHigh"],
+            volume=snap["volume"],
+            market_cap=snap["marketCap"],
+            quote_time_utc=snap.get("lastUpdated"),
+            source="coinpaprika",
+            tz_name=quote_math.CRYPTO_TZ,
+        ) if snap else None
+        if quote:
+            out[original] = quote
             with _lock:
                 _stats["hits"] += 1
         else:
