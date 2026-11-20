@@ -276,9 +276,9 @@ def test_yf_batch_previous_close_skips_a_row_without_close(yf_download):
 
 
 def test_yf_batch_single_symbol_multiindex_now_works(yf_download):
-    # yfinance 0.2.66 keeps the (Ticker, Price) columns for one ticker. The
-    # old single-symbol branch read data['Close'] (KeyError) and never
-    # produced a quote.
+    # yfinance 0.2.66 and 1.8.0 keep the (Ticker, Price) columns for one
+    # ticker. The old single-symbol branch read data['Close'] (KeyError) and
+    # never produced a quote.
     yf_download.frame = _grouped({'AAPL': _daily(AAPL_FINAL, NOV19_DATES)})
     q = scoring_service.download_quotes_yfinance_only(['AAPL'], 'stocks')['AAPL']
     assert (q['last_price'], q['previous_close'], q['volume']) == (349.21, 352.45, 40_469_518)
@@ -474,7 +474,7 @@ def fake_yf(monkeypatch):
 
 
 def test_live_snapshot_fast_info_uses_regular_session_previous_close(fake_yf):
-    # previous_close in yfinance 0.2.66 includes after-hours prints.
+    # previous_close in yfinance 0.2.66 and 1.8.0 includes after-hours prints.
     fake_yf.fast = _fast(last_price=352.45, previous_close=352.10, regular_market_previous_close=351.91,
                          open=351.87, day_low=351.47, day_high=356.42, last_volume=33_393_854)
     q = scoring_service.fetch_live_snapshot('AAPL', 'stocks')

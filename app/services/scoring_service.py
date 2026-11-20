@@ -2148,11 +2148,12 @@ def merge_market_shape(primary: dict | None = None, secondary: dict | None = Non
 def _fast_previous_close(fast) -> float:
     """fast_info's previous close, taken from regular-session daily bars.
 
-    Phase 2C: yfinance 0.2.66's `previous_close` is the last close of the
-    previous date in 1-hour bars *including* pre- and post-market, so it
-    carries after-hours prints, and reading it costs an extra 5d/1h
-    request. `regular_market_previous_close` is the prior daily bar's close
-    from the same 1y daily series `last_price`, `open` and `day_high` read.
+    Phase 2C: yfinance's `previous_close` (0.2.66, and still 1.8.0) is the
+    last close of the previous date in 1-hour bars *including* pre- and
+    post-market, so it carries after-hours prints, and reading it costs an
+    extra request for a week of 1-hour bars. `regular_market_previous_close`
+    is the prior daily bar's close from the same 1y daily series
+    `last_price`, `open` and `day_high` read.
     """
     if hasattr(fast, 'regular_market_previous_close'):
         return safe_float(getattr(fast, 'regular_market_previous_close', None))
@@ -2552,12 +2553,12 @@ def download_quotes_yfinance_only(symbols: List[str], market: str = 'stocks') ->
 def _yf_symbol_frame(data, sym: str, *, single: bool):
     """One symbol's OHLCV columns from a `yf.download(group_by='ticker')` result.
 
-    yfinance 0.2.66 returns (ticker, field) MultiIndex columns even for a
-    single ticker, so the old `data['Close']` single-symbol branch raised
-    KeyError (and its `pd.Series` fallbacks a NameError: this module never
-    imported `pd`), which `except Exception: pass` hid. It never produced
-    a quote. Flat columns (older yfinance) are accepted for a
-    single-symbol download only.
+    yfinance (0.2.66, and 1.8.0 unless multi_level_index=False) returns
+    (ticker, field) MultiIndex columns even for a single ticker, so the old
+    `data['Close']` single-symbol branch raised KeyError (and its
+    `pd.Series` fallbacks a NameError: this module never imported `pd`),
+    which `except Exception: pass` hid. It never produced a quote. Flat
+    columns (older yfinance) are accepted for a single-symbol download only.
     """
     columns = getattr(data, 'columns', None)
     if _pd is not None and isinstance(columns, _pd.MultiIndex):
